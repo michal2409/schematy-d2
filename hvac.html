@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pl"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schemat HVAC — pompa, reku, klima, PV</title>
+<style>
+  body{margin:0;background:#fafaf9}
+  a{color:#b45309;text-decoration:underline}
+  a:hover{color:#92400e}
+</style>
+</head>
+<body>
+<div style="min-height:100vh; background:#fafaf9; color:#1c1917; font-family:var(--font-sans,'NVIDIA Sans',-apple-system,BlinkMacSystemFont,sans-serif); line-height:1.6">
+<div style="max-width:1220px; margin:0 auto; padding:40px 28px 72px">
+
+  <header style="border-bottom:4px solid #b45309; padding-bottom:20px; margin-bottom:32px; display:flex; flex-direction:column; gap:10px">
+    <span style="align-self:flex-start; background:#b45309; color:#fff; font-size:12px; font-weight:700; letter-spacing:.1em; padding:4px 14px; border-radius:99px; text-transform:uppercase">Dom D2 · Jaśminowy Mokotów</span>
+    <h1 style="margin:0; font-size:34px; letter-spacing:-.02em; font-weight:700">Schemat HVAC — cztery maszyny klimatu, jeden dyrygent</h1>
+    <p style="margin:0; color:#57534e; font-size:16px; max-width:760px">Pompa ciepła grzeje, rekuperator wymienia powietrze, klima chłodzi, fotowoltaika daje prąd. Każde z osobna już działa — ten schemat pokazuje, jakie kable położyć, żeby serwer domu został ich wspólnym dyrygentem. Spoiler: przez dom idzie tylko JEDEN nowy kabel.</p>
+  </header>
+
+  <!-- LEGENDA -->
+  <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px">
+    <span style="display:inline-flex; align-items:center; gap:8px; background:#fff; border:1px solid #e7e5e4; border-radius:99px; padding:6px 14px; font-size:13.5px; font-weight:600"><span style="width:22px; height:6px; border-radius:3px; background:#0d9488"></span>magistrala Modbus — skrętka UTP</span>
+    <span style="display:inline-flex; align-items:center; gap:8px; background:#fff; border:1px solid #e7e5e4; border-radius:99px; padding:6px 14px; font-size:13.5px; font-weight:600"><span style="width:22px; height:6px; border-radius:3px; background:#ea580c"></span>styki SG Ready — YTDY 6×0,5</span>
+    <span style="display:inline-flex; align-items:center; gap:8px; background:#fff; border:1px solid #e7e5e4; border-radius:99px; padding:6px 14px; font-size:13.5px; font-weight:600"><span style="width:22px; height:6px; border-radius:3px; background:#ca8a04"></span>RS485 do PV — ✓ już położone</span>
+    <span style="display:inline-flex; align-items:center; gap:8px; background:#fff; border:1px solid #e7e5e4; border-radius:99px; padding:6px 14px; font-size:13.5px; font-weight:600"><span style="width:22px; height:6px; border-radius:3px; background:#2563eb"></span>LAN — UTP kat.6</span>
+    <span style="display:inline-flex; align-items:center; gap:8px; background:#fff; border:1px solid #e7e5e4; border-radius:99px; padding:6px 14px; font-size:13.5px; font-weight:600"><span style="width:22px; height:0; border-top:3px dashed #0ea5e9"></span>〜 Wi-Fi (bez kabla)</span>
+    <span style="display:inline-flex; align-items:center; gap:8px; background:#fff; border:1px solid #e7e5e4; border-radius:99px; padding:6px 14px; font-size:13.5px; font-weight:600"><span style="width:22px; height:0; border-top:3px dashed #78716c"></span>schowane w szachcie / ścianie</span>
+  </div>
+
+  <!-- ================= RYSUNEK GŁÓWNY ================= -->
+  <section style="background:#fff; border:1px solid #e7e5e4; border-radius:16px; padding:28px; margin-bottom:28px; box-shadow:0 1px 3px rgba(0,0,0,.05)">
+    <h2 style="margin:0 0 6px; font-size:22px; font-weight:700">Przekrój domu — kto gdzie mieszka i którędy melduje się serwerowi</h2>
+    <p style="margin:0 0 18px; color:#57534e; font-size:15px">Czytaj numerkami <b style="color:#b45309">① → ⑧</b> — te same numery znajdziesz w opowieści pod rysunkiem.</p>
+
+    <svg viewBox="0 0 1180 990" xmlns="http://www.w3.org/2000/svg" font-family="var(--font-sans,'NVIDIA Sans',sans-serif)" style="width:100%; height:auto; display:block">
+      <defs>
+        <pattern id="hatch" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+          <rect width="8" height="8" fill="#e7e5e4"/><line x1="0" y1="0" x2="0" y2="8" stroke="#d6d3d1" stroke-width="3"/>
+        </pattern>
+      </defs>
+
+      <!-- AGREGATY KLIMY NA DACHU -->
+      <rect x="150" y="10" width="180" height="38" rx="8" fill="#fff" stroke="#1c1917" stroke-width="2"/>
+      <text x="240" y="28" font-size="12.5" font-weight="700" text-anchor="middle">AGREGATY KLIMY</text>
+      <text x="240" y="42" font-size="10.5" fill="#78716c" text-anchor="middle">(dach, na wspornikach)</text>
+      <text x="350" y="32" font-size="11" fill="#78716c">przejścia przez papę tylko z uszczelnieniem żywicą</text>
+
+      <!-- DACH -->
+      <rect x="40" y="50" width="1100" height="24" fill="url(#hatch)" stroke="#d6d3d1"/>
+      <text x="1060" y="67" fill="#a8a29e" font-size="11" letter-spacing=".12em">DACH</text>
+
+      <!-- ŚCIANY -->
+      <rect x="40" y="74" width="32" height="806" fill="url(#hatch)" stroke="#d6d3d1"/>
+      <rect x="1108" y="74" width="32" height="806" fill="url(#hatch)" stroke="#d6d3d1"/>
+
+      <!-- STROPY -->
+      <rect x="72" y="252" width="1036" height="20" fill="url(#hatch)" stroke="#d6d3d1"/>
+      <rect x="72" y="452" width="1036" height="20" fill="url(#hatch)" stroke="#d6d3d1"/>
+      <rect x="72" y="652" width="1036" height="20" fill="url(#hatch)" stroke="#d6d3d1"/>
+
+      <!-- PODŁOGA -->
+      <rect x="40" y="880" width="1100" height="24" fill="url(#hatch)" stroke="#d6d3d1"/>
+
+      <!-- ETYKIETY KONDYGNACJI -->
+      <text x="56" y="163" fill="#a8a29e" font-size="11" text-anchor="middle" letter-spacing=".15em" transform="rotate(-90 56 163)">PIĘTRO 2</text>
+      <text x="56" y="362" fill="#a8a29e" font-size="11" text-anchor="middle" letter-spacing=".15em" transform="rotate(-90 56 362)">PIĘTRO 1</text>
+      <text x="56" y="562" fill="#a8a29e" font-size="11" text-anchor="middle" letter-spacing=".15em" transform="rotate(-90 56 562)">PARTER</text>
+      <text x="56" y="776" fill="#a8a29e" font-size="11" text-anchor="middle" letter-spacing=".15em" transform="rotate(-90 56 776)">GARAŻ</text>
+
+      <!-- SZACHT -->
+      <rect x="950" y="74" width="56" height="806" fill="none" stroke="#a8a29e" stroke-width="1.5" stroke-dasharray="7 6"/>
+      <text x="1000" y="360" fill="#a8a29e" font-size="11" text-anchor="middle" letter-spacing=".12em" transform="rotate(-90 1000 360)">SZACHT INSTALACYJNY</text>
+
+      <!-- ============ PIĘTRO 2 ============ -->
+      <!-- REKUPERATOR -->
+      <rect x="700" y="100" width="220" height="110" rx="10" fill="#fff" stroke="#1c1917" stroke-width="2"/>
+      <text x="810" y="128" font-size="14" font-weight="700" text-anchor="middle">REKUPERATOR</text>
+      <text x="810" y="146" font-size="11.5" fill="#78716c" text-anchor="middle">Frapol OnyX Pride 400</text>
+      <rect x="714" y="158" width="192" height="28" rx="6" fill="#f0fdfa" stroke="#0d9488"/>
+      <text x="810" y="177" font-size="12" fill="#0f766e" text-anchor="middle">port COM3: Modbus RTU</text>
+      <circle cx="700" cy="86" r="14" fill="#b45309"/><text x="700" y="91" font-size="14" fill="#fff" text-anchor="middle" font-weight="700">2</text>
+
+      <!-- klima p.2 -->
+      <rect x="120" y="100" width="120" height="34" rx="8" fill="#fff" stroke="#1c1917" stroke-width="1.5"/>
+      <text x="180" y="122" font-size="11.5" font-weight="700" text-anchor="middle">KLIMA</text>
+      <text x="254" y="120" font-size="16" fill="#0ea5e9">〜</text>
+
+      <!-- regulator podłogówki p.2 -->
+      <rect x="420" y="150" width="24" height="24" rx="4" fill="#fff" stroke="#a8a29e" stroke-width="1.5"/>
+      <text x="432" y="192" font-size="10.5" fill="#78716c" text-anchor="middle">regulator podłog.</text>
+
+      <!-- ============ PIĘTRO 1 ============ -->
+      <rect x="120" y="300" width="120" height="34" rx="8" fill="#fff" stroke="#1c1917" stroke-width="1.5"/>
+      <text x="180" y="322" font-size="11.5" font-weight="700" text-anchor="middle">KLIMA</text>
+      <text x="254" y="320" font-size="16" fill="#0ea5e9">〜</text>
+      <circle cx="120" cy="286" r="14" fill="#b45309"/><text x="120" y="291" font-size="14" fill="#fff" text-anchor="middle" font-weight="700">6</text>
+      <text x="300" y="306" font-size="13" font-weight="700" fill="#0ea5e9">KLIMA — zero kabli sygnałowych</text>
+      <text x="300" y="323" font-size="11.5" fill="#57534e">jednostki mają Wi-Fi (GREE) i gadają lokalnie z serwerem</text>
+      <text x="300" y="340" font-size="11" fill="#78716c">(wariant VRF: zamiast tego LiYCY 2×1,5 do szafy RACK)</text>
+
+      <rect x="420" y="352" width="24" height="24" rx="4" fill="#fff" stroke="#a8a29e" stroke-width="1.5"/>
+
+      <!-- etykieta kabla UTP (na wolnym polu p.1, strzałka do szachtu) -->
+      <text x="620" y="392" font-size="13" font-weight="700" fill="#0d9488">NOWY KABEL: UTP kat.6 (skrętka)</text>
+      <text x="620" y="409" font-size="11.5" fill="#57534e">z rekuperatora, szachtem, do szafy RACK w garażu</text>
+      <text x="620" y="426" font-size="11" fill="#78716c">4 pary: Modbus (A/B) + REKU-STOP (z alarmu) + 2× zapas</text>
+      <line x1="936" y1="404" x2="966" y2="416" stroke="#0d9488" stroke-width="1.5"/>
+      <polygon points="970,418 957,417 961,407" fill="#0d9488"/>
+
+      <!-- ============ PARTER ============ -->
+      <rect x="120" y="500" width="120" height="34" rx="8" fill="#fff" stroke="#1c1917" stroke-width="1.5"/>
+      <text x="180" y="522" font-size="11.5" font-weight="700" text-anchor="middle">KLIMA</text>
+      <text x="254" y="520" font-size="16" fill="#0ea5e9">〜</text>
+
+      <rect x="420" y="550" width="24" height="24" rx="4" fill="#fff" stroke="#a8a29e" stroke-width="1.5"/>
+      <circle cx="420" cy="540" r="14" fill="#b45309"/><text x="420" y="545" font-size="14" fill="#fff" text-anchor="middle" font-weight="700">7</text>
+      <text x="470" y="552" font-size="13" font-weight="700">PODŁOGÓWKA — kable JUŻ SĄ</text>
+      <text x="470" y="569" font-size="11.5" fill="#57534e">sterowanie per pokój istnieje (Salus, regulator w każdym pokoju);</text>
+      <text x="470" y="586" font-size="11.5" fill="#57534e">smart = wymiana regulatora w puszce — zero nowych kabli</text>
+
+      <!-- ============ GARAŻ ============ -->
+      <!-- RACK -->
+      <rect x="120" y="700" width="240" height="140" rx="10" fill="#fff" stroke="#1c1917" stroke-width="2"/>
+      <text x="240" y="718" font-size="13.5" font-weight="700" text-anchor="middle">SZAFA RACK — mózg domu</text>
+      <rect x="134" y="726" width="212" height="24" rx="5" fill="#1c1917"/>
+      <text x="240" y="742" font-size="11" fill="#fff" text-anchor="middle">SERWER (Home Assistant)</text>
+      <rect x="134" y="754" width="212" height="24" rx="5" fill="#eff6ff" stroke="#2563eb"/>
+      <text x="240" y="770" font-size="11" fill="#1d4ed8" text-anchor="middle">switch LAN</text>
+      <rect x="134" y="782" width="212" height="24" rx="5" fill="#f0fdfa" stroke="#0d9488"/>
+      <text x="240" y="798" font-size="11" fill="#0f766e" text-anchor="middle">2× konwerter USB ↔ RS485</text>
+      <rect x="134" y="810" width="212" height="24" rx="5" fill="#fff7ed" stroke="#ea580c"/>
+      <text x="240" y="826" font-size="11" fill="#c2410c" text-anchor="middle">Shelly Pro 2 — styki SG Ready</text>
+      <circle cx="120" cy="686" r="14" fill="#b45309"/><text x="120" y="691" font-size="14" fill="#fff" text-anchor="middle" font-weight="700">1</text>
+
+      <!-- POMPA CIEPŁA -->
+      <rect x="460" y="700" width="230" height="140" rx="10" fill="#fff" stroke="#1c1917" stroke-width="2"/>
+      <text x="575" y="718" font-size="13.5" font-weight="700" text-anchor="middle">POMPA CIEPŁA</text>
+      <text x="575" y="734" font-size="11" fill="#78716c" text-anchor="middle">Vitocal 222-S (jedn. wewnętrzna)</text>
+      <rect x="474" y="742" width="202" height="24" rx="5" fill="#eff6ff" stroke="#2563eb"/>
+      <text x="575" y="758" font-size="11" fill="#1d4ed8" text-anchor="middle">Wi-Fi / LAN — apka ViCare</text>
+      <rect x="474" y="770" width="202" height="24" rx="5" fill="#fff7ed" stroke="#ea580c"/>
+      <text x="575" y="786" font-size="11" fill="#c2410c" text-anchor="middle">wejście SG Ready (2 styki)</text>
+      <rect x="474" y="798" width="202" height="24" rx="5" fill="#f5f5f4" stroke="#d6d3d1"/>
+      <text x="575" y="814" font-size="11" fill="#78716c" text-anchor="middle">(opcja) czujnik rosy — chłodzenie</text>
+      <circle cx="460" cy="686" r="14" fill="#b45309"/><text x="460" y="691" font-size="14" fill="#fff" text-anchor="middle" font-weight="700">4</text>
+
+      <!-- FALOWNIK PV -->
+      <rect x="750" y="700" width="180" height="110" rx="10" fill="#fff" stroke="#1c1917" stroke-width="2"/>
+      <text x="840" y="722" font-size="13.5" font-weight="700" text-anchor="middle">FALOWNIK PV</text>
+      <text x="840" y="738" font-size="11" fill="#78716c" text-anchor="middle">GoodWe GW4K-DT</text>
+      <rect x="764" y="748" width="152" height="24" rx="5" fill="#fefce8" stroke="#ca8a04"/>
+      <text x="840" y="764" font-size="11" fill="#a16207" text-anchor="middle">RS485 do RACK ✓ jest</text>
+      <circle cx="750" cy="686" r="14" fill="#b45309"/><text x="750" y="691" font-size="14" fill="#fff" text-anchor="middle" font-weight="700">8</text>
+
+      <!-- KABLE W GARAŻU: RACK <-> POMPA -->
+      <path d="M 360 742 L 460 742" stroke="#2563eb" stroke-width="3"/>
+      <text x="410" y="733" font-size="10.5" fill="#1d4ed8" text-anchor="middle">UTP (LAN)</text>
+
+      <path d="M 360 800 L 460 800" stroke="#ea580c" stroke-width="3.5"/>
+      <circle cx="410" cy="800" r="13" fill="#b45309"/><text x="410" y="805" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">5</text>
+      <text x="410" y="779" font-size="11" font-weight="700" fill="#ea580c" text-anchor="middle">YTDY 6×0,5</text>
+      <text x="410" y="826" font-size="10.5" fill="#78716c" text-anchor="middle">SG Ready</text>
+
+      <!-- KABEL UTP REKU -> RACK (szachtem) -->
+      <path d="M 920 165 L 978 165 L 978 856 L 300 856 L 300 840" fill="none" stroke="#0d9488" stroke-width="4" stroke-dasharray="9 7"/>
+      <circle cx="978" cy="470" r="14" fill="#b45309"/><text x="978" y="475" font-size="14" fill="#fff" text-anchor="middle" font-weight="700">3</text>
+
+      <!-- KABEL RS485 PV -> RACK (już jest) -->
+      <path d="M 840 810 L 840 872 L 340 872 L 340 840" fill="none" stroke="#ca8a04" stroke-width="3.5" stroke-dasharray="9 7"/>
+
+      <!-- PASEK SCEN -->
+      <g>
+        <rect x="110" y="928" width="330" height="40" rx="20" fill="#fff" stroke="#e7e5e4"/>
+        <text x="275" y="953" font-size="13" text-anchor="middle"><tspan font-weight="700">nadwyżka z PV</tspan> = tania ciepła woda (SG Ready)</text>
+        <rect x="460" y="928" width="330" height="40" rx="20" fill="#fff" stroke="#e7e5e4"/>
+        <text x="625" y="953" font-size="13" text-anchor="middle"><tspan font-weight="700">okno otwarte</tspan> = klima pauza (kontaktron)</text>
+        <rect x="810" y="928" width="260" height="40" rx="20" fill="#fff" stroke="#e7e5e4"/>
+        <text x="940" y="953" font-size="13" text-anchor="middle"><tspan font-weight="700">pożar</tspan> = reku STOP (Satel)</text>
+      </g>
+    </svg>
+  </section>
+
+  <!-- ================= OPOWIEŚĆ ================= -->
+  <section style="margin-bottom:28px">
+    <h2 style="margin:0 0 14px; font-size:22px; font-weight:700">Opowieść krok po kroku</h2>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:14px">
+      <div style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:18px 20px; box-shadow:0 1px 3px rgba(0,0,0,.04)">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px"><span style="flex:none; width:30px; height:30px; border-radius:99px; background:#b45309; color:#fff; font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:center">1</span><b style="font-size:15px">Szafa RACK — dyrygent</b></div>
+        <p style="margin:0; font-size:14px; color:#44403c">W garażu mieszka serwer domu (Home Assistant). Sam nie grzeje i nie chłodzi — słucha meldunków i wydaje polecenia. Obok niego w szafie: switch LAN, dwa małe konwertery USB↔RS485 i Shelly Pro 2 na szynie DIN.</p>
+      </div>
+      <div style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:18px 20px; box-shadow:0 1px 3px rgba(0,0,0,.04)">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px"><span style="flex:none; width:30px; height:30px; border-radius:99px; background:#b45309; color:#fff; font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:center">2</span><b style="font-size:15px">Rekuperator — mówi tylko po kablu</b></div>
+        <p style="margin:0; font-size:14px; color:#44403c">Jedyna z czterech maszyn bez radia (piętro 2, przy szachcie) — ma port <b>COM3 z Modbus RTU</b>. Przez niego serwer odczyta biegi, temperatury i filtry oraz ustawi wydajność (np. boost dla łazienki).</p>
+      </div>
+      <div style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:18px 20px; box-shadow:0 1px 3px rgba(0,0,0,.04)">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px"><span style="flex:none; width:30px; height:30px; border-radius:99px; background:#b45309; color:#fff; font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:center">3</span><b style="font-size:15px">Jedyny nowy kabel przez dom</b></div>
+        <p style="margin:0; font-size:14px; color:#44403c"><b>UTP kat.6</b> od rekuperatora, szachtem, do RACK. Skrętka ma 4 pary, Modbus potrzebuje jednej — druga dostaje od razu drugą pracę: <b>REKU-STOP</b>, sygnał z centrali alarmowej „pożar = zatrzymaj wentylację" (żeby reku nie rozdmuchiwał dymu). Dwie pary zostają w zapasie.</p>
+      </div>
+      <div style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:18px 20px; box-shadow:0 1px 3px rgba(0,0,0,.04)">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px"><span style="flex:none; width:30px; height:30px; border-radius:99px; background:#b45309; color:#fff; font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:center">4</span><b style="font-size:15px">Pompa ciepła — sieć + zapas kabla</b></div>
+        <p style="margin:0; font-size:14px; color:#44403c">Ma własne Wi-Fi i oficjalną apkę <b>ViCare</b> — tą drogą wchodzi do serwera (przez chmurę). Stoi kilka metrów od szafy, więc kładziemy też <b>UTP (LAN)</b>: pewniejszy od Wi-Fi i furtka na integracje lokalne. Uwaga: wariant „AC" umie chłodzić, ale przed aktywacją trzeba dokupić <b>czujnik rosy</b> — inaczej chłodna podłoga się wykropli.</p>
+      </div>
+      <div style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:18px 20px; box-shadow:0 1px 3px rgba(0,0,0,.04)">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px"><span style="flex:none; width:30px; height:30px; border-radius:99px; background:#b45309; color:#fff; font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:center">5</span><b style="font-size:15px">SG Ready — perła tego schematu</b></div>
+        <p style="margin:0; font-size:14px; color:#44403c">Dwa styki na płycie pompy, których deweloper nie okablował. Krótki <b>YTDY 6×0,5</b> z RACK do pompy + Shelly Pro 2, które na rozkaz serwera zwiera styki: „masz tani prąd — podgrzej wodę mocniej". Cztery kombinacje dwóch styków = cztery tryby (normalny, blokada, zachęta, wymuszenie).</p>
+      </div>
+      <div style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:18px 20px; box-shadow:0 1px 3px rgba(0,0,0,.04)">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px"><span style="flex:none; width:30px; height:30px; border-radius:99px; background:#b45309; color:#fff; font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:center">6</span><b style="font-size:15px">Klimatyzacja — zero kabli</b></div>
+        <p style="margin:0; font-size:14px; color:#44403c">Jednostki GREE mają wbudowane Wi-Fi i integrację lokalną z Home Assistant — rozmowa idzie w Twojej sieci, bez chmury. (Gdyby wrócił wariant VRF Toshiba: zamiast tego jeden przewód LiYCY 2×1,5 z dowolnej jednostki wewnętrznej do RACK.)</p>
+      </div>
+      <div style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:18px 20px; box-shadow:0 1px 3px rgba(0,0,0,.04)">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px"><span style="flex:none; width:30px; height:30px; border-radius:99px; background:#b45309; color:#fff; font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:center">7</span><b style="font-size:15px">Podłogówka — kable już są</b></div>
+        <p style="margin:0; font-size:14px; color:#44403c">Tu deweloper odrobił lekcję: w każdym pokoju jest przewodowy regulator (Salus), kable siedzą w ścianach. Smart = <b>wymiana regulatora w istniejącej puszce</b> na wersję łączącą się z serwerem. Zero nowych kabli, zero kucia.</p>
+      </div>
+      <div style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:18px 20px; box-shadow:0 1px 3px rgba(0,0,0,.04)">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px"><span style="flex:none; width:30px; height:30px; border-radius:99px; background:#b45309; color:#fff; font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:center">8</span><b style="font-size:15px">Fotowoltaika — kabel już leży</b></div>
+        <p style="margin:0; font-size:14px; color:#44403c">RS485 od falownika do RACK położył deweloper — wystarczy wpiąć w drugi konwerter. GoodWe ma też natywną integrację po sieci; obie drogi są lokalne. Po co serwerowi PV? Scena „nadwyżka słońca → grzej wodę" (punkt 5) musi wiedzieć, ile prądu właśnie się marnuje.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ZBLIŻENIE: RACK ================= -->
+  <section style="background:#fff; border:1px solid #e7e5e4; border-radius:16px; padding:28px; margin-bottom:36px; box-shadow:0 1px 3px rgba(0,0,0,.05)">
+    <h2 style="margin:0 0 6px; font-size:22px; font-weight:700">Zbliżenie: rozszycie w szafie RACK (dla elektryka i do samodzielnego montażu)</h2>
+    <p style="margin:0 0 18px; color:#57534e; font-size:15px">Wszystkie trzy kable schodzą się w jednym miejscu. Tak wygląda ich podpięcie do serwera.</p>
+
+    <svg viewBox="0 0 1180 470" xmlns="http://www.w3.org/2000/svg" font-family="var(--font-sans,'NVIDIA Sans',sans-serif)" style="width:100%; height:auto; display:block">
+      <!-- obrys szafy -->
+      <rect x="150" y="40" width="880" height="390" rx="16" fill="#fefce8" fill-opacity=".35" stroke="#a8a29e" stroke-width="2" stroke-dasharray="8 6"/>
+      <text x="590" y="30" font-size="13" fill="#78716c" text-anchor="middle">SZAFA RACK — widok środka (półka + szyna DIN)</text>
+
+      <!-- SERWER -->
+      <rect x="190" y="80" width="210" height="100" rx="10" fill="#1c1917"/>
+      <text x="295" y="122" font-size="14" font-weight="700" fill="#fff" text-anchor="middle">SERWER</text>
+      <text x="295" y="140" font-size="11.5" fill="#a8a29e" text-anchor="middle">(Home Assistant)</text>
+
+      <!-- konwerter 1 -->
+      <line x1="400" y1="95" x2="500" y2="95" stroke="#57534e" stroke-width="2.5"/>
+      <text x="450" y="88" font-size="10" fill="#78716c" text-anchor="middle">USB</text>
+      <rect x="500" y="70" width="150" height="50" rx="8" fill="#f0fdfa" stroke="#0d9488" stroke-width="1.5"/>
+      <text x="575" y="91" font-size="11.5" font-weight="700" fill="#0f766e" text-anchor="middle">USB ↔ RS485 nr 1</text>
+      <text x="575" y="107" font-size="10.5" fill="#78716c" text-anchor="middle">(dla rekuperatora)</text>
+
+      <!-- konwerter 2 -->
+      <line x1="400" y1="195" x2="500" y2="195" stroke="#57534e" stroke-width="2.5"/>
+      <text x="450" y="188" font-size="10" fill="#78716c" text-anchor="middle">USB</text>
+      <rect x="500" y="170" width="150" height="50" rx="8" fill="#f0fdfa" stroke="#0d9488" stroke-width="1.5"/>
+      <text x="575" y="191" font-size="11.5" font-weight="700" fill="#0f766e" text-anchor="middle">USB ↔ RS485 nr 2</text>
+      <text x="575" y="207" font-size="10.5" fill="#78716c" text-anchor="middle">(dla falownika PV)</text>
+
+      <!-- para Modbus z UTP reku -->
+      <path d="M 650 85 L 780 85" stroke="#0d9488" stroke-width="3"/>
+      <path d="M 650 105 L 780 105" stroke="#0d9488" stroke-width="3"/>
+      <text x="656" y="78" font-size="9.5" fill="#0f766e">A</text>
+      <text x="656" y="120" font-size="9.5" fill="#0f766e">B</text>
+      <rect x="780" y="70" width="22" height="50" rx="4" fill="#e7e5e4" stroke="#a8a29e"/>
+      <text x="814" y="84" font-size="12" font-weight="700" fill="#0d9488">UTP kat.6 → REKUPERATOR (p.2)</text>
+      <text x="814" y="101" font-size="11" fill="#57534e">para 1: Modbus (zaciski A / B)</text>
+
+      <!-- REKU-STOP: para 2 z tego samego UTP do wyjścia Satela -->
+      <path d="M 791 120 L 791 298 L 800 298" fill="none" stroke="#57534e" stroke-width="2.5"/>
+      <text x="806" y="148" font-size="11" fill="#78716c">para 2 z tego samego UTP:</text>
+      <text x="806" y="164" font-size="11" font-weight="700" fill="#57534e">REKU-STOP (pożar → wentylacja staje)</text>
+      <rect x="800" y="270" width="212" height="56" rx="8" fill="#fff" stroke="#1c1917" stroke-width="1.5"/>
+      <text x="906" y="293" font-size="11.5" font-weight="700" text-anchor="middle">WYJŚCIE CENTRALI ALARMU (Satel)</text>
+      <text x="906" y="310" font-size="10.5" fill="#78716c" text-anchor="middle">styk przekaźnikowy: pożar = zwarcie pary</text>
+
+      <!-- para PV -->
+      <path d="M 650 195 L 780 195" stroke="#ca8a04" stroke-width="3"/>
+      <text x="814" y="190" font-size="12" font-weight="700" fill="#ca8a04">RS485 → FALOWNIK PV</text>
+      <text x="814" y="207" font-size="11" fill="#57534e">(kabel od dewelopera — już jest)</text>
+
+      <!-- SHELLY PRO 2 -->
+      <rect x="190" y="250" width="210" height="100" rx="10" fill="#166534"/>
+      <text x="295" y="288" font-size="13.5" font-weight="700" fill="#fff" text-anchor="middle">SHELLY PRO 2</text>
+      <text x="295" y="306" font-size="11" fill="#bbf7d0" text-anchor="middle">(przekaźnik na szynę DIN)</text>
+      <rect x="392" y="264" width="16" height="14" rx="3" fill="#fff"/>
+      <rect x="392" y="322" width="16" height="14" rx="3" fill="#fff"/>
+      <path d="M 408 271 L 560 271" stroke="#ea580c" stroke-width="3"/>
+      <path d="M 408 329 L 560 329" stroke="#ea580c" stroke-width="3"/>
+      <text x="190" y="240" font-size="12" font-weight="700" fill="#ea580c">YTDY 6×0,5 → POMPA — zaciski Smart Grid</text>
+      <text x="572" y="290" font-size="11" fill="#57534e">styk 1 → wejście SG 1 (para żył)</text>
+      <text x="572" y="348" font-size="11" fill="#57534e">styk 2 → wejście SG 2 · 2 żyły zapasu</text>
+
+      <!-- callout -->
+      <text x="190" y="398" font-size="11.5" fill="#57534e">Shelly tylko <tspan font-weight="700">ZWIERA styki</tspan> (bez podawania napięcia — pompa sama „pyta" swoje wejścia).</text>
+      <text x="190" y="416" font-size="11.5" fill="#57534e">Cztery kombinacje dwóch styków = cztery tryby pompy: normalny · blokada · „tani prąd — podnieś temperaturę" · „grzej na maksa".</text>
+    </svg>
+  </section>
+
+  <!-- ================= WERSJA TECHNICZNA ================= -->
+  <section>
+    <h2 style="margin:0 0 4px; font-size:22px; font-weight:700">Wersja techniczna <span style="color:#78716c; font-weight:400; font-size:16px">(dla elektryka i do zakupów)</span></h2>
+    <p style="margin:0 0 18px; color:#57534e; font-size:15px">Całość roboty kablowej HVAC to dwa nowe kable + jeden opcjonalny. Reszta idzie radiem albo po kablach, które już są.</p>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:16px">
+
+      <div style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:20px 22px; font-size:14px">
+        <h3 style="margin:0 0 12px; font-size:15px; padding-bottom:10px; border-bottom:2px solid #f5f5f4">Kable — co położyć TERAZ (przed gładziami)</h3>
+        <ul style="margin:0; padding-left:18px; display:flex; flex-direction:column; gap:8px; color:#44403c">
+          <li><b>UTP kat.6 (drut)</b>: rekuperator (p.2) → RACK, szachtem. Jeden odcinek z rolki, bez sztukowania, zapas 2 m z każdej strony.</li>
+          <li><b>YTDY 6×0,5</b>: RACK → pompa ciepła (SG Ready). Krótki odcinek w garażu.</li>
+          <li><b>UTP kat.6</b>: pompa → switch w RACK (LAN) — opcja pewności; pompa ma Wi-Fi, ale kabel to kabel.</li>
+          <li>Wariant VRF (gdyby wrócił): <b>LiYCY 2×1,5</b> z dowolnej jednostki wewnętrznej do RACK.</li>
+          <li><b>NIC</b> do: klimy GREE (Wi-Fi), podłogówki (kable są), fotowoltaiki (kabel jest ✓).</li>
+        </ul>
+      </div>
+
+      <div style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:20px 22px; font-size:14px">
+        <h3 style="margin:0 0 12px; font-size:15px; padding-bottom:10px; border-bottom:2px solid #f5f5f4">Sprzęt i integracje (montaż własny, bez kucia)</h3>
+        <ul style="margin:0; padding-left:18px; display:flex; flex-direction:column; gap:8px; color:#44403c">
+          <li><b>2× konwerter USB↔RS485</b> (~40–60 zł/szt.) — osobny na każdą magistralę; reku i PV NIE wpinamy na jeden.</li>
+          <li><b>Shelly Pro 2</b> (~400 zł, szyna DIN) — dwa beznapięciowe styki na SG Ready.</li>
+          <li>Integracje w Home Assistant: reku = <b>Modbus</b> (rejestry z instrukcji Frapol) · PV = <b>GoodWe</b> (natywna, lokalna) · pompa = <b>ViCare</b> (oficjalna, chmura) · klima = <b>GREE</b> (natywna, lokalna) · podłogówka = po wymianie regulatorów.</li>
+          <li><b>Appartme zostaje nietknięte</b> — serwer współistnieje, niczego nie przejmuje.</li>
+        </ul>
+      </div>
+
+      <div style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:20px 22px; font-size:14px">
+        <h3 style="margin:0 0 12px; font-size:15px; padding-bottom:10px; border-bottom:2px solid #f5f5f4">Sceny i zasady dyrygenta</h3>
+        <ul style="margin:0; padding-left:18px; display:flex; flex-direction:column; gap:8px; color:#44403c">
+          <li><b>Interlock</b>: nigdy jednocześnie grzanie podłogą i chłodzenie klimą w tym samym pomieszczeniu.</li>
+          <li><b>Kontaktron</b>: okno otwarte → klima w tym pokoju pauza.</li>
+          <li><b>Nadwyżka z PV</b> → SG Ready → pompa grzeje wodę „darmowym" prądem.</li>
+          <li><b>Pożar (Satel)</b> → REKU-STOP — wentylacja nie roznosi dymu.</li>
+          <li><b>Boost łazienki</b>: wilgoć/przycisk → wyższy bieg reku (po Modbusie).</li>
+          <li><b>Chłodzenie pompą</b> (wariant AC): przed aktywacją dokupić czujnik rosy — inaczej wykropli podłogę.</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+</div>
+</body></html>

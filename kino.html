@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pl"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schemat kina domowego — salon</title>
+<style>
+  body{margin:0;background:#fafaf9}
+  a{color:#b45309;text-decoration:underline}
+  a:hover{color:#92400e}
+</style>
+</head>
+<body>
+<div style="min-height:100vh; background:#fafaf9; color:#1c1917; font-family:var(--font-sans,'NVIDIA Sans',-apple-system,BlinkMacSystemFont,sans-serif); line-height:1.6">
+<div style="max-width:1220px; margin:0 auto; padding:40px 28px 72px">
+
+  <header style="border-bottom:4px solid #b45309; padding-bottom:20px; margin-bottom:32px; display:flex; flex-direction:column; gap:10px">
+    <span style="align-self:flex-start; background:#b45309; color:#fff; font-size:12px; font-weight:700; letter-spacing:.1em; padding:4px 14px; border-radius:99px; text-transform:uppercase">Dom D2 · Jaśminowy Mokotów</span>
+    <h1 style="margin:0; font-size:34px; letter-spacing:-.02em; font-weight:700">Schemat kina domowego — salon</h1>
+    <p style="margin:0; color:#57534e; font-size:16px; max-width:760px">Jeden klik „FILM" i salon staje się kinem: winda opuszcza projektor, ekran zjeżdża z sufitu, gra dźwięk z 7 głośników. Drugi klik — wszystko znika. Najpierw obrazek, potem opowieść, na końcu wersja dla elektryka.</p>
+  </header>
+
+  <!-- LEGENDA -->
+  <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px">
+    <span style="display:inline-flex; align-items:center; gap:8px; background:#fff; border:1px solid #e7e5e4; border-radius:99px; padding:6px 14px; font-size:13.5px; font-weight:600"><span style="width:22px; height:6px; border-radius:3px; background:#dc2626"></span>prąd 230 V (obwód RA-7)</span>
+    <span style="display:inline-flex; align-items:center; gap:8px; background:#fff; border:1px solid #e7e5e4; border-radius:99px; padding:6px 14px; font-size:13.5px; font-weight:600"><span style="width:22px; height:6px; border-radius:3px; background:#7c3aed"></span>HDMI — obraz (w peszlu)</span>
+    <span style="display:inline-flex; align-items:center; gap:8px; background:#fff; border:1px solid #e7e5e4; border-radius:99px; padding:6px 14px; font-size:13.5px; font-weight:600"><span style="width:22px; height:6px; border-radius:3px; background:#16a34a"></span>drucik wyzwalacza 12 V (YTDY)</span>
+    <span style="display:inline-flex; align-items:center; gap:8px; background:#fff; border:1px solid #e7e5e4; border-radius:99px; padding:6px 14px; font-size:13.5px; font-weight:600"><span style="width:22px; height:6px; border-radius:3px; background:#2563eb"></span>LAN — UTP kat.6</span>
+    <span style="display:inline-flex; align-items:center; gap:8px; background:#fff; border:1px solid #e7e5e4; border-radius:99px; padding:6px 14px; font-size:13.5px; font-weight:600"><span style="width:22px; height:0; border-top:3px dashed #78716c"></span>schowane: nad sufitem GK / w ścianie</span>
+  </div>
+
+  <!-- ================= RYSUNEK GŁÓWNY ================= -->
+  <section style="background:#fff; border:1px solid #e7e5e4; border-radius:16px; padding:28px; margin-bottom:28px; box-shadow:0 1px 3px rgba(0,0,0,.05)">
+    <h2 style="margin:0 0 6px; font-size:22px; font-weight:700">Przekrój salonu — kino rozłożone, w trakcie seansu</h2>
+    <p style="margin:0 0 18px; color:#57534e; font-size:15px">Czytaj numerkami <b style="color:#b45309">① → ⑨</b> — te same numery znajdziesz w opowieści pod rysunkiem.</p>
+
+    <svg viewBox="0 0 1180 920" xmlns="http://www.w3.org/2000/svg" font-family="var(--font-sans,'NVIDIA Sans',sans-serif)" style="width:100%; height:auto; display:block">
+      <defs>
+        <pattern id="hatch" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+          <rect width="8" height="8" fill="#e7e5e4"/><line x1="0" y1="0" x2="0" y2="8" stroke="#d6d3d1" stroke-width="3"/>
+        </pattern>
+      </defs>
+
+      <!-- TELEFON + SERWER (nad stropem, symbolicznie) -->
+      <rect x="600" y="14" width="162" height="46" rx="10" fill="#fff" stroke="#1c1917" stroke-width="2"/>
+      <text x="681" y="34" font-size="13" font-weight="700" text-anchor="middle">TELEFON / TABLET</text>
+      <text x="681" y="50" font-size="11" fill="#78716c" text-anchor="middle">klik: scena „FILM"</text>
+      <circle cx="596" cy="12" r="13" fill="#b45309"/><text x="596" y="17" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">1</text>
+
+      <rect x="940" y="10" width="200" height="50" rx="10" fill="#1c1917"/>
+      <text x="1040" y="31" fill="#fff" font-size="14" font-weight="700" text-anchor="middle">SERWER DOMU</text>
+      <text x="1040" y="48" fill="#a8a29e" font-size="11" text-anchor="middle">(Home Assistant — RACK w garażu)</text>
+      <circle cx="935" cy="12" r="13" fill="#b45309"/><text x="935" y="17" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">2</text>
+
+      <!-- wifi telefon -> serwer -->
+      <path d="M 764 37 C 820 37 884 35 938 33" fill="none" stroke="#0ea5e9" stroke-width="2.5" stroke-dasharray="4 6"/>
+      <text x="851" y="26" font-size="11" fill="#0ea5e9" text-anchor="middle">〜 Wi-Fi</text>
+
+      <!-- STROP -->
+      <rect x="40" y="60" width="1100" height="24" fill="url(#hatch)" stroke="#d6d3d1"/>
+      <text x="420" y="77" fill="#a8a29e" font-size="11" letter-spacing=".12em">STROP</text>
+      <text x="1136" y="77" font-size="11" fill="#2563eb" text-anchor="end">▼ UTP kat.6 z szafki AV (w murze)</text>
+
+      <!-- ŚCIANY -->
+      <rect x="40" y="84" width="36" height="736" fill="url(#hatch)" stroke="#d6d3d1"/>
+      <rect x="1104" y="84" width="36" height="736" fill="url(#hatch)" stroke="#d6d3d1"/>
+
+      <!-- PODŁOGA -->
+      <rect x="40" y="820" width="1100" height="26" fill="url(#hatch)" stroke="#d6d3d1"/>
+      <text x="430" y="812" fill="#a8a29e" font-size="11" letter-spacing=".12em">SALON (PARTER) — PODŁOGA: NIE KUĆ (PODŁOGÓWKA)</text>
+
+      <!-- pas nad sufitem GK -->
+      <rect x="76" y="84" width="1028" height="84" fill="#fefce8" opacity=".55"/>
+
+      <!-- SUFIT GK z przerwami: szczelina ekranu (150-200) i klapa windy (745-835) -->
+      <rect x="76" y="168" width="74" height="12" fill="#d6d3d1"/>
+      <rect x="200" y="168" width="545" height="12" fill="#d6d3d1"/>
+      <rect x="835" y="168" width="269" height="12" fill="#d6d3d1"/>
+      <text x="680" y="163" font-size="10.5" fill="#a8a29e" letter-spacing=".1em" text-anchor="middle">SUFIT GK</text>
+
+      <!-- 230V: pion z garażu (lewa ściana) + magistrala nad GK + zejścia + zejście do szafki -->
+      <path d="M 60 34 L 60 90 L 1085 90" fill="none" stroke="#dc2626" stroke-width="4" stroke-dasharray="9 7"/>
+      <path d="M 150 90 L 150 112" stroke="#dc2626" stroke-width="4" stroke-dasharray="9 7"/>
+      <path d="M 770 90 L 770 112" stroke="#dc2626" stroke-width="4" stroke-dasharray="9 7"/>
+      <path d="M 1085 90 L 1110 90 L 1110 690 L 1097 690" fill="none" stroke="#dc2626" stroke-width="4" stroke-dasharray="9 7"/>
+      <circle cx="60" cy="18" r="13" fill="#b45309"/><text x="60" y="23" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">9</text>
+      <text x="82" y="30" font-size="12.5" font-weight="700" fill="#dc2626">OBWÓD RA-7 z rozdzielnicy w garażu (poza stycznikami) — zasila wszystko</text>
+
+      <!-- TRIGGER 12V: z ampli pionem, potem nad urządzeniami, zejścia do windy i kasety -->
+      <path d="M 975 660 L 975 110 L 210 110 L 210 112" fill="none" stroke="#16a34a" stroke-width="3.5" stroke-dasharray="9 7"/>
+      <circle cx="790" cy="112" r="5" fill="#16a34a"/>
+      <path d="M 790 110 L 790 112" stroke="#16a34a" stroke-width="3.5"/>
+      <circle cx="210" cy="112" r="5" fill="#16a34a"/>
+      <circle cx="560" cy="110" r="13" fill="#b45309"/><text x="560" y="115" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">6</text>
+
+      <!-- HDMI: z ampli pionem, do windy -->
+      <path d="M 1005 660 L 1005 152 L 845 152" fill="none" stroke="#7c3aed" stroke-width="4" stroke-dasharray="9 7"/>
+      <circle cx="1005" cy="470" r="13" fill="#b45309"/><text x="1005" y="475" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">4</text>
+
+      <!-- KASETA EKRANU -->
+      <rect x="90" y="112" width="165" height="52" rx="8" fill="#fff" stroke="#1c1917" stroke-width="2"/>
+      <text x="172" y="134" font-size="12.5" font-weight="700" text-anchor="middle">KASETA EKRANU</text>
+      <text x="172" y="150" font-size="11" fill="#78716c" text-anchor="middle">Kauber InCeiling (nad GK)</text>
+      <circle cx="90" cy="106" r="13" fill="#b45309"/><text x="90" y="111" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">7</text>
+
+      <!-- EKRAN rozwinięty (przekrój = pionowy panel) -->
+      <rect x="166" y="180" width="18" height="150" fill="#1c1917"/>
+      <rect x="166" y="330" width="18" height="370" rx="2" fill="#f5f5f4" stroke="#1c1917" stroke-width="2"/>
+      <text x="202" y="244" font-size="11.5" fill="#57534e">pas górny 50 cm</text>
+      <text x="202" y="259" font-size="11.5" fill="#57534e">(opuszcza obraz niżej)</text>
+      <line x1="198" y1="250" x2="188" y2="252" stroke="#78716c" stroke-width="1.5"/>
+      <polygon points="186,252 196,247 196,257" fill="#78716c"/>
+      <text x="202" y="420" font-size="12.5" font-weight="700">EKRAN ALR 240 cm</text>
+      <text x="202" y="436" font-size="11.5" fill="#57534e">odbija światło projektora,</text>
+      <text x="202" y="451" font-size="11.5" fill="#57534e">„gasi" światło z boku (okna)</text>
+      <line x1="198" y1="428" x2="188" y2="430" stroke="#78716c" stroke-width="1.5"/>
+      <polygon points="186,430 196,425 196,435" fill="#78716c"/>
+
+      <!-- WINDA + PROJEKTOR -->
+      <rect x="735" y="112" width="110" height="52" rx="8" fill="#fff" stroke="#1c1917" stroke-width="2"/>
+      <text x="790" y="134" font-size="12.5" font-weight="700" text-anchor="middle">WINDA</text>
+      <text x="790" y="150" font-size="11" fill="#78716c" text-anchor="middle">Kauber V Ultra Slim</text>
+      <!-- ramiona nożycowe -->
+      <line x1="752" y1="164" x2="828" y2="250" stroke="#78716c" stroke-width="3"/>
+      <line x1="828" y1="164" x2="752" y2="250" stroke="#78716c" stroke-width="3"/>
+      <rect x="725" y="250" width="130" height="50" rx="8" fill="#1c1917"/>
+      <text x="790" y="271" fill="#fff" font-size="12" font-weight="700" text-anchor="middle">PROJEKTOR</text>
+      <text x="790" y="287" fill="#a8a29e" font-size="10.5" text-anchor="middle">BenQ W4100i (LED)</text>
+      <circle cx="718" cy="240" r="13" fill="#b45309"/><text x="718" y="245" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">5</text>
+
+      <!-- stożek światła projektor -> ekran -->
+      <polygon points="725,262 184,335 184,695 725,286" fill="#fbbf24" opacity=".14"/>
+
+      <!-- GŁOŚNIKI sufitowe (kółka w GK) -->
+      <circle cx="300" cy="174" r="9" fill="#fff" stroke="#1c1917" stroke-width="2"/>
+      <circle cx="360" cy="174" r="9" fill="#fff" stroke="#1c1917" stroke-width="2"/>
+      <circle cx="420" cy="174" r="9" fill="#fff" stroke="#1c1917" stroke-width="2"/>
+      <circle cx="560" cy="174" r="9" fill="#fff" stroke="#1c1917" stroke-width="2"/>
+      <circle cx="620" cy="174" r="9" fill="#fff" stroke="#1c1917" stroke-width="2"/>
+      <circle cx="880" cy="174" r="9" fill="#fff" stroke="#1c1917" stroke-width="2"/>
+      <circle cx="1050" cy="174" r="9" fill="#fff" stroke="#1c1917" stroke-width="2"/>
+      <circle cx="242" cy="202" r="13" fill="#b45309"/><text x="242" y="207" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">8</text>
+      <text x="430" y="206" font-size="12.5" font-weight="700" text-anchor="middle">GŁOŚNIKI FOCAL W SUFICIE ×7 (fronty ×3 + surroundy ×4)</text>
+      <text x="430" y="222" font-size="11.5" fill="#57534e" text-anchor="middle">7 tras kabla głośnikowego 2×2,5 nad sufitem — pominięte na rysunku, patrz karta „Kable"</text>
+
+      <!-- SZAFKA AV -->
+      <rect x="950" y="640" width="145" height="178" rx="10" fill="#fff" stroke="#1c1917" stroke-width="2"/>
+      <text x="1022" y="632" font-size="13" font-weight="700" text-anchor="middle">SZAFKA AV</text>
+      <rect x="962" y="660" width="121" height="50" rx="6" fill="#f5f5f4" stroke="#78716c"/>
+      <text x="1022" y="680" font-size="11" font-weight="700" text-anchor="middle">AMPLITUNER</text>
+      <text x="1022" y="695" font-size="10.5" fill="#57534e" text-anchor="middle">Pioneer VSX-LX505</text>
+      <rect x="962" y="722" width="70" height="30" rx="6" fill="#f5f5f4" stroke="#78716c"/>
+      <text x="997" y="741" font-size="10.5" font-weight="700" text-anchor="middle">APPLE TV</text>
+      <rect x="962" y="768" width="121" height="34" rx="6" fill="#fef2f2" stroke="#dc2626"/>
+      <text x="1022" y="783" font-size="10" fill="#991b1b" text-anchor="middle">gniazda 230 V ×4 (RA-7)</text>
+      <text x="1022" y="796" font-size="10" fill="#991b1b" text-anchor="middle">+ gniazdo dla subwoofera</text>
+      <circle cx="975" cy="641" r="5" fill="#16a34a"/>
+      <circle cx="1005" cy="641" r="5" fill="#7c3aed"/>
+      <circle cx="944" cy="634" r="13" fill="#b45309"/><text x="944" y="639" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">3</text>
+
+      <!-- SUBWOOFER -->
+      <rect x="868" y="752" width="66" height="66" rx="8" fill="#1c1917"/>
+      <text x="901" y="790" fill="#fff" font-size="11" font-weight="700" text-anchor="middle">SUB</text>
+      <text x="876" y="744" font-size="10.5" fill="#57534e" text-anchor="middle">subwoofer (aktywny)</text>
+      <path d="M 950 784 L 934 784" stroke="#78716c" stroke-width="3"/>
+
+      <!-- UTP: szafka -> serwer (w murze prawym) -->
+      <path d="M 1095 700 L 1128 700 L 1128 58" fill="none" stroke="#2563eb" stroke-width="3.5" stroke-dasharray="9 7"/>
+
+      <!-- opisy kabli po prawej (na marginesach ze strzałkami) -->
+      <g>
+        <text x="950" y="378" font-size="12.5" font-weight="700" fill="#7c3aed" text-anchor="end">PESZEL Ø40 z kablem HDMI 2.1</text>
+        <text x="950" y="394" font-size="11.5" fill="#57534e" text-anchor="end">rura = kabel wymienialny bez kucia</text>
+        <line x1="955" y1="384" x2="1000" y2="388" stroke="#7c3aed" stroke-width="1.5"/>
+        <polygon points="1002,388 990,383 991,394" fill="#7c3aed"/>
+      </g>
+      <g>
+        <text x="950" y="552" font-size="12.5" font-weight="700" fill="#16a34a" text-anchor="end">DRUCIK WYZWALACZA 12 V</text>
+        <text x="950" y="568" font-size="11.5" fill="#57534e" text-anchor="end">YTDY 6×0,5 — ampli mówi: „START!"</text>
+        <text x="950" y="583" font-size="11.5" fill="#57534e" text-anchor="end">12 V = rozłóż się · 0 V = schowaj się</text>
+        <line x1="955" y1="560" x2="970" y2="562" stroke="#16a34a" stroke-width="1.5"/>
+        <polygon points="972,562 961,557 962,568" fill="#16a34a"/>
+      </g>
+
+      <!-- PASEK GESTÓW -->
+      <g>
+        <rect x="120" y="870" width="300" height="40" rx="20" fill="#fff" stroke="#e7e5e4"/>
+        <text x="270" y="895" font-size="13" text-anchor="middle"><tspan font-weight="700">klik „FILM"</tspan> = kino rozkłada się samo</text>
+        <rect x="440" y="870" width="300" height="40" rx="20" fill="#fff" stroke="#e7e5e4"/>
+        <text x="590" y="895" font-size="13" text-anchor="middle"><tspan font-weight="700">klik „KONIEC"</tspan> = wszystko znika</text>
+        <rect x="760" y="870" width="300" height="40" rx="20" fill="#fff" stroke="#e7e5e4"/>
+        <text x="910" y="895" font-size="13" text-anchor="middle"><tspan font-weight="700">pilot RF Kauber</tspan> = sterowanie awaryjne</text>
+      </g>
+    </svg>
+  </section>
+
+  <!-- ================= OPOWIEŚĆ ================= -->
+  <section style="margin-bottom:28px">
+    <h2 style="margin:0 0 14px; font-size:22px; font-weight:700">Opowieść krok po kroku</h2>
+    <ol style="margin:0; padding-left:0; list-style:none; display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:14px">
+      <li style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:18px 20px; display:flex; flex-direction:column; gap:10px">
+        <div style="display:flex; align-items:center; gap:10px"><span style="flex:none; width:32px; height:32px; border-radius:99px; background:#b45309; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px">1</span><b style="font-size:15px">Klik „FILM"</b></div>
+        <p style="margin:0; font-size:14px; color:#44403c">Klikasz <b>„FILM"</b> na telefonie, tablecie albo przycisku przy kanapie. Jedno kliknięcie — resztę robi dom.</p>
+      </li>
+      <li style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:18px 20px; display:flex; flex-direction:column; gap:10px">
+        <div style="display:flex; align-items:center; gap:10px"><span style="flex:none; width:32px; height:32px; border-radius:99px; background:#b45309; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px">2</span><b style="font-size:15px">Serwer dyryguje</b></div>
+        <p style="margin:0; font-size:14px; color:#44403c"><b>Serwer domu</b> (Home Assistant w garażu) zaczyna dyrygować: po kablu LAN budzi urządzenia w szafce AV.</p>
+      </li>
+      <li style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:18px 20px; display:flex; flex-direction:column; gap:10px">
+        <div style="display:flex; align-items:center; gap:10px"><span style="flex:none; width:32px; height:32px; border-radius:99px; background:#b45309; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px">3</span><b style="font-size:15px">Szafka AV budzi się</b></div>
+        <p style="margin:0; font-size:14px; color:#44403c">Budzą się Apple TV i <b>amplituner Pioneer</b> — serce systemu. Apple TV przez kabel HDMI (sygnał CEC) budzi też projektor. Wszystko po kablach, nie przez chmurę.</p>
+      </li>
+      <li style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:18px 20px; display:flex; flex-direction:column; gap:10px">
+        <div style="display:flex; align-items:center; gap:10px"><span style="flex:none; width:32px; height:32px; border-radius:99px; background:#b45309; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px">4</span><b style="font-size:15px">Obraz w peszlu</b></div>
+        <p style="margin:0; font-size:14px; color:#44403c">Obraz jedzie z szafki <b>kablem HDMI w peszlu</b> nad sufitem do projektora. Peszel to rura w ścianie — kiedyś, gdy powstanie „HDMI 3.0", wymienisz kabel bez kucia, ciągnąc nowy za starym.</p>
+      </li>
+      <li style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:18px 20px; display:flex; flex-direction:column; gap:10px">
+        <div style="display:flex; align-items:center; gap:10px"><span style="flex:none; width:32px; height:32px; border-radius:99px; background:#b45309; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px">5</span><b style="font-size:15px">Winda opuszcza projektor</b></div>
+        <p style="margin:0; font-size:14px; color:#44403c"><b>Winda Kauber</b> otwiera klapę w suficie GK i opuszcza <b>projektor BenQ</b> na wysokość seansu. Po filmie schowa go z powrotem — sufit wygląda, jakby projektora nigdy nie było.</p>
+      </li>
+      <li style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:18px 20px; display:flex; flex-direction:column; gap:10px">
+        <div style="display:flex; align-items:center; gap:10px"><span style="flex:none; width:32px; height:32px; border-radius:99px; background:#b45309; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px">6</span><b style="font-size:15px">Drucik wyzwalacza 12 V</b></div>
+        <p style="margin:0; font-size:14px; color:#44403c">Skąd winda i ekran <i>wiedzą</i>, że mają się rozłożyć? Amplituner po włączeniu podaje napięcie na cienki kabelek (YTDY). <b>12 V = rozłóż się, 0 V = schowaj</b>. Czysta elektryka — działa bez internetu, bez Wi-Fi i bez serwera.</p>
+      </li>
+      <li style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:18px 20px; display:flex; flex-direction:column; gap:10px">
+        <div style="display:flex; align-items:center; gap:10px"><span style="flex:none; width:32px; height:32px; border-radius:99px; background:#b45309; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px">7</span><b style="font-size:15px">Ekran zjeżdża</b></div>
+        <p style="margin:0; font-size:14px; color:#44403c"><b>Kaseta nad sufitem rozwija ekran</b>: najpierw czarny pas 50 cm (żeby obraz wisiał na wygodnej wysokości), potem 240 cm powierzchni <b>ALR</b> — odbija do oczu światło projektora, a „połyka" światło z boku, więc obraz jest soczysty nawet bez pełnej ciemności.</p>
+      </li>
+      <li style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:18px 20px; display:flex; flex-direction:column; gap:10px">
+        <div style="display:flex; align-items:center; gap:10px"><span style="flex:none; width:32px; height:32px; border-radius:99px; background:#b45309; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px">8</span><b style="font-size:15px">Dźwięk z sufitu</b></div>
+        <p style="margin:0; font-size:14px; color:#44403c">Gra <b>7 głośników Focal ukrytych w suficie</b> + subwoofer przy szafce. Kable głośnikowe (7 tras) muszą leżeć nad sufitem ZANIM powstanie GK — głośniki wycina się i montuje w gotowym suficie.</p>
+      </li>
+      <li style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:18px 20px; display:flex; flex-direction:column; gap:10px">
+        <div style="display:flex; align-items:center; gap:10px"><span style="flex:none; width:32px; height:32px; border-radius:99px; background:#b45309; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px">9</span><b style="font-size:15px">Zasilanie: obwód RA-7</b></div>
+        <p style="margin:0; font-size:14px; color:#44403c">Całość zasila <b>obwód RA-7</b> z garażu (poza stycznikami Appartme): wypust przy kasecie, dwa przy windzie (winda + projektor), gniazda w szafce AV i gniazdo przy subwooferze.</p>
+      </li>
+      <li style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:18px 20px; display:flex; flex-direction:column; gap:10px">
+        <div style="display:flex; align-items:center; gap:10px"><span style="flex:none; width:32px; height:32px; border-radius:99px; background:#b45309; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px">10</span><b style="font-size:15px">Klik „KONIEC"</b></div>
+        <p style="margin:0; font-size:14px; color:#44403c">Amplituner gaśnie → 12 V znika → <b>ekran i winda chowają się same</b>, projektor w standby, serwer przywraca światła. A gdy serwer leży: amplituner pilotem rozkłada kino, pilot RF Kauber steruje ekranem i windą ręcznie.</p>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ================= ZBLIŻENIE: TRIGGER ================= -->
+  <section style="background:#fff; border:1px solid #e7e5e4; border-radius:16px; padding:28px; margin-bottom:36px; box-shadow:0 1px 3px rgba(0,0,0,.05)">
+    <h2 style="margin:0 0 6px; font-size:22px; font-weight:700">Zbliżenie: jak podpiąć drucik wyzwalacza 12 V</h2>
+    <p style="margin:0 0 18px; color:#57534e; font-size:15px">Jedno wyjście z amplitunera steruje naraz ekranem i windą — rozgałęzienie na kostce, oba wejścia równolegle.</p>
+
+    <svg viewBox="0 0 1180 380" xmlns="http://www.w3.org/2000/svg" font-family="var(--font-sans,'NVIDIA Sans',sans-serif)" style="width:100%; height:auto; display:block">
+      <!-- ampli -->
+      <rect x="70" y="90" width="330" height="200" rx="12" fill="#f5f5f4" stroke="#1c1917" stroke-width="2"/>
+      <text x="235" y="120" font-size="14" font-weight="700" text-anchor="middle">TYŁ AMPLITUNERA PIONEER VSX-LX505</text>
+      <circle cx="360" cy="190" r="10" fill="#fff" stroke="#16a34a" stroke-width="3"/>
+      <text x="340" y="165" font-size="11.5" fill="#57534e" text-anchor="end">gniazdo 12V TRIGGER OUT</text>
+      <text x="340" y="180" font-size="11.5" fill="#57534e" text-anchor="end">(mały jack 3,5 mm)</text>
+      <line x1="344" y1="172" x2="354" y2="184" stroke="#78716c" stroke-width="1.5"/>
+      <polygon points="356,186 352,175 345,182" fill="#78716c"/>
+
+      <!-- kabel do kostki -->
+      <path d="M 370 190 L 560 190" stroke="#16a34a" stroke-width="4"/>
+      <text x="465" y="176" font-size="11.5" fill="#57534e" text-anchor="middle">2 żyły z YTDY 6×0,5</text>
+
+      <!-- kostka rozgałęźna -->
+      <rect x="560" y="168" width="52" height="44" rx="6" fill="#fb923c" stroke="#c2410c"/>
+      <text x="586" y="234" font-size="11" fill="#c2410c" text-anchor="middle">kostka</text>
+      <text x="586" y="248" font-size="11" fill="#c2410c" text-anchor="middle">(rozgałęzienie)</text>
+
+      <!-- odnogi do windy i ekranu -->
+      <path d="M 612 180 L 700 180 L 700 110 L 800 110" fill="none" stroke="#16a34a" stroke-width="4"/>
+      <path d="M 612 200 L 700 200 L 700 270 L 800 270" fill="none" stroke="#16a34a" stroke-width="4"/>
+
+      <rect x="800" y="76" width="290" height="66" rx="10" fill="#fff" stroke="#1c1917" stroke-width="2"/>
+      <text x="945" y="102" font-size="13" font-weight="700" text-anchor="middle">WINDA — wejście „TRIGGER IN"</text>
+      <text x="945" y="122" font-size="11.5" fill="#57534e" text-anchor="middle">12 V = zjedź z projektorem · 0 V = wjedź</text>
+
+      <rect x="800" y="236" width="290" height="66" rx="10" fill="#fff" stroke="#1c1917" stroke-width="2"/>
+      <text x="945" y="262" font-size="13" font-weight="700" text-anchor="middle">KASETA EKRANU — „TRIGGER IN"</text>
+      <text x="945" y="282" font-size="11.5" fill="#57534e" text-anchor="middle">12 V = rozwiń ekran · 0 V = zwiń</text>
+
+      <!-- callouty -->
+      <text x="70" y="340" font-size="12.5" fill="#57534e">Biegunowość jak w baterii: czubek wtyku jack = <tspan font-weight="700">plus</tspan>, tulejka = <tspan font-weight="700">minus</tspan> — nie pomylić żył.</text>
+      <text x="70" y="360" font-size="12.5" fill="#57534e">Pozostałe 4 żyły YTDY = <tspan font-weight="700">zapas</tspan> (zwinięte w puszkach). Pobór prądu obu wejść jest znikomy — jedno wyjście ampli spokojnie wystarczy.</text>
+    </svg>
+  </section>
+
+  <!-- ================= WERSJA TECHNICZNA ================= -->
+  <section>
+    <h2 style="margin:0 0 4px; font-size:22px; font-weight:700">Wersja techniczna <span style="color:#78716c; font-weight:400; font-size:16px">(dla elektryka i do zakupów)</span></h2>
+    <p style="margin:0 0 18px; color:#57534e; font-size:15px">Wszystko z karty „Kable" musi być położone PRZED zamknięciem sufitu GK — potem zostaje tylko montaż sprzętu.</p>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:16px">
+
+      <div style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:20px 22px; font-size:14px">
+        <h3 style="margin:0 0 12px; font-size:15px; padding-bottom:10px; border-bottom:2px solid #f5f5f4">Kable — do położenia TERAZ</h3>
+        <ul style="margin:0; padding-left:18px; display:flex; flex-direction:column; gap:8px; color:#44403c">
+          <li><b>230 V (obwód RA-7)</b>: wypust przy kasecie ekranu, <b>2×</b> przy windzie (winda + projektor), gniazda ×4 w szafce AV, <b>gniazdo przy subwooferze</b>.</li>
+          <li><b>Peszel Ø40</b> szafka AV → winda: kabel <b>HDMI 2.1 certyfikowany</b> (do 10 m) + linka do przeciągania na przyszłość.</li>
+          <li><b>UTP kat.6</b>: 2× do szafki AV (amplituner + Apple TV; jest RJ-45 od dewelopera — sprawdzić lokalizację) + 1 zapasowy do windy.</li>
+          <li><b>YTDY 6×0,5</b>: szafka → kaseta ekranu i szafka → winda (drucik 12 V + żyły zapasowe).</li>
+          <li><b>Głośnikowe OFC 2×2,5 mm²</b>: 7 tras do punktów sufitowych (rozmieszczenie wg planu Technikarium) + interkonekt RCA do subwoofera w peszlu 25 mm.</li>
+          <li>Separacja: HDMI / YTDY / UTP min. 20–30 cm od tras 230 V, krzyżowania pod kątem prostym.</li>
+        </ul>
+      </div>
+
+      <div style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:20px 22px; font-size:14px">
+        <h3 style="margin:0 0 12px; font-size:15px; padding-bottom:10px; border-bottom:2px solid #f5f5f4">Sterowanie i integracja z HA</h3>
+        <ul style="margin:0; padding-left:18px; display:flex; flex-direction:column; gap:8px; color:#44403c">
+          <li><b>Pioneer VSX-LX505</b>: po LAN — gotowa integracja HA (rodzina Onkyo/Pioneer): włącz/wyłącz, głośność, wejścia.</li>
+          <li><b>Apple TV</b>: natywna integracja HA; budzi amplituner i projektor sygnałem <b>HDMI-CEC</b>.</li>
+          <li><b>BenQ W4100i</b>: budzenie/usypianie przez CEC; opcja „pro": mostek RS-232↔LAN (~150 zł) dla twardego sterowania i odczytu stanu.</li>
+          <li><b>Kauber (ekran + winda)</b>: wejście <b>trigger 12 V</b> — <u>potwierdzić z Technikarium wersję silników</u>; pilot RF w zestawie. Plan B: Shelly 2PM jak przy rolecie okiennej.</li>
+          <li><b>Sceny w HA</b>: „FILM" / „KONIEC" — plus bonusy z pozostałych schematów: światła na 15% (Dimmer Gen3), rolety zewnętrzne w dół (Shelly 2PM).</li>
+        </ul>
+      </div>
+
+      <div style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:20px 22px; font-size:14px">
+        <h3 style="margin:0 0 12px; font-size:15px; padding-bottom:10px; border-bottom:2px solid #f5f5f4">Zasady i pułapki</h3>
+        <ul style="margin:0; padding-left:18px; display:flex; flex-direction:column; gap:8px; color:#44403c">
+          <li>W4100i jest projektorem <b>LED</b> — nie ma długiego chłodzenia lampy; mimo to w scenie „KONIEC" daj windzie <b>30–60 s zwłoki</b> przed schowaniem.</li>
+          <li>Drucik 12 V = mechanika działa <b>bez serwera</b>: włączysz amplituner pilotem, a kino i tak się rozłoży.</li>
+          <li><b>Kaseta i winda montowane PRZED zamknięciem GK</b> — koordynacja ekipy od sufitu z Technikarium (oni montują, ekipa zabudowuje).</li>
+          <li>Kable głośnikowe przed GK; same głośniki wycina się w gotowym suficie — kolejność z maila Technikarium.</li>
+          <li>Obwód RA-7 <b>poza stycznikami Appartme</b> — tryb „wychodzę" nie może odcinać kina (zegary, standby, aktualizacje).</li>
+          <li>Gniazdo przy subwooferze to najczęściej zapominany punkt kina — u nas jest na liście.</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+</div>
+</body></html>

@@ -294,8 +294,8 @@ th:last-child,td:last-child{padding-right:0}
     <div class="figure__body">
       <div class="dwg-wrap">
 <svg class="dwg" viewBox="0 0 1180 826" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="f1-t f1-d">
-  <title id="f1-t">Przekrój łazienki z drogą prądu od skrzynki bezpiecznikowej do taśm LED</title>
-  <desc id="f1-d">Kabel 230 V biegnie ze skrzynki z bezpiecznikami w ścianie, tranzytem przez puszkę z dwoma przyciskami, na półkę techniczną nad sufitem podwieszanym. Tam zasilacz zamienia 230 V na 24 V i karmi moduł Shelly. Shelly przez dwie kostki rozdziela 24 V na grupę SUFIT (taśma dookoła sufitu) i grupę RESZTA (piony w płytkach oraz taśma pod szafką). Cienki kabelek sterowniczy łączy przyciski z Shelly. Na wyjściach modułu, przy każdej kostce rozgałęźnej, siedzi wkładka bezpiecznikowa dobrana do prądu tej grupy.</desc>
+  <title id="f1-t">Przekrój łazienki z drogą prądu od puszki sufitowej do taśm LED</title>
+  <desc id="f1-d">Zasilanie 230 V odchodzi od puszki sufitowej obwodu oświetlenia łazienki, tuż obok półki technicznej, krótkim odcinkiem do zasilacza. Do puszki z przyciskami nie wchodzi ani jedna żyła 230 V. Zasilacz zamienia 230 V na 24 V i karmi moduł Shelly. Shelly przez dwie kostki rozdziela 24 V na grupę SUFIT (taśma dookoła sufitu) i grupę RESZTA (piony w płytkach oraz taśma pod szafką). Cienki kabelek sterowniczy łączy przyciski z Shelly. Na wyjściach modułu, przy każdej kostce rozgałęźnej, siedzi wkładka bezpiecznikowa dobrana do prądu tej grupy.</desc>
 
   <defs>
     <pattern id="hatch" width="9" height="9" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
@@ -328,22 +328,17 @@ th:last-child,td:last-child{padding-right:0}
   <rect x="140" y="84" width="60" height="716" fill="url(#hatch)"/>
   <rect x="60" y="800" width="1060" height="14" fill="var(--d-floor)"/>
 
-  <!-- ===== 1 · skrzynka z bezpiecznikami ===== -->
-  <rect x="24" y="660" width="112" height="120" rx="12" fill="var(--d-box)"/>
-  <rect x="40" y="762" width="80" height="4" rx="2" fill="var(--v230)"/>
-  <text x="80" y="700" font-size="12" font-weight="700" fill="var(--d-box-text)" text-anchor="middle">SKRZYNKA Z</text>
-  <text x="80" y="715" font-size="12" font-weight="700" fill="var(--d-box-text)" text-anchor="middle">BEZPIECZNIKAMI</text>
-  <text x="80" y="736" font-size="11" fill="var(--d-box-dim)" text-anchor="middle">stąd wychodzi</text>
-  <text class="m" x="80" y="750" font-size="11" fill="var(--d-box-dim)" text-anchor="middle">prąd 230 V</text>
-  <g class="bal"><circle cx="80" cy="632" r="17"/><text x="80" y="638">1</text></g>
+  <!-- ===== 1 · puszka sufitowa obwodu oświetlenia ===== -->
+  <rect x="256" y="150" width="84" height="64" rx="10" fill="var(--v230-bg)" stroke="var(--v230)" stroke-width="2"/>
+  <text x="298" y="172" font-size="11" font-weight="700" fill="var(--v230-ink)" text-anchor="middle">PUSZKA</text>
+  <text x="298" y="186" font-size="11" font-weight="700" fill="var(--v230-ink)" text-anchor="middle">SUFITOWA</text>
+  <text x="298" y="202" font-size="9.5" fill="var(--ink-2)" text-anchor="middle">łazienki</text>
+  <g class="bal"><circle cx="272" cy="142" r="17"/><text x="272" y="148">1</text></g>
 
-  <!-- kabel 230 V: skrzynka → zasilacz -->
-  <path d="M 136 700 L 163 700 L 163 160 L 340 160 L 340 190 L 380 190" fill="none" stroke="var(--v230)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-  <text x="22" y="116" font-size="13.5" font-weight="700" fill="var(--v230-ink)">KABEL 230 V</text>
-  <text class="m" x="22" y="133" font-size="12" font-weight="500" fill="var(--v230-ink)">YDYp 3×1,5</text>
-  <text x="22" y="149" font-size="11.5" fill="var(--ink-3)">gruby, sztywny,</text>
-  <text x="22" y="163" font-size="11.5" fill="var(--ink-3)">kuty w ścianie</text>
-  <line x1="112" y1="146" x2="150" y2="151" stroke="var(--v230)" stroke-width="1.4"/>
+  <!-- krótki odcinek 230 V: puszka → zasilacz -->
+  <path d="M 340 190 L 380 190" fill="none" stroke="var(--v230)" stroke-width="7" stroke-linejoin="round"/>
+  <text x="256" y="236" font-size="10.5" fill="var(--ink-3)">z obwodu oświetlenia</text>
+  <text class="m" x="256" y="252" font-size="11" font-weight="600" fill="var(--v230-ink)">YDYp 3×1,5</text>
   <polygon points="159,152 147.6,152.6 149.6,144.8" fill="var(--v230)"/>
 
   <!-- ===== 2 · puszka z przyciskami ===== -->
@@ -366,23 +361,15 @@ th:last-child,td:last-child{padding-right:0}
   <text x="262" y="558" font-size="11.5" fill="var(--ink-2)">na ścianie WIDAĆ tylko to —</text>
   <text x="262" y="572" font-size="11.5" fill="var(--ink-2)">dwa przyciski jak dzwonek do drzwi</text>
 
-  <!-- ostrzeżenie: 230 V przechodzi przez puszkę tranzytem -->
-  <rect x="322" y="616" width="480" height="66" rx="8" fill="var(--v230-bg)"/>
-  <rect x="322" y="616" width="3" height="66" fill="var(--v230)"/>
-  <text x="340" y="637" font-size="12.5" font-weight="700" fill="var(--v230-ink)">Ważne: 230 V tylko PRZEPŁYWA przez puszkę tranzytem</text>
-  <text x="340" y="653" font-size="12.5" font-weight="500" fill="var(--v230-ink)">w drodze na górę — przyciski w ogóle go nie dotykają.</text>
-  <text x="340" y="669" font-size="12.5" font-weight="500" fill="var(--v230-ink)">Powłoka kabla zostaje nienaruszona: bez kostki, bez odsłoniętych zacisków.</text>
-  <path d="M 318 634 C 250 618 195 580 172 546" fill="none" stroke="var(--v230)" stroke-width="1.4" stroke-dasharray="4 4" opacity=".6"/>
 
   <!-- ===== 3 · kabelek sygnałowy ===== -->
   <path d="M 185 480 L 185 262 L 700 262 L 700 250" fill="none" stroke="var(--v24)" stroke-width="3.5" stroke-dasharray="9 5"/>
   <g class="bal"><circle cx="185" cy="350" r="17"/><text x="185" y="356">3</text></g>
   <text x="22" y="206" font-size="13.5" font-weight="700" fill="var(--v24-ink)">KABELEK</text>
   <text x="22" y="221" font-size="13.5" font-weight="700" fill="var(--v24-ink)">SYGNAŁOWY</text>
-  <text class="m" x="22" y="238" font-size="12" font-weight="600" fill="var(--v24-ink)">OWY 5×0,75</text>
-  <text class="m" x="22" y="252" font-size="10" font-weight="500" fill="var(--ink-3)">H05VV-F 5G0,75</text>
-  <text x="22" y="268" font-size="11.5" fill="var(--ink-3)">niesie kliknięcia,</text>
-  <text x="22" y="282" font-size="11.5" fill="var(--ink-3)">bezpieczne 24 V</text>
+  <text class="m" x="22" y="238" font-size="12" font-weight="600" fill="var(--v24-ink)">YTDY 4×0,5</text>
+  <text x="22" y="253" font-size="11.5" fill="var(--ink-3)">niesie kliknięcia,</text>
+  <text x="22" y="267" font-size="11.5" fill="var(--ink-3)">bezpieczne 24 V</text>
   <line x1="112" y1="230" x2="170" y2="252" stroke="var(--v24)" stroke-width="1.4"/>
   <polygon points="179,255 167.7,254.9 170.3,247" fill="var(--v24)"/>
 
@@ -525,12 +512,12 @@ th:last-child,td:last-child{padding-right:0}
     <li class="step">
       <span class="step__no" aria-hidden="true">1</span>
       <span class="step__tag tag-hv">230 V</span>
-      <p><b>Skrzynka z bezpiecznikami</b> wysyła zwykły domowy prąd grubym kablem ukrytym w ścianie.</p>
+      <p><b>Prąd bierzemy z obwodu oświetlenia łazienki</b> — z puszki w suficie, tuż obok półki technicznej. Bez ciągnięcia kabla z rozdzielnicy w garażu i bez nowej bruzdy przez pół domu.</p>
     </li>
     <li class="step">
       <span class="step__no" aria-hidden="true">2</span>
-      <span class="step__tag tag-mix">230 V tranzytem</span>
-      <p><b>Na ścianie widać tylko dwa przyciski</b> — jak dzwonki do drzwi: pomarańczowy rządzi sufitem, niebieski resztą. Za nimi, w ścianie, siedzi puszka-kubek z kablami. Prąd 230 V przepływa przez nią tranzytem — przycisków w ogóle nie dotyka.</p>
+      <span class="step__tag tag-lv">tylko 24 V</span>
+      <p><b>Na ścianie widać tylko dwa przyciski</b> — jak dzwonki do drzwi: pomarańczowy rządzi sufitem, niebieski resztą. Za nimi, w ścianie, siedzi puszka-kubek z kablami. Nie ma w niej ani jednej żyły 230 V — same przyciski i cienki kabelek na 24 V.</p>
     </li>
     <li class="step">
       <span class="step__no" aria-hidden="true">3</span>
@@ -575,7 +562,7 @@ th:last-child,td:last-child{padding-right:0}
         <span class="section__no">03</span>
         <div>
           <h2>Zbliżenie: jak podpiąć kabelek sterujący do przycisków i mózgu</h2>
-          <p>Przycisk nie ma elektroniki — to zwykła zwora: wciśnięcie łączy jego dwa zaciski. Mózg trzyma swoje wejścia w gotowości i czeka, aż przycisk zewrze je z <b>minusem zasilania</b>. Wspólna żyła <span class="mono">COM</span> idzie z zacisku <span class="mono">⊥</span> do obu przycisków, a <span class="mono">S1</span> i <span class="mono">S2</span> wracają na <span class="mono">SW1</span> i <span class="mono">SW3</span>. Kolory żył zależą od producenta kabla — liczy się schemat, nie kolor izolacji. Jedno jest sztywne: <b>żyły żółto-zielonej nie wolno użyć</b> do żadnej z tych funkcji.</p>
+          <p>Przycisk nie ma elektroniki — to zwykła zwora: wciśnięcie łączy jego dwa zaciski. Mózg trzyma swoje wejścia w gotowości i czeka, aż przycisk zewrze je z <b>minusem zasilania</b>. Wspólna żyła <span class="mono">COM</span> idzie z zacisku <span class="mono">⊥</span> do obu przycisków, a <span class="mono">S1</span> i <span class="mono">S2</span> wracają na <span class="mono">SW1</span> i <span class="mono">SW3</span>. Kolory żył zależą od producenta kabla — liczy się schemat, nie kolor izolacji.</p>
         </div>
       </div>
     </div>
@@ -699,10 +686,11 @@ th:last-child,td:last-child{padding-right:0}
     <div class="card">
       <h3>Kable — jedna bruzda z puszki na półkę techniczną</h3>
       <ul>
-        <li><b>Zasilanie:</b> <code>YDYp 3×1,5</code> (L, N, PE) z obwodu OŚWIETLENIA — nie z gniazdek, stycznik Appartme — do zasilacza. Przez puszkę przycisków <b>przelot z nienaruszoną powłoką</b>: bez zdejmowania izolacji i bez kostki. W tej puszce nic nie pobiera 230 V, więc nie ma po co jej rozcinać.</li>
-        <li><b>Sygnał — w sklepie <code>OWY 5×0,75</code></b> (normowo <code>H05VV-F 5G0,75</code>), z puszki przycisków na półkę. Cztery żyły robocze: <code>COM</code> wspólny (minus zasilania, zacisk <code>⊥</code>), <code>S1</code> = przycisk SUFIT → <code>SW1</code>, <code>S2</code> = przycisk RESZTA → <code>SW3</code>, czwarta zapas. Żyła żółto-zielona zostaje <b>nieużyta</b> — nie wolno jej wykorzystać jako roboczej.</li>
-        <li><b>Separacja SELV od 230 V — bez kombinowania:</b> kabel sterowniczy ma izolację <b>300/500 V</b>, więc sąsiedztwo <code>YDYp</code> w jednej bruździe jest załatwione samą izolacją. Nie trzeba przegrody w puszce ani osobnego peszla na sygnał. Po stronie 230 V podstawą pozostaje <b>nienaruszona powłoka <code>YDYp</code></b>.</li>
-        <li class="warn"><b>Każdy odcinek w bruździe w peszlu.</b> <code>H05VV-F</code> to przewód giętki, przewidziany do zasilania odbiorników ruchomych — układanie go na stałe pod klejem i tynkiem jest niezgodne z jego przeznaczeniem. Peszel załatwia i osłonę mechaniczną, i wymienialność na zawsze.</li>
+        <li><b>Zasilanie:</b> <code>YDYp 3×1,5</code> (L, N, PE) z <b>puszki sufitowej obwodu oświetlenia łazienki</b>, krótkim odcinkiem do zasilacza. Obciążenie ~160 W plus moduł to poniżej 1 A — obwód oświetlenia tego nie zauważy.</li>
+        <li class="warn"><b>Wpiąć się w fazę stałą, nie przełączoną.</b> Jeśli elektryk weźmie przewód idący z włącznika do lampy, cała instalacja LED będzie gasła przy każdym strzale klawiszem sufitówki — razem z modułem. W typowej puszce sufitowej faza stała jest dostępna, ale w instalacjach prowadzonych „od włącznika” bywa tam wyłącznie przełączona. Sprawdzić przed łączeniem.</li>
+        <li><b>Sprawdź, czy ten obwód idzie przez stycznik Appartme.</b> Jeśli tak, po każdym „wychodzę / wracam” moduł się zrestartuje: przycisk odezwie się kilka sekund po powrocie, a zdalne sterowanie w czasie nieobecności nie działa.</li>
+        <li><b>Sygnał:</b> <code>YTDY 4×0,5</code> z puszki przycisków na półkę. Trzy żyły robocze: <code>COM</code> wspólny (minus zasilania, zacisk <code>⊥</code>), <code>S1</code> = przycisk SUFIT → <code>SW1</code>, <code>S2</code> = przycisk RESZTA → <code>SW3</code>; czwarta zapas.</li>
+        <li><b>W puszce przycisków nie ma 230 V</b>, więc nie trzeba ani przegrody, ani kabla o izolacji sieciowej. Zasilanie idzie z sufitu wprost do zasilacza i tej puszki nie dotyka.</li>
         <li><b>Przyciski:</b> monostabilne, dzwonkowe. Reguła klik / przytrzymanie działa lokalnie w module, bez HA.</li>
       </ul>
     </div>
@@ -711,6 +699,7 @@ th:last-child,td:last-child{padding-right:0}
       <h3>Strefa 24 V — montaż własny, bez kucia</h3>
       <ul>
         <li><b>Zejścia do taśm — w sklepie pytaj o <code>OWY 3×1,5</code></b> (nazwa normowa: <code>H05VV-F 3X1,5</code>), 300/500 V („linka” = giętka budowa żyły, nie nazwa handlowa). Żyły: <b>brązowa</b> = <code>V+</code>, <b>czarna</b> = <code>WW−</code>, <b>szara</b> = <code>CW−</code>; max ~5 m na odnogę. Sufit karmiony z narożników przez kostki WAGO — 3 szt., żyła do żyły.</li>
+        <li class="warn"><b>Zejścia do taśm w peszlu.</b> <code>OWY</code> to przewód giętki, przewidziany do odbiorników ruchomych — układanie go na stałe pod klejem i tynkiem jest niezgodne z przeznaczeniem. Peszel daje osłonę mechaniczną i wymienialność na zawsze.</li>
         <li class="warn"><b>Musi być <code>3X</code>, nie <code>3G</code>.</b> Litera <code>G</code> w oznaczeniu znaczy, że kabel ma żyłę żółto-zieloną, a ta jest zarezerwowana wyłącznie dla przewodu ochronnego — nie wolno jej użyć jako <code>CW−</code>. Jeśli w sklepie jest tylko <code>4G1,5</code>, weź ją i zostaw żółto-zieloną nieużytą.</li>
         <li><b>Nie mylić z <code>OMY</code>:</b> to <code>H03VV-F</code> 300/300 V, a ta norma sięga tylko 0,75 mm² — „OMY 3×1,5” jako produkt nie istnieje.</li>
         <li><b>Zasilacz:</b> <code>ELG-200-24</code> — 24 V, 8,4 A, 201,6 W, obudowa IP67, napięcie i prąd na stałe (wersja <code>A</code> jest regulowana, ale ma IP65). Moc = suma taśm × 1,25; tu ~160 W. Łącznik zasilacz → moduł: ten sam <code>OWY 3×1,5</code>, w peszlu.</li>

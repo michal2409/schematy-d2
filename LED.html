@@ -295,7 +295,7 @@ th:last-child,td:last-child{padding-right:0}
       <div class="dwg-wrap">
 <svg class="dwg" viewBox="0 0 1180 826" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="f1-t f1-d">
   <title id="f1-t">Przekrój łazienki z drogą prądu od skrzynki bezpiecznikowej do taśm LED</title>
-  <desc id="f1-d">Kabel 230 V biegnie ze skrzynki z bezpiecznikami w ścianie, tranzytem przez puszkę z dwoma przyciskami, na półkę techniczną nad sufitem podwieszanym. Tam zasilacz zamienia 230 V na 24 V i karmi moduł Shelly. Shelly przez dwie kostki rozdziela 24 V na grupę SUFIT (taśma dookoła sufitu) i grupę RESZTA (piony w płytkach oraz taśma pod szafką). Cienki kabelek YTDY łączy przyciski z Shelly.</desc>
+  <desc id="f1-d">Kabel 230 V biegnie ze skrzynki z bezpiecznikami w ścianie, tranzytem przez puszkę z dwoma przyciskami, na półkę techniczną nad sufitem podwieszanym. Tam zasilacz zamienia 230 V na 24 V i karmi moduł Shelly. Shelly przez dwie kostki rozdziela 24 V na grupę SUFIT (taśma dookoła sufitu) i grupę RESZTA (piony w płytkach oraz taśma pod szafką). Cienki kabelek sterowniczy łączy przyciski z Shelly. Na wyjściach modułu, przy każdej kostce rozgałęźnej, siedzi wkładka bezpiecznikowa dobrana do prądu tej grupy.</desc>
 
   <defs>
     <pattern id="hatch" width="9" height="9" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
@@ -374,14 +374,15 @@ th:last-child,td:last-child{padding-right:0}
   <text x="340" y="669" font-size="12.5" font-weight="500" fill="var(--v230-ink)">Powłoka kabla zostaje nienaruszona: bez kostki, bez odsłoniętych zacisków.</text>
   <path d="M 318 634 C 250 618 195 580 172 546" fill="none" stroke="var(--v230)" stroke-width="1.4" stroke-dasharray="4 4" opacity=".6"/>
 
-  <!-- ===== 3 · kabelek sygnałowy YTDY ===== -->
+  <!-- ===== 3 · kabelek sygnałowy ===== -->
   <path d="M 185 480 L 185 262 L 700 262 L 700 250" fill="none" stroke="var(--v24)" stroke-width="3.5" stroke-dasharray="9 5"/>
   <g class="bal"><circle cx="185" cy="350" r="17"/><text x="185" y="356">3</text></g>
   <text x="22" y="206" font-size="13.5" font-weight="700" fill="var(--v24-ink)">KABELEK</text>
   <text x="22" y="221" font-size="13.5" font-weight="700" fill="var(--v24-ink)">SYGNAŁOWY</text>
-  <text class="m" x="22" y="238" font-size="12" font-weight="500" fill="var(--v24-ink)">YTDY 4×0,5</text>
-  <text x="22" y="253" font-size="11.5" fill="var(--ink-3)">niesie kliknięcia,</text>
-  <text x="22" y="267" font-size="11.5" fill="var(--ink-3)">bezpieczne 24 V</text>
+  <text class="m" x="22" y="238" font-size="12" font-weight="600" fill="var(--v24-ink)">OWY 5×0,75</text>
+  <text class="m" x="22" y="252" font-size="10" font-weight="500" fill="var(--ink-3)">H05VV-F 5G0,75</text>
+  <text x="22" y="268" font-size="11.5" fill="var(--ink-3)">niesie kliknięcia,</text>
+  <text x="22" y="282" font-size="11.5" fill="var(--ink-3)">bezpieczne 24 V</text>
   <line x1="112" y1="230" x2="170" y2="252" stroke="var(--v24)" stroke-width="1.4"/>
   <polygon points="179,255 167.7,254.9 170.3,247" fill="var(--v24)"/>
 
@@ -398,22 +399,23 @@ th:last-child,td:last-child{padding-right:0}
 
   <!-- łącznik zasilacz → mózg -->
   <line x1="560" y1="195" x2="640" y2="195" stroke="var(--v24)" stroke-width="6.5"/>
-  <rect x="587" y="187" width="26" height="16" rx="4" fill="var(--panel)" stroke="var(--v24)" stroke-width="2"/>
-  <text x="600" y="176" font-size="10.5" font-weight="600" fill="var(--v24-ink)" text-anchor="middle">bezpiecznik</text>
-  <text class="m" x="600" y="216" font-size="10.5" font-weight="500" fill="var(--v24-ink)" text-anchor="middle">~10 A · 24 V</text>
 
   <!-- ===== 5 · mózg światła ===== -->
   <rect x="640" y="140" width="190" height="110" rx="12" fill="var(--d-box)"/>
   <text x="735" y="170" font-size="16" font-weight="700" fill="var(--d-box-text)" text-anchor="middle">MÓZG ŚWIATŁA</text>
   <text x="735" y="186" font-size="11" fill="var(--on-box-v24)" text-anchor="middle">(moduł Shelly)</text>
   <text x="735" y="206" font-size="11.5" fill="var(--d-box-dim)" text-anchor="middle">słucha przycisków (kabelkiem)</text>
-  <text x="735" y="221" font-size="11.5" fill="var(--d-box-dim)" text-anchor="middle">i telefonu (Wi-Fi), a potem</text>
+  <text x="735" y="221" font-size="11.5" fill="var(--d-box-dim)" text-anchor="middle">i telefonu (sieć), a potem</text>
   <text x="735" y="236" font-size="11.5" fill="var(--d-box-dim)" text-anchor="middle">dawkuje jasność i barwę taśmom</text>
   <g class="bal"><circle cx="652" cy="128" r="17"/><text x="652" y="134">5</text></g>
 
   <!-- ===== 6 · kostki rozgałęźne ===== -->
   <line x1="830" y1="165" x2="868" y2="165" stroke="var(--sufit)" stroke-width="4"/>
   <line x1="830" y1="217" x2="868" y2="217" stroke="var(--reszta)" stroke-width="4"/>
+  <rect x="838" y="157" width="22" height="16" rx="4" fill="var(--panel)" stroke="var(--sufit)" stroke-width="2"/>
+  <rect x="838" y="209" width="22" height="16" rx="4" fill="var(--panel)" stroke="var(--reszta)" stroke-width="2"/>
+  <text x="930" y="169" font-size="10.5" font-weight="600" fill="var(--sufit-ink)">wkładka</text>
+  <text x="930" y="221" font-size="10.5" font-weight="600" fill="var(--reszta-ink)">wkładka</text>
   <rect x="868" y="152" width="54" height="26" rx="7" fill="var(--sufit-bg)" stroke="var(--sufit)" stroke-width="1.5"/>
   <text x="895" y="170" font-size="11" font-weight="600" fill="var(--sufit-ink)" text-anchor="middle">kostka A</text>
   <rect x="868" y="204" width="54" height="26" rx="7" fill="var(--reszta-bg)" stroke="var(--reszta)" stroke-width="1.5"/>
@@ -423,7 +425,8 @@ th:last-child,td:last-child{padding-right:0}
   <!-- ===== 7 · grupa SUFIT — świeci ===== -->
   <path d="M 895 152 L 895 112 L 250 112 L 250 300" fill="none" stroke="var(--sufit)" stroke-width="4"/>
   <path d="M 895 112 L 1060 112 L 1060 300" fill="none" stroke="var(--sufit)" stroke-width="4"/>
-  <text class="m halo" x="1052" y="133" font-size="11" font-weight="500" fill="var(--sufit-ink)" text-anchor="end">OWY 3×1,5 · 24 V</text>
+  <text class="m halo" x="1052" y="127" font-size="11" font-weight="600" fill="var(--sufit-ink)" text-anchor="end">OWY 3×1,5</text>
+  <text class="m halo" x="1052" y="141" font-size="10" font-weight="500" fill="var(--ink-3)" text-anchor="end">H05VV-F 3X1,5</text>
 
   <g class="glow" opacity=".34"><ellipse cx="650" cy="344" rx="392" ry="16" fill="var(--sufit)" filter="url(#bloom)"/></g>
   <g class="glow" opacity=".65"><rect x="262" y="320" width="776" height="8" rx="4" fill="var(--sufit)" filter="url(#bloomS)"/></g>
@@ -439,7 +442,7 @@ th:last-child,td:last-child{padding-right:0}
   <path d="M 895 230 L 895 272 L 470 272 L 470 300" fill="none" stroke="var(--reszta)" stroke-width="4"/>
   <path d="M 760 272 L 760 300" fill="none" stroke="var(--reszta)" stroke-width="4"/>
   <path d="M 895 272 L 1096 272 L 1096 490" fill="none" stroke="var(--reszta)" stroke-width="4" stroke-dasharray="9 6"/>
-  <text class="m halo" x="620" y="292" font-size="11" font-weight="500" fill="var(--reszta-ink)" text-anchor="middle">OWY 3×1,5 · 24 V</text>
+  <text class="m halo" x="620" y="292" font-size="11" font-weight="600" fill="var(--reszta-ink)" text-anchor="middle">OWY 3×1,5</text>
   <text x="1104" y="420" font-size="11.5" fill="var(--reszta-ink)" transform="rotate(90 1104 420)">zejście w bruździe (w ścianie)</text>
 
   <g class="glow" opacity=".34">
@@ -542,7 +545,7 @@ th:last-child,td:last-child{padding-right:0}
     <li class="step">
       <span class="step__no" aria-hidden="true">5</span>
       <span class="step__tag tag-lv">24 V</span>
-      <p><b>Mózg światła (Shelly)</b> dostaje bezpieczny prąd i słucha dwóch rzeczy: przycisków (kabelkiem) i telefonu lub automatyki (Wi-Fi). To on decyduje, ile światła i jak ciepłego dać każdej grupie.</p>
+      <p><b>Mózg światła (Shelly)</b> dostaje bezpieczny prąd i słucha dwóch rzeczy: przycisków (kabelkiem) i telefonu lub automatyki (siecią — kablem LAN albo Wi-Fi). To on decyduje, ile światła i jak ciepłego dać każdej grupie.</p>
     </li>
     <li class="step">
       <span class="step__no" aria-hidden="true">6</span>
@@ -563,7 +566,7 @@ th:last-child,td:last-child{padding-right:0}
 </section>
 
 <!-- ============================================================
-     03 — ZBLIŻENIE YTDY
+     03 — ZBLIŻENIE KABELKA STERUJĄCEGO
      ============================================================ -->
 <section class="section" id="zblizenie">
   <figure class="figure">
@@ -571,8 +574,8 @@ th:last-child,td:last-child{padding-right:0}
       <div class="section__head">
         <span class="section__no">03</span>
         <div>
-          <h2>Zbliżenie: jak podpiąć kabelek YTDY do przycisków i mózgu</h2>
-          <p>Przycisk nie ma elektroniki — to zwykła zwora: wciśnięcie łączy jego dwa zaciski. Mózg sam wysyła żyłą <span class="mono">V+</span> swoje bezpieczne 24 V „pod drzwi” przycisków i nasłuchuje, którą żyłą (<span class="mono">S1</span> / <span class="mono">S2</span>) prąd wraca. Kolory żył w Twoim YTDY mogą być inne — liczy się schemat, nie kolor izolacji.</p>
+          <h2>Zbliżenie: jak podpiąć kabelek sterujący do przycisków i mózgu</h2>
+          <p>Przycisk nie ma elektroniki — to zwykła zwora: wciśnięcie łączy jego dwa zaciski. Mózg trzyma swoje wejścia w gotowości i czeka, aż przycisk zewrze je z <b>minusem zasilania</b>. Wspólna żyła <span class="mono">COM</span> idzie z zacisku <span class="mono">⊥</span> do obu przycisków, a <span class="mono">S1</span> i <span class="mono">S2</span> wracają na <span class="mono">SW1</span> i <span class="mono">SW3</span>. Kolory żył zależą od producenta kabla — liczy się schemat, nie kolor izolacji. Jedno jest sztywne: <b>żyły żółto-zielonej nie wolno użyć</b> do żadnej z tych funkcji.</p>
         </div>
       </div>
     </div>
@@ -582,8 +585,8 @@ th:last-child,td:last-child{padding-right:0}
     <div class="figure__body">
       <div class="dwg-wrap">
 <svg class="dwg" viewBox="0 0 1180 424" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="f2-t f2-d">
-  <title id="f2-t">Schemat połączenia kabelka YTDY między dwoma przyciskami a modułem Shelly</title>
-  <desc id="f2-d">Żyła V plus wychodzi z zacisku V+ modułu Shelly i rozgałęzia się do zacisku 1 obu przycisków. Żyła S1 z zacisku 2 przycisku SUFIT wraca do wejścia WE1. Żyła S2 z zacisku 2 przycisku RESZTA wraca do wejścia WE2. Czwarta żyła kabla zostaje jako zapas, zwinięta w puszce.</desc>
+  <title id="f2-t">Schemat połączenia kabelka sterującego między dwoma przyciskami a modułem Shelly</title>
+  <desc id="f2-d">Żyła wspólna wychodzi z zacisku minusa zasilania modułu Shelly i rozgałęzia się do zacisku 1 obu przycisków. Żyła S1 z zacisku 2 przycisku SUFIT wraca do wejścia SW1. Żyła S2 z zacisku 2 przycisku RESZTA wraca do wejścia SW3. Wciśnięcie przycisku zwiera wejście z minusem. Czwarta żyła kabla zostaje jako zapas, zwinięta w puszce.</desc>
 
   <!-- ===== puszka od środka ===== -->
   <rect x="40" y="40" width="360" height="230" rx="14" fill="var(--panel-2)" stroke="var(--line-2)" stroke-width="1.5"/>
@@ -611,10 +614,14 @@ th:last-child,td:last-child{padding-right:0}
 
   <!-- 4. żyła = zapas -->
   <circle cx="368" cy="80" r="11" fill="none" stroke="var(--ink-3)" stroke-width="2.5" stroke-dasharray="4 3"/>
-  <text x="440" y="110" font-size="13" font-weight="700" fill="var(--ink)">4. ŻYŁA YTDY = ZAPAS</text>
+  <text x="440" y="110" font-size="13" font-weight="700" fill="var(--ink)">4. ŻYŁA ROBOCZA = ZAPAS</text>
   <text x="440" y="127" font-size="12" fill="var(--ink-3)">zwinięta w puszce, na przyszłość</text>
   <line x1="434" y1="112" x2="392" y2="90" stroke="var(--ink-3)" stroke-width="1.4"/>
   <polygon points="382,84 392.8,86.4 388.4,93.2" fill="var(--ink-3)"/>
+
+  <!-- czego nie zgaduj -->
+  <text x="420" y="240" font-size="11.5" font-weight="600" fill="var(--ink-2)">Wspólny biegun przycisków to ⊥ — minus zasilania.</text>
+  <text x="420" y="256" font-size="11.5" fill="var(--ink-3)">Nie plus. Patrz fig. II w instrukcji modułu.</text>
 
   <!-- co robi wciśnięcie -->
   <text x="440" y="170" font-size="13" font-weight="700" fill="var(--ink)">WCIŚNIĘCIE PRZYCISKU</text>
@@ -625,16 +632,16 @@ th:last-child,td:last-child{padding-right:0}
 
   <!-- ===== mózg ===== -->
   <rect x="760" y="60" width="260" height="170" rx="14" fill="var(--d-box)"/>
-  <text x="890" y="90" font-size="14.5" font-weight="700" fill="var(--d-box-text)" text-anchor="middle">MÓZG (Shelly Plus RGBW PM)</text>
+  <text x="890" y="90" font-size="14.5" font-weight="700" fill="var(--d-box-text)" text-anchor="middle">MÓZG (Shelly Pro RGBWW PM)</text>
   <rect x="752" y="102" width="16" height="16" rx="4" fill="var(--panel)" stroke="var(--v24)" stroke-width="2"/>
   <rect x="752" y="137" width="16" height="16" rx="4" fill="var(--panel)" stroke="var(--sufit)" stroke-width="2"/>
   <rect x="752" y="172" width="16" height="16" rx="4" fill="var(--panel)" stroke="var(--reszta)" stroke-width="2"/>
-  <text class="m" x="778" y="114" font-size="12" font-weight="600" fill="var(--on-box-v24)">V+</text>
-  <text class="m" x="778" y="149" font-size="12" font-weight="600" fill="var(--on-box-sufit)">WE1</text>
-  <text class="m" x="778" y="184" font-size="12" font-weight="600" fill="var(--on-box-reszta)">WE2</text>
+  <text class="m" x="778" y="114" font-size="12" font-weight="600" fill="var(--on-box-v24)">⊥</text>
+  <text class="m" x="778" y="149" font-size="12" font-weight="600" fill="var(--on-box-sufit)">SW1</text>
+  <text class="m" x="778" y="184" font-size="12" font-weight="600" fill="var(--on-box-reszta)">SW3</text>
   <text x="915" y="126" font-size="11.5" fill="var(--d-box-dim)" text-anchor="middle">stale nasłuchuje wejść:</text>
-  <text x="915" y="143" font-size="11.5" fill="var(--d-box-dim)" text-anchor="middle">jest 24 V na WE = przycisk wciśnięty,</text>
-  <text x="915" y="160" font-size="11.5" fill="var(--d-box-dim)" text-anchor="middle">brak napięcia = puszczony</text>
+  <text x="915" y="143" font-size="11.5" fill="var(--d-box-dim)" text-anchor="middle">zwarcie SW z minusem = wciśnięty,</text>
+  <text x="915" y="160" font-size="11.5" fill="var(--d-box-dim)" text-anchor="middle">rozwarcie = puszczony</text>
   <text x="890" y="212" font-size="11.5" fill="var(--on-box-v24)" text-anchor="middle">zegar mierzy rytm → klik / przytrzymanie</text>
 
   <!-- ===== żyła V+ (24 V) ===== -->
@@ -643,15 +650,15 @@ th:last-child,td:last-child{padding-right:0}
   <circle cx="250" cy="302" r="6" fill="var(--v24)"/>
   <text class="halo" x="250" y="322" font-size="10.5" font-weight="600" fill="var(--v24-ink)" text-anchor="middle">rozgałęzienie</text>
   <!-- opisy żył wyrównane do lewej w prześwicie x 310…690, żeby nie przecinały przewodów -->
-  <text class="halo" x="330" y="292" font-size="13" font-weight="600" fill="var(--v24-ink)"><tspan class="m" font-weight="600">V+</tspan> — wspólny plus: mózg wysyła nim 24 V do obu przycisków</text>
+  <text class="halo" x="330" y="292" font-size="13" font-weight="600" fill="var(--v24-ink)"><tspan class="m" font-weight="600">COM</tspan> — wspólny minus z zacisku <tspan class="m" font-weight="600">⊥</tspan> modułu, do obu przycisków</text>
 
   <!-- ===== żyła S1 (grupa SUFIT) ===== -->
   <path d="M 150 205 L 150 342 L 725 342 L 725 145 L 752 145" fill="none" stroke="var(--sufit)" stroke-width="3" stroke-linejoin="round"/>
-  <text class="halo" x="330" y="332" font-size="13" font-weight="600" fill="var(--sufit-ink)"><tspan class="m" font-weight="600">S1</tspan> — wraca do <tspan class="m" font-weight="600">WE1</tspan>, gdy wciśnięty SUFIT</text>
+  <text class="halo" x="330" y="332" font-size="13" font-weight="600" fill="var(--sufit-ink)"><tspan class="m" font-weight="600">S1</tspan> — wraca do <tspan class="m" font-weight="600">SW1</tspan>, gdy wciśnięty SUFIT</text>
 
   <!-- ===== żyła S2 (grupa RESZTA) ===== -->
   <path d="M 300 205 L 300 382 L 742 382 L 742 180 L 752 180" fill="none" stroke="var(--reszta)" stroke-width="3" stroke-linejoin="round"/>
-  <text class="halo" x="330" y="372" font-size="13" font-weight="600" fill="var(--reszta-ink)"><tspan class="m" font-weight="600">S2</tspan> — wraca do <tspan class="m" font-weight="600">WE2</tspan>, gdy wciśnięta RESZTA</text>
+  <text class="halo" x="330" y="372" font-size="13" font-weight="600" fill="var(--reszta-ink)"><tspan class="m" font-weight="600">S2</tspan> — wraca do <tspan class="m" font-weight="600">SW3</tspan>, gdy wciśnięta RESZTA</text>
 
   <text x="590" y="410" font-size="12" fill="var(--ink-3)" text-anchor="middle">cały ten obwód to bezpieczne 24 V — podłączysz go sam, śrubokrętem; reguła klik / przytrzymanie działa w mózgu lokalnie, bez Wi-Fi</text>
 </svg>
@@ -661,15 +668,15 @@ th:last-child,td:last-child{padding-right:0}
     <div class="key key--4">
       <div class="key__item">
         <span class="key__swatch"><span class="key__line" style="background:var(--v24)"></span></span>
-        <span><b>V+</b><span>wspólny plus 24 V do obu przycisków</span></span>
+        <span><b>COM</b><span>wspólny minus z zacisku <span class="mono">⊥</span> modułu</span></span>
       </div>
       <div class="key__item">
         <span class="key__swatch"><span class="key__line" style="background:var(--sufit)"></span></span>
-        <span><b>S1</b><span>powrót z przycisku SUFIT do WE1</span></span>
+        <span><b>S1</b><span>powrót z przycisku SUFIT do SW1</span></span>
       </div>
       <div class="key__item">
         <span class="key__swatch"><span class="key__line" style="background:var(--reszta)"></span></span>
-        <span><b>S2</b><span>powrót z przycisku RESZTA do WE2</span></span>
+        <span><b>S2</b><span>powrót z przycisku RESZTA do SW3</span></span>
       </div>
       <div class="key__item">
         <span class="key__swatch" style="margin-top:4px"><span style="display:block;width:18px;height:18px;border-radius:50%;border:2.5px dashed var(--ink-3)"></span></span>
@@ -693,8 +700,9 @@ th:last-child,td:last-child{padding-right:0}
       <h3>Kable — jedna bruzda z puszki na półkę techniczną</h3>
       <ul>
         <li><b>Zasilanie:</b> <code>YDYp 3×1,5</code> (L, N, PE) z obwodu OŚWIETLENIA — nie z gniazdek, stycznik Appartme — do zasilacza. Przez puszkę przycisków <b>przelot z nienaruszoną powłoką</b>: bez zdejmowania izolacji i bez kostki. W tej puszce nic nie pobiera 230 V, więc nie ma po co jej rozcinać.</li>
-        <li><b>Sygnał:</b> <code>YTDY 4×0,5</code> do Shelly: <code>V+</code> wspólny, <code>S1</code> = przycisk SUFIT → <code>WE1</code>, <code>S2</code> = przycisk RESZTA → <code>WE2</code>, 4. żyła zapas.</li>
-        <li><b>Separacja SELV od 230 V:</b> podstawą jest <b>nienaruszona powłoka YDYp</b> — to ona stanowi wymaganą izolację. Dodatkowo YTDY w peszlu obok YDYp; puszka podwójna (komora 230 V / komora przycisków) albo przegroda. YTDY jest kablem telekomunikacyjnym i jego izolacja nie jest przewidziana na sąsiedztwo napięcia sieciowego (PN-HD 60364-4-41).</li>
+        <li><b>Sygnał — w sklepie <code>OWY 5×0,75</code></b> (normowo <code>H05VV-F 5G0,75</code>), z puszki przycisków na półkę. Cztery żyły robocze: <code>COM</code> wspólny (minus zasilania, zacisk <code>⊥</code>), <code>S1</code> = przycisk SUFIT → <code>SW1</code>, <code>S2</code> = przycisk RESZTA → <code>SW3</code>, czwarta zapas. Żyła żółto-zielona zostaje <b>nieużyta</b> — nie wolno jej wykorzystać jako roboczej.</li>
+        <li><b>Separacja SELV od 230 V — bez kombinowania:</b> kabel sterowniczy ma izolację <b>300/500 V</b>, więc sąsiedztwo <code>YDYp</code> w jednej bruździe jest załatwione samą izolacją. Nie trzeba przegrody w puszce ani osobnego peszla na sygnał. Po stronie 230 V podstawą pozostaje <b>nienaruszona powłoka <code>YDYp</code></b>.</li>
+        <li class="warn"><b>Każdy odcinek w bruździe w peszlu.</b> <code>H05VV-F</code> to przewód giętki, przewidziany do zasilania odbiorników ruchomych — układanie go na stałe pod klejem i tynkiem jest niezgodne z jego przeznaczeniem. Peszel załatwia i osłonę mechaniczną, i wymienialność na zawsze.</li>
         <li><b>Przyciski:</b> monostabilne, dzwonkowe. Reguła klik / przytrzymanie działa lokalnie w module, bez HA.</li>
       </ul>
     </div>
@@ -702,10 +710,13 @@ th:last-child,td:last-child{padding-right:0}
     <div class="card">
       <h3>Strefa 24 V — montaż własny, bez kucia</h3>
       <ul>
-        <li><b>Zejścia do taśm:</b> <code>OWY 3×1,5</code> — po normie <code>H05VV-F 3G1,5</code>, 300/500 V („linka” = giętka budowa żyły, nie nazwa handlowa). <b>Nie mylić z <code>OMY</code></b>: to <code>H03VV-F</code> 300/300 V, a ta norma sięga tylko 0,75 mm² — „OMY 3×1,5” jako produkt nie istnieje. Żyły: V+, WW−, CW−; max ~5 m na odnogę. Sufit karmiony z narożników przez kostki WAGO — 3 szt., żyła do żyły.</li>
-        <li><b>Zasilacz:</b> Mean Well, moc = suma taśm × 1,25 (tu: <code>ELG-200-24</code> przy ~160 W). Łącznik zasilacz → Shelly: ten sam <code>OWY 3×1,5</code> (2 żyły robocze + zapas) — płynie nim moc wszystkich taśm. Cała strefa 24 V to jeden rodzaj kabla.</li>
-        <li class="warn"><b>Bezpiecznik na wyjściu zasilacza — obowiązkowo:</b> ok. 10 A zwłoczny (samochodowy w oprawce albo automatyk DC) między zasilaczem a Shellym, jak najbliżej zasilacza. <code>ELG-200-24</code> wyłapie twarde zwarcie, ale nie uszkodzoną taśmę ciągnącą 5–6 A — to poniżej jego progu, więc zasilacz nie widzi awarii, a ścieżki taśmy grzeją się w zamkniętej fudze. Odcinek zasilacz → Shelly niesie moc wszystkich taśm i dziś nie ma żadnego zabezpieczenia. Bezpieczniki per grupa to bonus — Shelly PM mierzy prąd na kanale, ale elektronicznie, wolniej niż wkładka.</li>
-        <li><b>Limit:</b> 4 A ≈ 96 W na kanał (przy 100% ciepłej cała moc grupy idzie jednym kanałem) → taśmy max ~10 W/m.</li>
+        <li><b>Zejścia do taśm — w sklepie pytaj o <code>OWY 3×1,5</code></b> (nazwa normowa: <code>H05VV-F 3X1,5</code>), 300/500 V („linka” = giętka budowa żyły, nie nazwa handlowa). Żyły: <b>brązowa</b> = <code>V+</code>, <b>czarna</b> = <code>WW−</code>, <b>szara</b> = <code>CW−</code>; max ~5 m na odnogę. Sufit karmiony z narożników przez kostki WAGO — 3 szt., żyła do żyły.</li>
+        <li class="warn"><b>Musi być <code>3X</code>, nie <code>3G</code>.</b> Litera <code>G</code> w oznaczeniu znaczy, że kabel ma żyłę żółto-zieloną, a ta jest zarezerwowana wyłącznie dla przewodu ochronnego — nie wolno jej użyć jako <code>CW−</code>. Jeśli w sklepie jest tylko <code>4G1,5</code>, weź ją i zostaw żółto-zieloną nieużytą.</li>
+        <li><b>Nie mylić z <code>OMY</code>:</b> to <code>H03VV-F</code> 300/300 V, a ta norma sięga tylko 0,75 mm² — „OMY 3×1,5” jako produkt nie istnieje.</li>
+        <li><b>Zasilacz:</b> <code>ELG-200-24</code> — 24 V, 8,4 A, 201,6 W, obudowa IP67, napięcie i prąd na stałe (wersja <code>A</code> jest regulowana, ale ma IP65). Moc = suma taśm × 1,25; tu ~160 W. Łącznik zasilacz → moduł: ten sam <code>OWY 3×1,5</code>, w peszlu.</li>
+        <li><b>Wkładki:</b> osobno na każdą gałąź, w żyle <code>V+</code>, jak najbliżej modułu. Dobór: <code>prąd gałęzi = moc gałęzi ÷ 24 V</code>, wkładka ≈ 1,5× tego, zaokrąglona w górę do typoszeregu — i <b>zawsze poniżej 8,4 A</b>, bo na tym progu zasilacz sam ogranicza prąd. Przykład: gałąź 90 W → 3,8 A → wkładka 5 A.</li>
+        <li><b>Limit mocy na kanał ustaw w aplikacji</b> od razu po montażu. To on wyłapuje powolne przeciążenie — na przykład uszkodzoną taśmę ciągnącą 5–6 A — w kilka sekund.</li>
+        <li><b>Limit sprzętowy modułu:</b> 6 A na kanał, 16 A na całe urządzenie (ok. 144 W na kanał przy 24 V — producent nie podaje watów). Przy 100% ciepłej cała moc grupy idzie jednym kanałem; ten przypadek wymiaruje taśmę.</li>
         <li><b>Taśma:</b> 24 V · COB CCT lub ≥120 LED/m · CRI ≥ 90 · profil z mlecznym kloszem obowiązkowo.</li>
         <li><b>Rewizja obowiązkowa:</b> zasilacz kiedyś wymienisz — klapka przy półce technicznej.</li>
         <li class="warn"><b>Zakaz:</b> nigdy nie łączyć wyjść dwóch zasilaczy. Każdy zasilacz = osobna wyspa ze swoimi taśmami.</li>
@@ -713,14 +724,14 @@ th:last-child,td:last-child{padding-right:0}
     </div>
 
     <div class="card card--map">
-      <h3>Mapa grup — Shelly Plus RGBW PM</h3>
+      <h3>Mapa grup — Shelly Pro RGBWW PM, profil <span class="mono">cctx2</span></h3>
       <div class="card__split">
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
                 <th scope="col">Grupa</th>
-                <th scope="col">Kanały</th>
+                <th scope="col">Wyjścia</th>
                 <th scope="col">Taśmy</th>
                 <th scope="col">Przycisk</th>
               </tr>
@@ -728,21 +739,25 @@ th:last-child,td:last-child{padding-right:0}
             <tbody>
               <tr>
                 <td class="grp grp--sufit">CCT-A „SUFIT”</td>
-                <td class="mono">CH1+CH2</td>
+                <td class="mono">O1 + O2</td>
                 <td>obwód w suficie GK, zasilanie w narożnikach</td>
-                <td class="mono">WE1</td>
+                <td class="mono">SW1</td>
               </tr>
               <tr>
                 <td class="grp grp--reszta">CCT-B „RESZTA”</td>
-                <td class="mono">CH3+CH4</td>
+                <td class="mono">O3 + O4</td>
                 <td>piony w płytkach + zabudowa meblowa, równolegle</td>
-                <td class="mono">WE2</td>
+                <td class="mono">SW3</td>
               </tr>
             </tbody>
           </table>
         </div>
         <ul>
-          <li>Taśma CCT zajmuje 2 kanały → RGBW PM daje dokładnie 2 grupy. Idealnie pod 2 przyciski.</li>
+          <li>W profilu <code>cctx2</code> wyjścia parują się po dwa w jeden komponent CCT: <code>O1</code> ciepła i <code>O2</code> zimna to grupa SUFIT, <code>O3</code> i <code>O4</code> to RESZTA. <code>O5</code> i <code>SW5</code> zostają wolne.</li>
+          <li class="warn"><b>Nie <code>Plus RGBW PM</code> — on tego nie umie.</b> Ma tylko profile <code>light</code>, <code>rgb</code> i <code>rgbw</code>; profilu CCT nie ma i nigdy nie było. W profilu <code>light</code> cztery kanały to cztery <b>niezależne</b> światła i przycisk steruje wyłącznie swoim. Sparowania nie da się ustawić — tryb o mylącej nazwie <code>dual_dim</code> robi odwrotność: dwa przyciski na jedno wyjście.</li>
+          <li class="warn">Zaciski <code>Plus RGBW PM</code> przyjmują <b>0,1–1 mm²</b> — i to samo dotyczy zacisków zasilania. Żyła 1,5 mm² w nie nie wejdzie. W wersji Pro zielone złącza (wyjścia <code>O1</code>–<code>O5</code> i minus <code>⊥</code>) biorą 0,5–2,5 mm², niebieskie (wejścia <code>SW</code> i plus <code>+</code>) 0,5–1,5 mm² — kabel z tego arkusza pasuje wprost.</li>
+          <li><b>Gdybyś jednak został przy Plus RGBW PM:</b> parę kanałów trzeba skleić skryptem na urządzeniu (<code>Light.SetMany</code> na dwóch kanałach naraz). Działa bez sieci i bez HA, ale utrzymujesz kod, a do tego dochodzi przejście WAGO na ogonki 0,75 mm² i obudowa ze względu na wilgoć.</li>
+          <li><b>Przyciskiem regulujesz tylko jasność.</b> Temperatura barwowa idzie z aplikacji — tak działają oba moduły. Zakres Pro: 2700–6500 K domyślnie, konfigurowalny między 1000 a 10000 K.</li>
           <li>Ł3 (lampy wiszące) i Ł4 (oczka) to oprawy 230 V — osobny temat, Shelly Dimmer w puszce.</li>
         </ul>
       </div>

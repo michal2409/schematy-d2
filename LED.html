@@ -367,8 +367,9 @@ th:last-child,td:last-child{padding-right:0}
   <text x="22" y="206" font-size="13.5" font-weight="700" fill="var(--v24-ink)">KABELEK</text>
   <text x="22" y="221" font-size="13.5" font-weight="700" fill="var(--v24-ink)">SYGNAŁOWY</text>
   <text class="m" x="22" y="238" font-size="12" font-weight="600" fill="var(--v24-ink)">YTDY 4×0,5</text>
-  <text x="22" y="253" font-size="11.5" fill="var(--ink-3)">niesie kliknięcia,</text>
-  <text x="22" y="267" font-size="11.5" fill="var(--ink-3)">bezpieczne 24 V</text>
+  <text class="m" x="22" y="253" font-size="10.5" font-weight="500" fill="var(--ink-3)">albo OWY 5×0,75</text>
+  <text x="22" y="269" font-size="11.5" fill="var(--ink-3)">niesie kliknięcia,</text>
+  <text x="22" y="283" font-size="11.5" fill="var(--ink-3)">bezpieczne 24 V</text>
   <line x1="112" y1="230" x2="170" y2="252" stroke="var(--v24)" stroke-width="1.4"/>
   <polygon points="179,255 167.7,254.9 170.3,247" fill="var(--v24)"/>
 
@@ -689,7 +690,7 @@ th:last-child,td:last-child{padding-right:0}
         <li><b>Zasilanie:</b> <code>YDYp 3×1,5</code> (L, N, PE) z <b>puszki sufitowej obwodu oświetlenia łazienki</b>, krótkim odcinkiem do zasilacza. Obciążenie ~160 W plus moduł to poniżej 1 A — obwód oświetlenia tego nie zauważy.</li>
         <li class="warn"><b>Wpiąć się w fazę stałą, nie przełączoną.</b> Jeśli elektryk weźmie przewód idący z włącznika do lampy, cała instalacja LED będzie gasła przy każdym strzale klawiszem sufitówki — razem z modułem. W typowej puszce sufitowej faza stała jest dostępna, ale w instalacjach prowadzonych „od włącznika” bywa tam wyłącznie przełączona. Sprawdzić przed łączeniem.</li>
         <li><b>Sprawdź, czy ten obwód idzie przez stycznik Appartme.</b> Jeśli tak, po każdym „wychodzę / wracam” moduł się zrestartuje: przycisk odezwie się kilka sekund po powrocie, a zdalne sterowanie w czasie nieobecności nie działa.</li>
-        <li><b>Sygnał:</b> <code>YTDY 4×0,5</code> z puszki przycisków na półkę. Trzy żyły robocze: <code>COM</code> wspólny (minus zasilania, zacisk <code>⊥</code>), <code>S1</code> = przycisk SUFIT → <code>SW1</code>, <code>S2</code> = przycisk RESZTA → <code>SW3</code>; czwarta zapas.</li>
+        <li><b>Sygnał:</b> <code>YTDY 4×0,5</code> z puszki przycisków na półkę. Trzy żyły robocze: <code>COM</code> wspólny (minus zasilania, zacisk <code>⊥</code>), <code>S1</code> = przycisk SUFIT → <code>SW1</code>, <code>S2</code> = przycisk RESZTA → <code>SW3</code>; czwarta zapas. <b>Zamiennie <code>OWY 5×0,75</code></b> — grubsza żyła lepiej trzyma się w zacisku przycisku, ale to przewód giętki, więc w bruździe w peszlu.</li>
         <li><b>W puszce przycisków nie ma 230 V</b>, więc nie trzeba ani przegrody, ani kabla o izolacji sieciowej. Zasilanie idzie z sufitu wprost do zasilacza i tej puszki nie dotyka.</li>
         <li><b>Przyciski:</b> monostabilne, dzwonkowe. Reguła klik / przytrzymanie działa lokalnie w module, bez HA.</li>
       </ul>

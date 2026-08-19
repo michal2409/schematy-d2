@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schemat korytarza — czujka zapala taśmy i punkty AQForm</title>
+<meta name="description" content="Jedna czujka ruchu steruje dwiema taśmami LED 24 V i trzema punktami AQForm 230 V, oba ściemnione. Jak rozdzielić dwa światy napięć, żeby działało lokalnie i bezpiecznie.">
+<meta name="color-scheme" content="light">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   TOKENY
+   Ten arkusz łączy dwa światy napięć w jednym korytarzu.
+   Dlatego kolor niesie przede wszystkim NAPIĘCIE — tak samo
+   jak w LED.html — a osobno oznaczony jest sygnał czujki.
+   ============================================================ */
+:root{
+  --f-body:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;
+  --f-cond:'IBM Plex Sans Condensed','IBM Plex Sans','Segoe UI',system-ui,sans-serif;
+  --f-mono:'IBM Plex Mono','SFMono-Regular',Consolas,'Liberation Mono',monospace;
+
+  /* powierzchnie */
+  --bg:#FFFFFF;
+  --panel:#FFFFFF;
+  --panel-2:#F7F8F9;
+  --line:#E7E9EC;
+  --line-2:#D3D8DD;
+
+  /* tekst */
+  --ink:#11181C;
+  --ink-2:#4E5964;
+  --ink-3:#6E767D;
+
+  /* napięcia i znaczenia */
+  --v230:#E5484D;  --v230-ink:#CD2B31;  --v230-bg:#FFF0EE;   /* groźne 230 V */
+  --v24:#12A594;   --v24-ink:#067A6F;   --v24-bg:#E7F9F5;    /* bezpieczne 24 V */
+  --light:#FFB224; --light-ink:#AD5700; --light-bg:#FFF4DC;  /* światło */
+  --sig:#3E63DD;   --sig-ink:#3451B2;   --sig-bg:#EDF2FE;    /* sygnał czujki */
+
+  /* elementy rysunku */
+  --d-slab:#EDEFF1;      --d-hatch:#D6DADE;
+  --d-gk:#C6CBD0;
+  --d-floor:#DCE0E3;
+  --d-box:#11181C;
+  --d-box-text:#FFFFFF;  --d-box-dim:#A9B1B8;
+  --on-box-v24:#5EEAD4;  --on-box-sig:#93B4FF;  --on-box-light:#FFCE83;
+
+  --shadow:0 1px 2px rgba(17,24,28,.04),0 10px 30px -18px rgba(17,24,28,.26);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--f-body);font-size:15.5px;line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--light-bg);color:var(--light-ink)}
+
+.sheet{max-width:1180px;margin:0 auto;padding:28px 22px 96px}
+
+a{color:var(--ink);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line-2)}
+a:hover{color:var(--v24-ink);text-decoration-color:var(--v24)}
+:focus-visible{outline:2.5px solid var(--v24);outline-offset:3px;border-radius:3px}
+
+h1,h2,h3{font-family:var(--f-cond);font-weight:600;letter-spacing:-.01em;margin:0}
+.mono{font-family:var(--f-mono);font-size:.94em;font-weight:500}
+
+/* ============================================================
+   NAGŁÓWEK
+   ============================================================ */
+.titleblock{padding:26px 0 38px}
+.titleblock h1{
+  font-size:clamp(31px,5.8vw,58px);line-height:1.02;
+  letter-spacing:-.035em;font-weight:700;margin:0;
+}
+.titleblock hr{border:0;height:1px;background:var(--ink);margin:30px 0 0}
+
+/* ============================================================
+   SEKCJE
+   ============================================================ */
+.section{margin-bottom:28px;scroll-margin-top:16px}
+.section__head{display:flex;gap:16px;align-items:baseline;margin-bottom:14px}
+.section__no{
+  font-family:var(--f-mono);font-size:13px;font-weight:500;color:var(--ink-3);
+  padding-top:2px;flex:none;
+}
+.section__head h2{font-size:clamp(20px,2.6vw,27px);letter-spacing:-.027em}
+.section__head .sub{font-family:var(--f-body);font-weight:400;font-size:15px;color:var(--ink-3)}
+
+/* ---- panel rysunku ---- */
+.figure{
+  background:var(--panel);border:1px solid var(--line);border-radius:16px;
+  box-shadow:var(--shadow);margin:0;overflow:hidden;
+}
+.figure__head{padding:24px 26px 16px}
+.figure__head .section__head{margin-bottom:0}
+.figure__head p{margin:8px 0 0;color:var(--ink-2);font-size:14.5px;max-width:80ch}
+.figure__body{padding:0 22px}
+.dwg-wrap{overflow-x:auto;overscroll-behavior-x:contain}
+.dwg{display:block;width:100%;height:auto}
+.dwg text{font-family:var(--f-cond)}
+.dwg .m{font-family:var(--f-mono)}
+.dwg .halo{paint-order:stroke;stroke:var(--panel);stroke-width:4.5px;stroke-linejoin:round}
+.dwg .bal circle{fill:var(--panel);stroke:var(--ink);stroke-width:2}
+.dwg .bal text{font-family:var(--f-cond);font-weight:700;font-size:15px;fill:var(--ink);text-anchor:middle}
+.scroll-hint{display:none;padding:0 26px 14px;font-size:12.5px;color:var(--ink-3)}
+.dwg-cap{
+  margin:0 0 2px;padding:16px 4px 0;
+  font-family:var(--f-cond);font-weight:600;font-size:15px;color:var(--ink);
+}
+.dwg-cap span{font-family:var(--f-body);font-weight:400;color:var(--ink-3)}
+
+/* ---- klucz ---- */
+.key{
+  display:grid;gap:0;border-top:1px solid var(--line);margin-top:20px;
+  grid-template-columns:repeat(auto-fit,minmax(290px,1fr));
+}
+.key__item{
+  display:flex;gap:12px;align-items:flex-start;padding:15px 26px;
+  border-bottom:1px solid var(--line);
+  font-size:13px;line-height:1.45;
+}
+.key__item b{display:block;font-family:var(--f-cond);font-size:14px;font-weight:600;color:var(--ink)}
+.key__item span{color:var(--ink-3)}
+.key__swatch{flex:none;width:26px;margin-top:7px}
+.key__line{display:block;height:5px;border-radius:3px}
+.key__dash{display:block;border-top:3px dashed var(--ink-3)}
+.key__bal{
+  flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--ink);
+  display:flex;align-items:center;justify-content:center;margin-top:2px;
+  font-family:var(--f-cond);font-weight:700;font-size:13px;
+}
+
+/* ---- zasady zachowania ---- */
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:0}
+.rule{padding:19px 26px 21px;border-right:1px solid var(--line)}
+.rule:last-child{border-right:0}
+.rule dt{font-family:var(--f-cond);font-size:16.5px;font-weight:700;letter-spacing:.01em}
+.rule dd{margin:3px 0 0;font-size:14px;color:var(--ink-2)}
+
+/* ============================================================
+   KROKI
+   ============================================================ */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:12px;list-style:none;margin:0;padding:0}
+.step{
+  background:var(--panel);border:1px solid var(--line);border-radius:16px;
+  padding:19px 21px 20px;display:grid;
+  grid-template-columns:36px 1fr;gap:7px 15px;
+  align-items:start;align-content:start; /* bez tego krótsze karty rozjeżdżają wiersz */
+}
+.step__no{
+  grid-row:span 2;width:36px;height:36px;border-radius:50%;
+  border:2px solid var(--ink);display:flex;align-items:center;justify-content:center;
+  font-family:var(--f-cond);font-weight:700;font-size:17px;
+}
+.step__tag{
+  justify-self:start;font-family:var(--f-mono);font-size:10.5px;font-weight:500;
+  letter-spacing:.09em;text-transform:uppercase;padding:3px 10px;border-radius:99px;
+}
+.tag-hv{background:var(--v230-bg);color:var(--v230-ink)}
+.tag-lv{background:var(--v24-bg);color:var(--v24-ink)}
+.tag-sig{background:var(--sig-bg);color:var(--sig-ink)}
+.tag-mix{background:var(--panel-2);color:var(--ink-2)}
+.step p{margin:0;font-size:14.8px;color:var(--ink-2)}
+.step p b{font-family:var(--f-cond);font-size:16px;font-weight:700;letter-spacing:-.005em;color:var(--ink)}
+
+/* ============================================================
+   KARTY I TABELE
+   ============================================================ */
+.spec{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px;align-items:start}
+.card{
+  background:var(--panel);border:1px solid var(--line);border-radius:16px;
+  padding:24px 26px 26px;box-shadow:var(--shadow);
+}
+.card h3{
+  font-size:14px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;
+  padding-bottom:12px;margin-bottom:16px;border-bottom:1px solid var(--ink);
+}
+.card ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:13px;font-size:14px;color:var(--ink-2)}
+.card li{padding-left:16px;position:relative}
+.card li::before{content:"";position:absolute;left:0;top:.62em;width:7px;height:1.5px;background:var(--ink-3)}
+.card li b{font-family:var(--f-cond);font-weight:700;font-size:15px;color:var(--ink)}
+.card code{
+  font-family:var(--f-mono);font-size:.9em;font-weight:500;color:var(--ink);
+  background:var(--panel-2);border:1px solid var(--line);
+  padding:1px 6px;border-radius:5px;white-space:nowrap;
+}
+.card li.warn{
+  background:var(--v230-bg);border-left:3px solid var(--v230);border-radius:0 10px 10px 0;
+  padding:12px 15px 12px 17px;color:var(--ink-2);
+}
+.card li.warn::before{display:none}
+.card li.warn b{color:var(--v230-ink)}
+
+.note{
+  background:var(--panel-2);border:1px solid var(--line);border-radius:14px;
+  padding:18px 22px;margin-top:14px;font-size:14px;color:var(--ink-2);
+}
+.note b{font-family:var(--f-cond);font-weight:700;font-size:15px;color:var(--ink)}
+
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px;color:var(--ink-2)}
+th{
+  text-align:left;font-family:var(--f-mono);font-size:10.5px;font-weight:500;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);
+  border-bottom:1px solid var(--ink);padding:8px 12px 8px 0;
+}
+td{padding:12px 12px 12px 0;border-bottom:1px solid var(--line);vertical-align:top}
+th:last-child,td:last-child{padding-right:0}
+tr:last-child td{border-bottom:0}
+.rowhead{font-family:var(--f-cond);font-weight:700;font-size:14.5px;color:var(--ink);white-space:nowrap}
+.lvl{font-family:var(--f-mono);font-weight:600;white-space:nowrap}
+.lvl--tape{color:var(--v24-ink)}
+.lvl--spot{color:var(--v230-ink)}
+.lvl--off{color:var(--ink-3)}
+
+.footnote{
+  margin:30px 0 0;padding-top:20px;border-top:1px solid var(--line);
+  font-size:13px;color:var(--ink-3);
+}
+
+/* ============================================================
+   RESPONSYWNOŚĆ
+   ============================================================ */
+@media (max-width:880px){
+  .sheet{padding:16px 14px 68px}
+  .titleblock{padding:14px 0 30px}
+  .titleblock hr{margin-top:24px}
+  .dwg{min-width:900px}
+  .dwg--sm{min-width:0}
+  .scroll-hint{display:block}
+  .figure__head,.rule,.key__item{padding-left:20px;padding-right:20px}
+  .figure__body{padding:0 16px}
+}
+@media (max-width:520px){
+  body{font-size:15px}
+  .step{grid-template-columns:32px 1fr;gap:6px 13px;padding:17px 18px 18px}
+  .step__no{width:32px;height:32px;font-size:15.5px}
+}
+@media (prefers-reduced-motion:no-preference){
+  a{transition:color .15s ease}
+}
+
+/* ============================================================
+   DRUK
+   ============================================================ */
+@media print{
+  :root{--shadow:none}
+  body{font-size:10.5pt}
+  .sheet{max-width:none;padding:0}
+  .figure,.card,.step{border-radius:0}
+  .scroll-hint{display:none}
+  .dwg-wrap{overflow:visible}
+  .dwg{min-width:0}
+  .figure,.section,.card,.step,.key__item,.note{break-inside:avoid;page-break-inside:avoid}
+  .section{break-before:page;page-break-before:always}
+  .section:first-of-type{break-before:auto;page-break-before:auto}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+
+<body>
+<div class="sheet">
+
+<header class="titleblock">
+  <h1>Schemat korytarza — czujka zapala taśmy i punkty AQForm</h1>
+  <hr>
+</header>
+
+<!-- ============================================================
+     01 — PRZEKRÓJ KORYTARZA
+     ============================================================ -->
+<section class="section" id="przekroj">
+  <figure class="figure">
+    <div class="figure__head">
+      <div class="section__head">
+        <span class="section__no">01</span>
+        <div>
+          <h2>Przekrój korytarza — dwie taśmy, trzy punkty, jedna czujka</h2>
+          <p>Jedna czujka ruchu zapala naraz dwa różne rodzaje światła: <b>taśmy LED przy podłodze</b> na bezpiecznych 24 V i <b>trzy punkty AQForm w suficie</b> na 230 V. Oba ściemnione. Czytaj po numerkach <span class="mono">1 → 7</span>. Czerwone to groźne 230 V, turkusowe — bezpieczne 24 V.</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="scroll-hint">Rysunek jest szeroki — przesuń go palcem w bok, żeby zobaczyć całość.</p>
+
+    <div class="figure__body">
+      <div class="dwg-wrap">
+<svg class="dwg" viewBox="0 0 1180 640" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="f1-t f1-d">
+  <title id="f1-t">Przekrój korytarza z dwiema taśmami LED i trzema punktami AQForm</title>
+  <desc id="f1-d">Nad sufitem podwieszanym, na półce technicznej, stoi zasilacz zamieniający 230 V na 24 V oraz moduł sterujący taśmami. Dwie taśmy LED biegną przy podłodze po obu stronach korytarza. W suficie zamontowane są trzy punkty AQForm zasilane ściemniaczem fazowym z głębokiej puszki przy przycisku. Czujka ruchu na suficie melduje się do obu modułów przez przekaźnik pośredniczący, który rozdziela obwód 24 V od obwodu 230 V.</desc>
+
+  <defs>
+    <pattern id="hatch" width="9" height="9" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="9" stroke="var(--d-hatch)" stroke-width="2"/>
+    </pattern>
+  </defs>
+
+  <!-- ===== przegrody ===== -->
+  <rect x="30" y="26" width="1120" height="22" fill="var(--d-slab)"/>
+  <rect x="30" y="26" width="1120" height="22" fill="url(#hatch)"/>
+  <text class="halo" x="1100" y="42" font-size="11.5" font-weight="600" fill="var(--ink-2)" text-anchor="end">strop</text>
+
+  <rect x="90" y="48" width="1020" height="120" rx="4" fill="var(--v24-bg)"/>
+  <rect x="90.5" y="48.5" width="1019" height="119" rx="4" fill="none" stroke="var(--v24)" stroke-width="1" stroke-dasharray="5 5" opacity=".5"/>
+  <text x="102" y="66" font-size="12" font-weight="700" fill="var(--v24-ink)">PÓŁKA TECHNICZNA</text>
+
+  <rect x="90" y="168" width="1020" height="12" fill="var(--d-gk)"/>
+  <text class="halo" x="1096" y="200" font-size="11.5" fill="var(--ink-2)" text-anchor="end">sufit podwieszany</text>
+
+  <rect x="30" y="48" width="60" height="516" fill="var(--d-slab)"/>
+  <rect x="30" y="48" width="60" height="516" fill="url(#hatch)"/>
+  <rect x="1110" y="48" width="60" height="516" fill="var(--d-slab)"/>
+  <rect x="1110" y="48" width="60" height="516" fill="url(#hatch)"/>
+  <rect x="30" y="564" width="1120" height="22" fill="var(--d-floor)"/>
+  <text class="halo" x="1100" y="604" font-size="11.5" fill="var(--ink-2)" text-anchor="end">podłoga</text>
+
+  <!-- ===== 1 · zasilacz 230 → 24 V ===== -->
+  <rect x="234" y="58" width="150" height="62" rx="10" fill="var(--d-box)"/>
+  <text x="309" y="82" font-size="12.5" font-weight="700" fill="var(--d-box-text)" text-anchor="middle">ZASILACZ</text>
+  <rect x="252" y="92" width="114" height="20" rx="10" fill="var(--panel)"/>
+  <text class="m" x="272" y="107" font-size="10.5" font-weight="600" fill="var(--v230-ink)">230 V</text>
+  <text x="309" y="107" font-size="11" fill="var(--ink-3)" text-anchor="middle">→</text>
+  <text class="m" x="346" y="107" font-size="10.5" font-weight="600" fill="var(--v24-ink)" text-anchor="end">24 V</text>
+  <g class="bal"><circle cx="228" cy="52" r="17"/><text x="228" y="58">1</text></g>
+
+  <!-- ===== 2 · mózg taśm ===== -->
+  <line x1="384" y1="89" x2="400" y2="89" stroke="var(--v24)" stroke-width="5.5"/>
+  <rect x="400" y="58" width="190" height="62" rx="10" fill="var(--d-box)"/>
+  <text x="495" y="80" font-size="12.5" font-weight="700" fill="var(--d-box-text)" text-anchor="middle">MÓZG TAŚM</text>
+  <text x="495" y="96" font-size="10.5" fill="var(--d-box-dim)" text-anchor="middle">Shelly RGBW PM · 24 V</text>
+  <text class="m" x="495" y="112" font-size="10.5" font-weight="600" fill="var(--on-box-sig)" text-anchor="middle">WE1 ◂ czujka</text>
+  <g class="bal"><circle cx="394" cy="52" r="17"/><text x="394" y="58">2</text></g>
+
+  <!-- ===== 3 · czujka ruchu ===== -->
+  <path d="M 878 194 L 762 470 L 994 470 Z" fill="var(--sig)" opacity=".07"/>
+  <line x1="878" y1="194" x2="762" y2="470" stroke="var(--sig)" stroke-width="1.5" stroke-dasharray="6 5" opacity=".5"/>
+  <line x1="878" y1="194" x2="994" y2="470" stroke="var(--sig)" stroke-width="1.5" stroke-dasharray="6 5" opacity=".5"/>
+  <rect x="856" y="168" width="44" height="12" fill="var(--d-box)"/>
+  <path d="M 860 180 A 18 18 0 0 0 896 180 Z" fill="var(--panel)" stroke="var(--sig)" stroke-width="2.5"/>
+  <circle cx="878" cy="185" r="4.5" fill="var(--sig)"/>
+  <g class="bal"><circle cx="878" cy="222" r="17"/><text x="878" y="228">3</text></g>
+  <text class="halo" x="878" y="252" font-size="12" font-weight="700" fill="var(--sig-ink)" text-anchor="middle">CZUJKA RUCHU (PIR)</text>
+
+  <!-- sygnał czujki do przekaźnika i dalej -->
+  <path d="M 878 168 L 878 146 L 656 146" fill="none" stroke="var(--sig)" stroke-width="3" stroke-linejoin="round"/>
+  <text class="m halo" x="770" y="140" font-size="10.5" font-weight="600" fill="var(--sig-ink)" text-anchor="middle">YTDY 4×0,5 — sygnał czujki</text>
+
+  <!-- ===== 4 · punkty AQForm ===== -->
+  <polygon points="786,184 826,184 852,320 760,320" fill="var(--light)" opacity=".22"/>
+  <polygon points="926,184 966,184 992,320 900,320" fill="var(--light)" opacity=".22"/>
+  <polygon points="1046,184 1086,184 1112,320 1020,320" fill="var(--light)" opacity=".22"/>
+  <rect x="782" y="166" width="48" height="16" rx="4" fill="var(--d-box)"/>
+  <rect x="922" y="166" width="48" height="16" rx="4" fill="var(--d-box)"/>
+  <rect x="1042" y="166" width="48" height="16" rx="4" fill="var(--d-box)"/>
+  <g class="bal"><circle cx="716" cy="332" r="17"/><text x="716" y="338">7</text></g>
+  <text class="halo" x="960" y="330" font-size="12.5" font-weight="700" fill="var(--light-ink)" text-anchor="middle">3 PUNKTY AQFORM — 230 V, ściemniane fazowo</text>
+  <text class="halo" x="960" y="346" font-size="11.5" fill="var(--ink-2)" text-anchor="middle">wersja Phase-Control · schodzą do ~10–30%</text>
+
+  <!-- ===== 5 · taśmy przy podłodze ===== -->
+  <line x1="160" y1="556" x2="560" y2="556" stroke="var(--light)" stroke-width="13" opacity=".35"/>
+  <line x1="160" y1="556" x2="560" y2="556" stroke="var(--light)" stroke-width="4.5"/>
+  <line x1="640" y1="556" x2="1080" y2="556" stroke="var(--light)" stroke-width="13" opacity=".35"/>
+  <line x1="640" y1="556" x2="1080" y2="556" stroke="var(--light)" stroke-width="4.5"/>
+  <g class="bal"><circle cx="200" cy="498" r="17"/><text x="200" y="504">5</text></g>
+  <text class="halo" x="360" y="528" font-size="12.5" font-weight="700" fill="var(--light-ink)" text-anchor="middle">TAŚMA 1 — 24 V</text>
+  <text class="halo" x="860" y="528" font-size="12.5" font-weight="700" fill="var(--light-ink)" text-anchor="middle">TAŚMA 2 — 24 V</text>
+  <text class="halo" x="610" y="596" font-size="11.5" fill="var(--ink-2)" text-anchor="middle">obie w profilu przy cokole · COB 2400–2700 K · schodzą poniżej 1%</text>
+
+  <!-- ===== 6 · puszka: przycisk + ściemniacz ===== -->
+  <rect x="36" y="300" width="34" height="116" rx="8" fill="var(--panel)" stroke="var(--ink-3)" stroke-width="2" stroke-dasharray="6 4"/>
+  <rect x="41" y="318" width="24" height="80" rx="6" fill="var(--d-box)"/>
+  <rect x="90" y="318" width="52" height="80" rx="10" fill="var(--panel-2)" stroke="var(--line-2)" stroke-width="1.5"/>
+  <circle cx="116" cy="358" r="9" fill="var(--panel)" stroke="var(--ink-2)" stroke-width="2"/>
+  <circle cx="116" cy="358" r="4" fill="var(--light)"/>
+  <g class="bal"><circle cx="166" cy="300" r="17"/><text x="166" y="306">6</text></g>
+  <text x="190" y="306" font-size="12.5" font-weight="700" fill="var(--ink)">PRZYCISK + ŚCIEMNIACZ</text>
+  <text x="190" y="322" font-size="11.5" fill="var(--ink-2)">Shelly Dimmer Gen3 w głębokiej puszce ≥ 60 mm</text>
+  <text x="190" y="338" font-size="11.5" fill="var(--ink-3)">przycisk zawsze wygrywa z czujką</text>
+
+  <!-- ===== kable ===== -->
+  <!-- 230 V pełne: z dołu, przez puszkę, dalej na półkę do zasilacza -->
+  <path d="M 45 564 L 45 90 L 234 90" fill="none" stroke="var(--v230)" stroke-width="4.5" stroke-linejoin="round"/>
+  <circle cx="45" cy="358" r="5.5" fill="var(--v230)"/>
+  <text class="m halo" x="150" y="452" font-size="10.5" font-weight="600" fill="var(--v230-ink)" text-anchor="middle">YDYp 3×1,5 — 230 V</text>
+  <line x1="128" y1="440" x2="54" y2="404" stroke="var(--v230)" stroke-width="1.3"/>
+
+  <!-- 230 V ściemnione: z puszki w górę i po półce do punktów -->
+  <path d="M 65 330 L 58 330 L 58 160 L 1090 160" fill="none" stroke="var(--v230)" stroke-width="4" stroke-dasharray="9 6"/>
+  <path d="M 806 160 L 806 168" stroke="var(--v230)" stroke-width="4"/>
+  <path d="M 946 160 L 946 168" stroke="var(--v230)" stroke-width="4"/>
+  <path d="M 1066 160 L 1066 168" stroke="var(--v230)" stroke-width="4"/>
+  <text class="m halo" x="700" y="164" font-size="10.5" font-weight="600" fill="var(--v230-ink)" text-anchor="middle">230 V przycięte → do punktów</text>
+
+  <!-- 24 V: z mózgu w dół obiema stronami do taśm -->
+  <path d="M 420 120 L 420 132 L 80 132 L 80 556 L 160 556" fill="none" stroke="var(--v24)" stroke-width="3.2" stroke-dasharray="9 6" stroke-linejoin="round"/>
+  <path d="M 570 120 L 570 132 L 1140 132 L 1140 556 L 1080 556" fill="none" stroke="var(--v24)" stroke-width="3.2" stroke-dasharray="9 6" stroke-linejoin="round"/>
+  <text class="m halo" x="122" y="540" font-size="10.5" font-weight="600" fill="var(--v24-ink)">OWY 3×1,5 · 24 V</text>
+  <text class="m halo" x="1058" y="540" font-size="10.5" font-weight="600" fill="var(--v24-ink)" text-anchor="end">OWY 3×1,5 · 24 V</text>
+
+  <!-- ===== 7 · przekaźnik pośredniczący ===== -->
+  <rect x="596" y="130" width="60" height="32" rx="7" fill="var(--sig-bg)" stroke="var(--sig)" stroke-width="2"/>
+  <text x="626" y="150" font-size="9.5" font-weight="700" fill="var(--sig-ink)" text-anchor="middle">PRZEKAŹNIK</text>
+  <path d="M 540 120 L 540 138 L 596 138" fill="none" stroke="var(--v24)" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M 596 154 L 96 154 L 96 318" fill="none" stroke="var(--sig)" stroke-width="3" stroke-linejoin="round"/>
+  <text class="m halo" x="300" y="148" font-size="10.5" font-weight="600" fill="var(--sig-ink)" text-anchor="middle">styk 2 → SW ściemniacza</text>
+  <g class="bal"><circle cx="626" cy="112" r="17"/><text x="626" y="118">4</text></g>
+</svg>
+      </div>
+    </div>
+
+    <div class="key">
+      <div class="key__item">
+        <span class="key__swatch"><span class="key__line" style="background:var(--v230);height:7px"></span></span>
+        <span><b>230 V</b><span>do zasilacza i do punktów AQForm — robi elektryk</span></span>
+      </div>
+      <div class="key__item">
+        <span class="key__swatch"><span class="key__line" style="background:var(--v24)"></span></span>
+        <span><b>24 V</b><span>za zasilaczem: moduł i obie taśmy — montaż własny</span></span>
+      </div>
+      <div class="key__item">
+        <span class="key__swatch"><span class="key__line" style="background:var(--sig)"></span></span>
+        <span><b>Sygnał czujki</b><span>rozdzielony przekaźnikiem na dwa osobne obwody</span></span>
+      </div>
+      <div class="key__item">
+        <span class="key__swatch"><span class="key__line" style="background:var(--light)"></span></span>
+        <span><b>Światło</b><span>taśmy poniżej 1%, punkty do ~10–30%</span></span>
+      </div>
+      <div class="key__item">
+        <span class="key__swatch" style="margin-top:12px"><span class="key__dash"></span></span>
+        <span><b>Linia przerywana</b><span>schowane nad sufitem albo w ścianie</span></span>
+      </div>
+      <div class="key__item">
+        <span class="key__bal">1</span>
+        <span><b>Numer kroku</b><span>opisany w opowieści niżej</span></span>
+      </div>
+    </div>
+
+    <dl class="rules">
+      <div class="rule">
+        <dt>Ruch w korytarzu</dt>
+        <dd>zapala się to, co przewiduje scena na daną porę — nie zawsze wszystko</dd>
+      </div>
+      <div class="rule">
+        <dt>Cisza przez 2 minuty</dt>
+        <dd>oba obwody gasną same, każdy swoim modułem</dd>
+      </div>
+      <div class="rule">
+        <dt>Przycisk wygrywa</dt>
+        <dd>klik nadpisuje czujkę i scenę — tak jak w pozostałych arkuszach</dd>
+      </div>
+    </dl>
+  </figure>
+</section>
+
+<!-- ============================================================
+     02 — KROK PO KROKU
+     ============================================================ -->
+<section class="section" id="kroki">
+  <div class="section__head">
+    <span class="section__no">02</span>
+    <h2>Krok po kroku <span class="sub">— droga jednego wykrycia</span></h2>
+  </div>
+
+  <ol class="steps">
+    <li class="step">
+      <span class="step__no" aria-hidden="true">1</span>
+      <span class="step__tag tag-hv">230 V → 24 V</span>
+      <p><b>Zasilacz na półce technicznej</b> zamienia groźne 230 V na bezpieczne 24 V. Od tego miejsca cała lewa strona schematu jest już „łagodna” i możesz ją montować sam.</p>
+    </li>
+    <li class="step">
+      <span class="step__no" aria-hidden="true">2</span>
+      <span class="step__tag tag-lv">24 V</span>
+      <p><b>Mózg taśm</b> — Shelly RGBW PM — dostaje 24 V i dawkuje je obu taśmom. Ma cztery kanały, więc każda taśma dostaje własny; dwa zostają w zapasie. Grupujesz je w aplikacji, nie kablem.</p>
+    </li>
+    <li class="step">
+      <span class="step__no" aria-hidden="true">3</span>
+      <span class="step__tag tag-sig">czujka</span>
+      <p><b>Czujka ruchu w suficie</b> widzi Cię, gdy wchodzisz w korytarz. W środku ma zwykły styk przekaźnika — dla obu modułów to nie do odróżnienia od wciśnięcia przycisku.</p>
+    </li>
+    <li class="step">
+      <span class="step__no" aria-hidden="true">4</span>
+      <span class="step__tag tag-sig">rozdzielenie</span>
+      <p><b>Przekaźnik pośredniczący</b> to serce tego układu. Jeden styk czujki nie może iść równolegle do obu modułów, bo połączyłby 230 V z obwodem bezpiecznym. Przekaźnik przyjmuje sygnał raz i oddaje go <b>dwoma osobnymi, odizolowanymi stykami</b> — po jednym na każdy świat napięć. Szczegóły na rysunku 03.</p>
+    </li>
+    <li class="step">
+      <span class="step__no" aria-hidden="true">5</span>
+      <span class="step__tag tag-lv">24 V</span>
+      <p><b>Dwie taśmy przy podłodze</b> zapalają się na poziomie z bieżącej sceny. Nocą to 2% — świecą pod nogi, nie w oczy. Schodzą płynnie poniżej 1%, bo to zasługa sterowania na 24 V.</p>
+    </li>
+    <li class="step">
+      <span class="step__no" aria-hidden="true">6</span>
+      <span class="step__tag tag-hv">230 V</span>
+      <p><b>Ściemniacz w głębokiej puszce</b> — Shelly Dimmer Gen3 za przyciskiem — przycina falę i podaje ją trzem punktom. Ten sam mechanizm co w <b>Schemacie lamp AQForm</b>. Przycisk na ścianie zawsze wygrywa z czujką.</p>
+    </li>
+    <li class="step">
+      <span class="step__no" aria-hidden="true">7</span>
+      <span class="step__tag tag-hv">230 V</span>
+      <p><b>Trzy punkty AQForm w suficie</b> zapalają się na swoim poziomie. Uwaga: w wersji Phase-Control zejdą tylko do 10–30%, więc <b>nocą prawdopodobnie mają zostać zgaszone</b> — patrz tabela scen.</p>
+    </li>
+  </ol>
+</section>
+
+<!-- ============================================================
+     03 — ROZDZIELENIE ŚWIATÓW
+     ============================================================ -->
+<section class="section" id="rozdzielenie">
+  <figure class="figure">
+    <div class="figure__head">
+      <div class="section__head">
+        <span class="section__no">03</span>
+        <div>
+          <h2>Zbliżenie: jedna czujka, dwa światy napięć</h2>
+          <p>To jedyny nieoczywisty fragment całego układu. Czujka ma jeden styk, a musi obsłużyć dwa moduły pracujące na zupełnie różnych napięciach. Odruch podpowiada wpiąć styk równolegle do obu — i <b>to jest właśnie ten jeden ruch, którego nie wolno zrobić</b>.</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="scroll-hint">Rysunek jest szeroki — przesuń go palcem w bok, żeby zobaczyć całość.</p>
+
+    <div class="figure__body">
+      <div class="dwg-wrap">
+<svg class="dwg" viewBox="0 0 1180 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="f2-t f2-d">
+  <title id="f2-t">Rozdzielenie sygnału czujki na obwód 24 V i obwód 230 V</title>
+  <desc id="f2-d">Styk czujki zasila cewkę przekaźnika pośredniczącego napięciem 24 V. Przekaźnik ma dwa niezależne, galwanicznie odizolowane zestawy styków. Pierwszy zwiera wejście WE1 modułu taśm w obwodzie 24 V. Drugi zwiera wejście SW ściemniacza w obwodzie 230 V. Oba obwody nigdzie się nie stykają.</desc>
+
+  <!-- linia podziału światów -->
+  <line x1="30" y1="222" x2="1150" y2="222" stroke="var(--line-2)" stroke-width="2" stroke-dasharray="6 6"/>
+  <text class="m halo" x="1146" y="212" font-size="10.5" font-weight="600" fill="var(--v24-ink)" text-anchor="end">powyżej — świat 24 V</text>
+  <text class="m halo" x="1146" y="240" font-size="10.5" font-weight="600" fill="var(--v230-ink)" text-anchor="end">poniżej — świat 230 V</text>
+
+  <!-- czujka -->
+  <rect x="40" y="120" width="180" height="90" rx="12" fill="var(--panel)" stroke="var(--sig)" stroke-width="2"/>
+  <text x="130" y="150" font-size="13" font-weight="700" fill="var(--sig-ink)" text-anchor="middle">CZUJKA RUCHU</text>
+  <text x="130" y="167" font-size="11" fill="var(--ink-2)" text-anchor="middle">jeden styk przekaźnika</text>
+  <circle cx="220" cy="160" r="5" fill="var(--ink-2)"/>
+  <circle cx="220" cy="185" r="5" fill="var(--ink-2)"/>
+  <line x1="228" y1="160" x2="248" y2="182" stroke="var(--ink-2)" stroke-width="3"/>
+
+  <!-- zasilanie cewki z 24 V -->
+  <path d="M 225 160 L 300 160 L 300 148" fill="none" stroke="var(--v24)" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M 225 185 L 300 185 L 300 200" fill="none" stroke="var(--v24)" stroke-width="3" stroke-linejoin="round"/>
+  <text class="m halo" x="262" y="152" font-size="10" font-weight="600" fill="var(--v24-ink)" text-anchor="middle">24 V</text>
+
+  <!-- przekaźnik -->
+  <rect x="270" y="148" width="180" height="52" rx="10" fill="var(--d-box)"/>
+  <text x="360" y="170" font-size="12.5" font-weight="700" fill="var(--d-box-text)" text-anchor="middle">PRZEKAŹNIK</text>
+  <text x="360" y="186" font-size="10.5" fill="var(--d-box-dim)" text-anchor="middle">cewka 24 V · 2 styki</text>
+  <text class="halo" x="360" y="138" font-size="11" fill="var(--ink-3)" text-anchor="middle">dwa zestawy styków, odizolowane od siebie i od cewki</text>
+
+  <!-- styk 1 → 24 V -->
+  <path d="M 450 164 L 520 164 L 520 96 L 600 96" fill="none" stroke="var(--v24)" stroke-width="3.5" stroke-linejoin="round"/>
+  <circle cx="600" cy="96" r="5" fill="var(--v24)"/>
+  <circle cx="640" cy="96" r="5" fill="var(--v24)"/>
+  <line x1="605" y1="96" x2="636" y2="96" stroke="var(--v24)" stroke-width="3.5"/>
+  <text class="m halo" x="620" y="82" font-size="10" font-weight="600" fill="var(--v24-ink)" text-anchor="middle">styk 1</text>
+  <path d="M 645 96 L 740 96" stroke="var(--v24)" stroke-width="3.5"/>
+
+  <rect x="740" y="60" width="220" height="76" rx="11" fill="var(--d-box)"/>
+  <text x="850" y="88" font-size="12.5" font-weight="700" fill="var(--d-box-text)" text-anchor="middle">MÓZG TAŚM</text>
+  <text x="850" y="105" font-size="10.5" fill="var(--d-box-dim)" text-anchor="middle">Shelly RGBW PM</text>
+  <text class="m" x="850" y="122" font-size="10.5" font-weight="600" fill="var(--on-box-v24)" text-anchor="middle">wejście WE1 · 24 V</text>
+  <text class="halo" x="1050" y="94" font-size="11.5" font-weight="600" fill="var(--v24-ink)">→ dwie taśmy</text>
+
+  <!-- styk 2 → 230 V -->
+  <path d="M 450 186 L 520 186 L 520 268 L 600 268" fill="none" stroke="var(--v230)" stroke-width="3.5" stroke-linejoin="round"/>
+  <circle cx="600" cy="268" r="5" fill="var(--v230)"/>
+  <circle cx="640" cy="268" r="5" fill="var(--v230)"/>
+  <line x1="605" y1="268" x2="636" y2="268" stroke="var(--v230)" stroke-width="3.5"/>
+  <text class="m halo" x="620" y="254" font-size="10" font-weight="600" fill="var(--v230-ink)" text-anchor="middle">styk 2</text>
+  <path d="M 645 268 L 740 268" stroke="var(--v230)" stroke-width="3.5"/>
+
+  <rect x="740" y="232" width="220" height="76" rx="11" fill="var(--d-box)"/>
+  <text x="850" y="260" font-size="12.5" font-weight="700" fill="var(--d-box-text)" text-anchor="middle">ŚCIEMNIACZ</text>
+  <text x="850" y="277" font-size="10.5" fill="var(--d-box-dim)" text-anchor="middle">Shelly Dimmer Gen3</text>
+  <text class="m" x="850" y="294" font-size="10.5" font-weight="600" fill="var(--on-box-light)" text-anchor="middle">wejście SW · faza 230 V</text>
+  <text class="halo" x="1050" y="266" font-size="11.5" font-weight="600" fill="var(--v230-ink)">→ trzy punkty</text>
+
+  <!-- ostrzeżenie -->
+  <rect x="40" y="336" width="1100" height="62" rx="9" fill="var(--v230-bg)"/>
+  <rect x="40" y="336" width="4" height="62" fill="var(--v230)"/>
+  <text x="60" y="360" font-size="12.5" font-weight="700" fill="var(--v230-ink)">Czego nie wolno: wpiąć jednego styku czujki równolegle do obu wejść.</text>
+  <text x="60" y="378" font-size="12" fill="var(--ink-2)">Połączyłoby to fazę 230 V z obwodem SELV taśm — a wtedy „bezpieczne 24 V” przestaje być bezpieczne w całym korytarzu.</text>
+  <text x="60" y="392" font-size="12" fill="var(--ink-2)">Rozdzielenie musi być galwaniczne: dwa styki przekaźnika albo czujka z dwoma niezależnymi wyjściami.</text>
+</svg>
+      </div>
+    </div>
+  </figure>
+
+  <div class="note">
+    <b>Są trzy sposoby na to rozdzielenie</b> i wszystkie działają. <b>Przekaźnik pośredniczący</b> (na rysunku) — najtaniej, kilkadziesiąt złotych, cewka 24 V, dwa styki, mieści się na półce technicznej. <b>Czujka z dwoma wyjściami</b> — mniej elementów, ale trzeba jej poszukać. <b>Dwie osobne czujki</b> — po jednej na każdy obwód; najprostsze do zrozumienia, ale musisz zgrać ich czasy i pola widzenia, więc paradoksalnie najtrudniejsze w strojeniu.
+  </div>
+</section>
+
+<!-- ============================================================
+     04 — ZBLIŻENIE: PÓŁKA TECHNICZNA
+     ============================================================ -->
+<section class="section" id="polka">
+  <figure class="figure">
+    <div class="figure__head">
+      <div class="section__head">
+        <span class="section__no">04</span>
+        <div>
+          <h2>Zbliżenie: co siedzi na półce technicznej</h2>
+          <p>Dwa rysunki, bo to dwie różne sprawy. Pierwszy pokazuje <b>drogę prądu</b>: kabel, zasilacz, bezpiecznik, moduł, taśmy. Drugi pokazuje <b>drogę sygnału</b>: czujka, kostki 24 V, przekaźnik i jego dwa styki. Wszystko za zasilaczem pracuje na bezpiecznych 24 V — wyjątkiem jest styk 2 przekaźnika, który zwiera fazę.</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="scroll-hint">Rysunek jest szeroki — przesuń go palcem w bok, żeby zobaczyć całość.</p>
+
+    <div class="figure__body">
+      <p class="dwg-cap">4a · Droga prądu <span>— od kabla z puszki do taśm</span></p>
+      <div class="dwg-wrap">
+<svg class="dwg" viewBox="0 0 1180 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="f4a-t f4a-d">
+  <title id="f4a-t">Półka techniczna, strona mocy: zasilacz, bezpiecznik i moduł taśm</title>
+  <desc id="f4a-d">Kabel YDYp 5×1,5 z głębokiej puszki wnosi na półkę fazę, neutralny, ochronny i dwie żyły zapasowe. Na fazie siedzi kostka WAGO — z niej odchodzi faza na styk drugi przekaźnika. Zasilacz zamienia 230 V na 24 V. Na plusie jest bezpiecznik około 10 A. Dalej moduł Shelly RGBW PM: wspólny plus i dwa kanały wychodzą do dwóch taśm, a wejście WE1 czeka na sygnał ze styku pierwszego przekaźnika.</desc>
+
+  <rect x="20" y="28" width="418" height="258" rx="12" fill="var(--v230-bg)"/>
+  <text class="m" x="36" y="48" font-size="10.5" font-weight="600" fill="var(--v230-ink)" letter-spacing="1.2">STREFA 230 V</text>
+
+  <!-- kabel z puszki -->
+  <text x="36" y="70" font-size="12.5" font-weight="700" fill="var(--ink)">Z PUSZKI</text>
+  <text class="m" x="36" y="87" font-size="11" font-weight="500" fill="var(--ink-3)">YDYp 5×1,5</text>
+
+  <path d="M 50 140 L 250 140" stroke="#65A30D" stroke-width="3.5"/>
+  <path d="M 50 175 L 250 175" stroke="var(--sig)" stroke-width="3.5"/>
+  <path d="M 50 210 L 250 210" stroke="var(--v230)" stroke-width="3.5"/>
+  <path d="M 50 110 L 150 110" stroke="var(--ink-3)" stroke-width="3"/>
+  <circle cx="44" cy="140" r="5" fill="#65A30D"/>
+  <circle cx="44" cy="175" r="5" fill="var(--sig)"/>
+  <circle cx="44" cy="210" r="5" fill="var(--v230)"/>
+  <circle cx="44" cy="110" r="5" fill="var(--ink-3)"/>
+  <text class="m" x="62" y="132" font-size="10" font-weight="600" fill="#4D7C0F">PE</text>
+  <text class="m" x="62" y="167" font-size="10" font-weight="600" fill="var(--sig-ink)">N</text>
+  <text class="m" x="62" y="202" font-size="10" font-weight="600" fill="var(--v230-ink)">L</text>
+  <text class="m" x="160" y="114" font-size="10" font-weight="500" fill="var(--ink-2)">2 żyły zapasowe — jedna wraca ze styku 2</text>
+
+  <!-- kostka na fazie -->
+  <rect x="100" y="198" width="76" height="24" rx="12" fill="var(--panel)" stroke="var(--v230)" stroke-width="1.5"/>
+  <text x="138" y="214" font-size="9.5" font-weight="600" fill="var(--v230-ink)" text-anchor="middle">WAGO L</text>
+  <path d="M 138 222 L 138 266 L 300 266" fill="none" stroke="var(--v230)" stroke-width="3" stroke-linejoin="round"/>
+  <text class="m" x="306" y="270" font-size="10" font-weight="600" fill="var(--v230-ink)">→ styk 2 przekaźnika, rysunek 4b</text>
+
+  <!-- zasilacz -->
+  <rect x="250" y="120" width="180" height="128" rx="12" fill="var(--d-box)"/>
+  <rect x="242" y="132" width="16" height="16" rx="4" fill="var(--panel)" stroke="#65A30D" stroke-width="2"/>
+  <rect x="242" y="167" width="16" height="16" rx="4" fill="var(--panel)" stroke="var(--sig)" stroke-width="2"/>
+  <rect x="242" y="202" width="16" height="16" rx="4" fill="var(--panel)" stroke="var(--v230)" stroke-width="2"/>
+  <rect x="422" y="147" width="16" height="16" rx="4" fill="var(--panel)" stroke="var(--v24)" stroke-width="2"/>
+  <rect x="422" y="192" width="16" height="16" rx="4" fill="var(--panel)" stroke="var(--v24)" stroke-width="2"/>
+  <text x="340" y="152" font-size="12.5" font-weight="700" fill="var(--d-box-text)" text-anchor="middle">ZASILACZ</text>
+  <text x="340" y="170" font-size="10.5" fill="var(--d-box-dim)" text-anchor="middle">Mean Well 60–75 W</text>
+  <rect x="272" y="196" width="136" height="24" rx="12" fill="var(--panel)"/>
+  <text class="m" x="288" y="212" font-size="10" font-weight="600" fill="var(--v230-ink)">230 V</text>
+  <text x="340" y="212" font-size="10.5" fill="var(--ink-3)" text-anchor="middle">→</text>
+  <text class="m" x="392" y="212" font-size="10" font-weight="600" fill="var(--v24-ink)" text-anchor="end">24 V</text>
+
+  <!-- bezpiecznik i szyny 24 V -->
+  <path d="M 438 155 L 470 155" stroke="var(--v24)" stroke-width="4"/>
+  <path d="M 514 155 L 560 155" stroke="var(--v24)" stroke-width="4"/>
+  <rect x="470" y="145" width="44" height="20" rx="6" fill="var(--panel)" stroke="var(--v24)" stroke-width="2"/>
+  <path d="M 438 200 L 560 200" stroke="var(--v24)" stroke-width="4"/>
+  <text class="m halo" x="452" y="148" font-size="10" font-weight="600" fill="var(--v24-ink)">V+</text>
+  <text class="m halo" x="452" y="193" font-size="10" font-weight="600" fill="var(--v24-ink)">V−</text>
+  <text class="m halo" x="492" y="136" font-size="10" font-weight="600" fill="var(--v24-ink)" text-anchor="middle">~10 A</text>
+
+  <!-- mozg tasm -->
+  <rect x="560" y="112" width="270" height="150" rx="12" fill="var(--d-box)"/>
+  <rect x="552" y="147" width="16" height="16" rx="4" fill="var(--panel)" stroke="var(--v24)" stroke-width="2"/>
+  <rect x="552" y="192" width="16" height="16" rx="4" fill="var(--panel)" stroke="var(--v24)" stroke-width="2"/>
+  <rect x="612" y="254" width="16" height="16" rx="4" fill="var(--panel)" stroke="var(--sig)" stroke-width="2"/>
+  <rect x="822" y="132" width="16" height="16" rx="4" fill="var(--panel)" stroke="var(--light)" stroke-width="2"/>
+  <rect x="822" y="172" width="16" height="16" rx="4" fill="var(--panel)" stroke="var(--light)" stroke-width="2"/>
+  <rect x="822" y="212" width="16" height="16" rx="4" fill="var(--panel)" stroke="var(--light)" stroke-width="2"/>
+  <text x="695" y="150" font-size="13" font-weight="700" fill="var(--d-box-text)" text-anchor="middle">MÓZG TAŚM</text>
+  <text x="695" y="168" font-size="10.5" fill="var(--d-box-dim)" text-anchor="middle">Shelly RGBW PM</text>
+  <text x="695" y="222" font-size="10" fill="var(--d-box-dim)" text-anchor="middle">4 kanały · 2 w zapasie</text>
+  <text class="m" x="576" y="159" font-size="10" font-weight="600" fill="var(--on-box-v24)">V+</text>
+  <text class="m" x="576" y="204" font-size="10" font-weight="600" fill="var(--on-box-v24)">V−</text>
+  <text class="m" x="620" y="248" font-size="10" font-weight="600" fill="var(--on-box-sig)" text-anchor="middle">WE1</text>
+  <text class="m" x="814" y="144" font-size="10" font-weight="600" fill="var(--on-box-light)" text-anchor="end">V+</text>
+  <text class="m" x="814" y="184" font-size="10" font-weight="600" fill="var(--on-box-light)" text-anchor="end">CH1</text>
+  <text class="m" x="814" y="224" font-size="10" font-weight="600" fill="var(--on-box-light)" text-anchor="end">CH2</text>
+
+  <path d="M 620 270 L 620 306" stroke="var(--sig)" stroke-width="3"/>
+  <text x="632" y="304" font-size="11" fill="var(--sig-ink)">tu wchodzi styk 1 przekaźnika — rysunek 4b</text>
+
+  <path d="M 838 140 L 980 140" stroke="var(--light)" stroke-width="4"/>
+  <path d="M 838 180 L 980 180" stroke="var(--light)" stroke-width="4"/>
+  <path d="M 838 220 L 980 220" stroke="var(--light)" stroke-width="4"/>
+  <text x="992" y="126" font-size="12" font-weight="700" fill="var(--ink)">DO TAŚM</text>
+  <text class="m" x="992" y="142" font-size="10.5" font-weight="500" fill="var(--ink-3)">OWY 3×1,5 ×2</text>
+  <text x="992" y="184" font-size="11" fill="var(--ink-2)">wspólny plus + kanał</text>
+  <text x="992" y="224" font-size="11" fill="var(--ink-3)">szczegóły — rysunek 06</text>
+
+  <text x="36" y="330" font-size="11.5" fill="var(--ink-2)">Wszystko na prawo od zasilacza pracuje na 24 V — tę część możesz złożyć sam. Czerwone pole to jedyny fragment, który dotyka elektryk.</text>
+</svg>
+      </div>
+
+      <p class="dwg-cap">4b · Droga sygnału <span>— czujka, kostki 24 V i przekaźnik z dwoma stykami</span></p>
+      <div class="dwg-wrap">
+<svg class="dwg" viewBox="0 0 1180 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="f4b-t f4b-d">
+  <title id="f4b-t">Półka techniczna, strona sterowania: czujka, kostki 24 V i przekaźnik</title>
+  <desc id="f4b-d">Czujka przychodzi kablem YTDY czterema żyłami. Dwie zasilają ją z kostki plus 24 V i kostki zero. Trzecia podaje plus 24 V na zacisk COM czujki, czwarta wraca z zacisku NO na cewkę A1 przekaźnika. Cewka drugim końcem A2 siedzi na kostce zero. Styk pierwszy podaje plus 24 V na wejście WE1 modułu taśm. Styk drugi zwiera fazę z kostki WAGO L na żyłę zapasową, która wraca do puszki na wejście SW2 ściemniacza.</desc>
+
+  <!-- kostki 24 V -->
+  <text x="330" y="48" font-size="10.5" fill="var(--ink-3)" text-anchor="middle">z zasilacza · rysunek 4a</text>
+  <text x="550" y="48" font-size="10.5" fill="var(--ink-3)" text-anchor="middle">z zasilacza · rysunek 4a</text>
+  <rect x="250" y="60" width="160" height="36" rx="14" fill="var(--v24-bg)" stroke="var(--v24)" stroke-width="1.5"/>
+  <text class="m" x="330" y="83" font-size="10.5" font-weight="600" fill="var(--v24-ink)" text-anchor="middle">WAGO +24 V</text>
+  <rect x="470" y="60" width="160" height="36" rx="14" fill="var(--panel)" stroke="var(--ink-2)" stroke-width="1.5"/>
+  <text class="m" x="550" y="83" font-size="10.5" font-weight="600" fill="var(--ink-2)" text-anchor="middle">WAGO 0 V</text>
+
+  <!-- kabel czujki -->
+  <text x="36" y="132" font-size="12.5" font-weight="700" fill="var(--ink)">OD CZUJKI</text>
+  <text class="m" x="36" y="149" font-size="11" font-weight="500" fill="var(--ink-3)">YTDY 4×0,5</text>
+
+  <path d="M 50 190 L 300 190 L 300 96" fill="none" stroke="var(--v24)" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M 50 225 L 370 225 L 370 96" fill="none" stroke="var(--sig)" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M 50 260 L 540 260 L 540 96" fill="none" stroke="var(--v24)" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M 50 295 L 772 295" stroke="var(--sig)" stroke-width="3"/>
+  <circle cx="44" cy="190" r="5" fill="var(--v24)"/>
+  <circle cx="44" cy="225" r="5" fill="var(--sig)"/>
+  <circle cx="44" cy="260" r="5" fill="var(--v24)"/>
+  <circle cx="44" cy="295" r="5" fill="var(--sig)"/>
+  <text class="m" x="62" y="182" font-size="10" font-weight="600" fill="var(--v24-ink)">+24 V — zasilanie czujki</text>
+  <text class="m" x="62" y="217" font-size="10" font-weight="600" fill="var(--sig-ink)">+24 V — na zacisk COM</text>
+  <text class="m" x="62" y="252" font-size="10" font-weight="600" fill="var(--v24-ink)">0 V — zasilanie czujki</text>
+  <text class="m" x="62" y="287" font-size="10" font-weight="600" fill="var(--sig-ink)">z zacisku NO — na cewkę A1</text>
+  <text x="36" y="336" font-size="11" fill="var(--ink-3)">Turkusowe żyły zasilają czujkę. Niebieskie to pętla styku — zwiera się dopiero, gdy czujka wykryje ruch.</text>
+
+  <!-- zasilanie stykow / cewki -->
+  <path d="M 410 78 L 440 78 L 440 28 L 890 28 L 890 234" fill="none" stroke="var(--v24)" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M 630 78 L 840 78 L 840 234" fill="none" stroke="var(--ink-2)" stroke-width="3" stroke-linejoin="round"/>
+  <text class="m halo" x="700" y="22" font-size="10" font-weight="600" fill="var(--v24-ink)">+24 V na styk 1</text>
+  <text class="m halo" x="700" y="72" font-size="10" font-weight="600" fill="var(--ink-2)">0 V na cewkę A2</text>
+
+  <!-- przekaznik -->
+  <rect x="780" y="242" width="340" height="170" rx="12" fill="var(--d-box)"/>
+  <rect x="832" y="234" width="16" height="16" rx="4" fill="var(--panel)" stroke="var(--ink-2)" stroke-width="2"/>
+  <rect x="882" y="234" width="16" height="16" rx="4" fill="var(--panel)" stroke="var(--v24)" stroke-width="2"/>
+  <rect x="772" y="287" width="16" height="16" rx="4" fill="var(--panel)" stroke="var(--sig)" stroke-width="2"/>
+  <rect x="822" y="404" width="16" height="16" rx="4" fill="var(--panel)" stroke="var(--sig)" stroke-width="2"/>
+  <rect x="932" y="404" width="16" height="16" rx="4" fill="var(--panel)" stroke="var(--v230)" stroke-width="2"/>
+  <rect x="1002" y="404" width="16" height="16" rx="4" fill="var(--panel)" stroke="var(--v230)" stroke-width="2"/>
+  <text class="m" x="840" y="266" font-size="10" font-weight="600" fill="var(--d-box-dim)" text-anchor="middle">A2</text>
+  <text class="m" x="890" y="266" font-size="10" font-weight="600" fill="var(--on-box-v24)" text-anchor="middle">11</text>
+  <text class="m" x="800" y="299" font-size="10" font-weight="600" fill="var(--on-box-sig)">A1</text>
+  <text class="m" x="830" y="396" font-size="10" font-weight="600" fill="var(--on-box-sig)" text-anchor="middle">14</text>
+  <text class="m" x="940" y="396" font-size="10" font-weight="600" fill="#FF9B96" text-anchor="middle">21</text>
+  <text class="m" x="1010" y="396" font-size="10" font-weight="600" fill="#FF9B96" text-anchor="middle">24</text>
+  <text x="975" y="300" font-size="13" font-weight="700" fill="var(--d-box-text)" text-anchor="middle">PRZEKAŹNIK</text>
+  <text x="975" y="318" font-size="10.5" fill="var(--d-box-dim)" text-anchor="middle">cewka 24 V · 2 styki zwierne</text>
+  <rect x="800" y="340" width="120" height="24" rx="12" fill="var(--v24-bg)"/>
+  <text class="m" x="860" y="357" font-size="10" font-weight="700" fill="var(--v24-ink)" text-anchor="middle">styk 1 · 24 V</text>
+  <rect x="950" y="340" width="130" height="24" rx="12" fill="var(--v230-bg)"/>
+  <text class="m" x="1015" y="357" font-size="10" font-weight="700" fill="var(--v230-ink)" text-anchor="middle">styk 2 · 230 V</text>
+
+  <!-- wyjscia przekaznika -->
+  <path d="M 830 420 L 830 452 L 700 452" fill="none" stroke="var(--sig)" stroke-width="3" stroke-linejoin="round"/>
+  <text class="m" x="688" y="456" font-size="10.5" font-weight="600" fill="var(--sig-ink)" text-anchor="end">styk 1 → WE1 modułu (rysunek 4a)</text>
+  <path d="M 940 420 L 940 492 L 560 492" fill="none" stroke="var(--v230)" stroke-width="3" stroke-linejoin="round"/>
+  <text class="m" x="548" y="496" font-size="10.5" font-weight="600" fill="var(--v230-ink)" text-anchor="end">styk 2 ← faza z kostki WAGO L (rysunek 4a)</text>
+  <path d="M 1010 420 L 1010 524 L 560 524" fill="none" stroke="var(--v230)" stroke-width="3" stroke-linejoin="round"/>
+  <text class="m" x="548" y="528" font-size="10.5" font-weight="600" fill="var(--v230-ink)" text-anchor="end">styk 2 → żyłą zapasową na SW2 ściemniacza (rysunek 05)</text>
+
+  <!-- ostrzezenie -->
+  <rect x="30" y="552" width="1120" height="50" rx="9" fill="var(--v230-bg)"/>
+  <rect x="30" y="552" width="4" height="50" fill="var(--v230)"/>
+  <text x="50" y="574" font-size="12.5" font-weight="700" fill="var(--v230-ink)">Styk 2 zwiera fazę — ta para żył to obwód sieciowy, nie SELV.</text>
+  <text x="50" y="592" font-size="12" fill="var(--ink-2)">Dlatego wraca do puszki żyłą zapasową w kablu YDYp, a nie w YTDY razem z sygnałem czujki. Nigdy nie mieszaj tych dwóch w jednym kablu.</text>
+</svg>
+      </div>
+    </div>
+  </figure>
+</section>
+
+<!-- ============================================================
+     05 — ZBLIŻENIE: GŁĘBOKA PUSZKA
+     ============================================================ -->
+<section class="section" id="puszka">
+  <figure class="figure">
+    <div class="figure__head">
+      <div class="section__head">
+        <span class="section__no">05</span>
+        <div>
+          <h2>Zbliżenie: co siedzi w głębokiej puszce</h2>
+          <p>Trzy kable schodzą się w jednym miejscu: z rozdzielnicy, na półkę techniczną i do lamp. Między nimi ściemniacz, przycisk i dwie kostki. <b>Przycisk i czujka trafiają na osobne wejścia</b> — i to nie jest wybór estetyczny, tylko konieczność.</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="scroll-hint">Rysunek jest szeroki — przesuń go palcem w bok, żeby zobaczyć całość.</p>
+
+    <div class="figure__body">
+      <div class="dwg-wrap">
+<svg class="dwg" viewBox="0 0 1180 616" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="f5-t f5-d">
+  <title id="f5-t">Wnętrze głębokiej puszki: ściemniacz, przycisk i kostki N oraz PE</title>
+  <desc id="f5-d">Do puszki wchodzi kabel z rozdzielnicy. Faza zasila ściemniacz i jest zmostkowana na przycisk, który wraca na wejście SW1. Żyła zapasowa od przekaźnika wraca na wejście SW2. Neutralny i ochronny omijają ściemniacz przez kostki WAGO i idą dalej do lamp. Z zacisku wyjściowego wychodzi faza już przycięta. Ten sam kabel, którym wraca żyła zapasowa, zabiera z puszki fazę, neutralny i ochronny na półkę techniczną.</desc>
+
+  <!-- kabel na polke techniczna -->
+  <text x="36" y="34" font-size="12" font-weight="700" fill="var(--ink)">KABEL NA PÓŁKĘ TECHNICZNĄ</text>
+  <text class="m" x="36" y="50" font-size="10.5" font-weight="500" fill="var(--ink-3)">YDYp 5×1,5 · L, N, PE w górę, zapas wraca</text>
+
+  <path d="M 50 66 L 608 66 L 608 262" fill="none" stroke="var(--v230)" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M 50 86 L 290 86 L 290 292 A 8 8 0 0 1 290 308 L 290 332 A 8 8 0 0 1 290 348 L 290 380" fill="none" stroke="#65A30D" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M 50 106 L 270 106 L 270 292 A 8 8 0 0 1 270 308 L 270 340" fill="none" stroke="var(--sig)" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M 50 126 L 250 126 L 250 300" fill="none" stroke="var(--v230)" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M 50 146 L 200 146" stroke="var(--ink-3)" stroke-width="3"/>
+  <circle cx="44" cy="66" r="4.5" fill="var(--v230)"/>
+  <circle cx="44" cy="86" r="4.5" fill="#65A30D"/>
+  <circle cx="44" cy="106" r="4.5" fill="var(--sig)"/>
+  <circle cx="44" cy="126" r="4.5" fill="var(--v230)"/>
+  <circle cx="44" cy="146" r="4.5" fill="var(--ink-3)"/>
+  <text class="m halo" x="330" y="59" font-size="10.5" font-weight="600" fill="var(--v230-ink)">styk 2 → SW2 · faza, nie SELV</text>
+  <text class="m" x="60" y="164" font-size="10" font-weight="500" fill="var(--ink-2)">żyła zapasowa — wolna</text>
+
+  <!-- puszka -->
+  <rect x="230" y="170" width="710" height="330" rx="16" fill="none" stroke="var(--line-2)" stroke-width="2" stroke-dasharray="8 6"/>
+  <text x="700" y="164" font-size="13" fill="var(--ink-3)">GŁĘBOKA PUSZKA ≥ 60 mm — widok od środka</text>
+
+  <!-- kabel z rozdzielnicy -->
+  <text x="36" y="256" font-size="12" font-weight="700" fill="var(--ink)">Z ROZDZIELNICY</text>
+  <text class="m" x="36" y="272" font-size="10.5" font-weight="500" fill="var(--ink-3)">YDYp 3×1,5</text>
+  <path d="M 36 300 L 470 300" stroke="var(--v230)" stroke-width="4"/>
+  <path d="M 36 340 L 400 340" stroke="var(--sig)" stroke-width="4"/>
+  <path d="M 36 380 L 396 380" stroke="#65A30D" stroke-width="4"/>
+  <text class="m halo" x="62" y="292" font-size="10" font-weight="600" fill="var(--v230-ink)">L</text>
+  <text class="m halo" x="62" y="332" font-size="10" font-weight="600" fill="var(--sig-ink)">N</text>
+  <text class="m halo" x="62" y="372" font-size="10" font-weight="600" fill="#4D7C0F">PE</text>
+
+  <!-- przycisk -->
+  <rect x="300" y="190" width="120" height="44" rx="10" fill="var(--panel)" stroke="var(--ink-2)" stroke-width="1.5"/>
+  <text x="360" y="218" font-size="12" font-weight="700" fill="var(--ink)" text-anchor="middle">PRZYCISK</text>
+  <path d="M 330 300 L 330 234" stroke="var(--v230)" stroke-width="3"/>
+  <path d="M 400 234 L 400 246 L 540 246 L 540 262" fill="none" stroke="var(--ink-2)" stroke-width="3" stroke-linejoin="round"/>
+  <text class="m halo" x="340" y="266" font-size="10" font-weight="600" fill="var(--v230-ink)">mostek fazy</text>
+
+  <!-- sciemniacz -->
+  <rect x="470" y="270" width="230" height="140" rx="12" fill="var(--d-box)"/>
+  <rect x="532" y="262" width="16" height="14" rx="4" fill="var(--panel)" stroke="var(--ink-3)" stroke-width="2"/>
+  <rect x="600" y="262" width="16" height="14" rx="4" fill="var(--panel)" stroke="var(--ink-3)" stroke-width="2"/>
+  <rect x="462" y="292" width="16" height="16" rx="4" fill="var(--panel)" stroke="var(--v230)" stroke-width="2"/>
+  <rect x="462" y="332" width="16" height="16" rx="4" fill="var(--panel)" stroke="var(--sig)" stroke-width="2"/>
+  <rect x="692" y="292" width="16" height="16" rx="4" fill="var(--panel)" stroke="var(--light)" stroke-width="2"/>
+  <text class="m" x="540" y="296" font-size="10" font-weight="600" fill="var(--d-box-text)" text-anchor="middle">SW1</text>
+  <text class="m" x="608" y="296" font-size="10" font-weight="600" fill="var(--d-box-text)" text-anchor="middle">SW2</text>
+  <text class="m" x="492" y="304" font-size="10" font-weight="600" fill="#FF9B96">L</text>
+  <text class="m" x="492" y="344" font-size="10" font-weight="600" fill="var(--on-box-sig)">N</text>
+  <text class="m" x="678" y="304" font-size="10" font-weight="600" fill="var(--on-box-light)" text-anchor="end">O</text>
+  <text x="600" y="368" font-size="12.5" font-weight="700" fill="var(--d-box-text)" text-anchor="middle">ŚCIEMNIACZ</text>
+  <text x="600" y="386" font-size="10.5" fill="var(--d-box-dim)" text-anchor="middle">Shelly Dimmer Gen3</text>
+  <text x="760" y="286" font-size="10.5" fill="var(--ink-3)">SW1 = przycisk · SW2 = czujka</text>
+
+  <!-- kostki -->
+  <path d="M 426 351 L 426 428 L 1000 428" fill="none" stroke="var(--sig)" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M 368 391 L 368 462 L 1000 462" fill="none" stroke="#65A30D" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M 454 340 L 462 340" stroke="var(--sig)" stroke-width="4"/>
+  <rect x="398" y="329" width="56" height="22" rx="8" fill="var(--sig-bg)" stroke="var(--sig)" stroke-width="1.5"/>
+  <text x="426" y="344" font-size="9.5" font-weight="600" fill="var(--sig-ink)" text-anchor="middle">WAGO N</text>
+  <rect x="340" y="369" width="56" height="22" rx="8" fill="#F1FADC" stroke="#65A30D" stroke-width="1.5"/>
+  <text x="368" y="384" font-size="9.5" font-weight="600" fill="#4D7C0F" text-anchor="middle">WAGO PE</text>
+
+  <!-- wyjscia do lamp -->
+  <path d="M 708 300 L 1000 300" stroke="var(--light)" stroke-width="4"/>
+  <text x="1012" y="286" font-size="12" font-weight="700" fill="var(--ink)">DO 3 PUNKTÓW</text>
+  <text class="m" x="1012" y="302" font-size="10.5" font-weight="500" fill="var(--ink-3)">YDYp 3×1,5</text>
+  <text x="1012" y="330" font-size="11" fill="var(--light-ink)">faza przycięta</text>
+  <text x="1012" y="432" font-size="11" fill="var(--sig-ink)">N — z kostki</text>
+  <text x="1012" y="466" font-size="11" fill="#4D7C0F">PE — z kostki</text>
+
+  <!-- odczepy na polke -->
+  <circle cx="250" cy="300" r="5.5" fill="var(--v230)"/>
+  <circle cx="270" cy="340" r="5.5" fill="var(--sig)"/>
+  <circle cx="290" cy="380" r="5.5" fill="#65A30D"/>
+
+  <text x="36" y="526" font-size="10.5" fill="var(--ink-3)">Kropka = przewody połączone. Łuk = przewody się mijają i nic ich nie łączy.</text>
+
+  <!-- ostrzezenie -->
+  <rect x="30" y="548" width="1120" height="50" rx="9" fill="var(--v230-bg)"/>
+  <rect x="30" y="548" width="4" height="50" fill="var(--v230)"/>
+  <text x="50" y="570" font-size="12.5" font-weight="700" fill="var(--v230-ink)">Przycisk na SW1, czujka na SW2 — nigdy oba na jedno wejście.</text>
+  <text x="50" y="588" font-size="12" fill="var(--ink-2)">Przycisk daje krótki impuls, czujka trzyma styk zwarty przez cały czas wykrywania. Na wejściu chwilowym to znaczy „przytrzymanie”, czyli lampa zacznie jeździć jasnością.</text>
+</svg>
+      </div>
+    </div>
+  </figure>
+</section>
+
+<!-- ============================================================
+     06 — ZBLIŻENIE: CZUJKA I TAŚMY
+     ============================================================ -->
+<section class="section" id="konce">
+  <div class="section__head">
+    <span class="section__no">06</span>
+    <h2>Zbliżenie: końcówki <span class="sub">— czujka i taśmy, zacisk po zacisku</span></h2>
+  </div>
+
+  <div class="spec">
+    <div class="card">
+      <h3>Czujka — cztery żyły, dokładnie tyle ile ma YTDY</h3>
+      <svg class="dwg dwg--sm" viewBox="0 0 520 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="f6-t f6-d" style="margin-bottom:14px">
+        <title id="f6-t">Zaciski czujki ruchu</title>
+        <desc id="f6-d">Czujka potrzebuje dwóch żył zasilania 24 V oraz dwóch żył na styk przekaźnika. Na zacisk COM podajesz plus 24 V, a zacisk NO wraca na cewkę przekaźnika. Styk zwiera się przy wykryciu ruchu.</desc>
+        <path d="M 40 112 L 295 112" stroke="var(--v24)" stroke-width="3"/>
+        <path d="M 40 136 L 295 136" stroke="var(--v24)" stroke-width="3"/>
+        <path d="M 40 170 L 295 170" stroke="var(--sig)" stroke-width="3"/>
+        <path d="M 40 192 L 295 192" stroke="var(--sig)" stroke-width="3"/>
+        <text x="30" y="60" font-size="11.5" font-weight="700" fill="var(--ink)">NA PÓŁKĘ</text>
+        <text class="m" x="30" y="76" font-size="10" font-weight="500" fill="var(--ink-3)">YTDY 4×0,5</text>
+        <text x="46" y="104" font-size="9.5" fill="var(--v24-ink)">zasilanie czujki — 2 żyły</text>
+        <text x="46" y="214" font-size="9.5" fill="var(--sig-ink)">pętla styku — 2 żyły</text>
+
+        <rect x="300" y="40" width="190" height="170" rx="12" fill="var(--panel)" stroke="var(--sig)" stroke-width="2.5"/>
+        <text x="395" y="68" font-size="12.5" font-weight="700" fill="var(--sig-ink)" text-anchor="middle">CZUJKA PIR</text>
+        <text x="395" y="85" font-size="10.5" fill="var(--ink-3)" text-anchor="middle">w suficie korytarza</text>
+        <path d="M 306 170 L 386 170" stroke="var(--sig)" stroke-width="2.5"/>
+        <path d="M 306 192 L 386 192" stroke="var(--sig)" stroke-width="2.5"/>
+        <path d="M 386 170 L 414 187" stroke="var(--sig)" stroke-width="2.5"/>
+        <circle cx="386" cy="170" r="3.5" fill="var(--sig)"/>
+        <circle cx="386" cy="192" r="3.5" fill="var(--sig)"/>
+        <circle cx="300" cy="112" r="5" fill="var(--v24)"/>
+        <circle cx="300" cy="136" r="5" fill="var(--v24)"/>
+        <circle cx="300" cy="170" r="5" fill="var(--sig)"/>
+        <circle cx="300" cy="192" r="5" fill="var(--sig)"/>
+        <text class="m halo" x="316" y="106" font-size="10" font-weight="600" fill="var(--v24-ink)">+24 V</text>
+        <text class="m halo" x="316" y="130" font-size="10" font-weight="600" fill="var(--v24-ink)">0 V</text>
+        <text class="m halo" x="316" y="164" font-size="10" font-weight="600" fill="var(--sig-ink)">COM</text>
+        <text class="m halo" x="316" y="186" font-size="10" font-weight="600" fill="var(--sig-ink)">NO</text>
+        <text x="395" y="230" font-size="9.5" fill="var(--ink-3)" text-anchor="middle">styk zwiera się przy ruchu</text>
+      </svg>
+      <ul>
+        <li><b>Dwie żyły zasilają czujkę</b>, dwie niosą jej styk: plus 24 V na <code>COM</code>, a z <code>NO</code> powrót na cewkę przekaźnika. <code>YTDY 4×0,5</code> ma dokładnie cztery — bez zapasu, więc rozważ <code>6×0,5</code>.</li>
+        <li class="warn"><b>Sprawdź napięcie czujki.</b> Wiele modeli chce 12 V, a na półce masz 24 V. Wtedy potrzebny mały konwerter 24 → 12 V, albo czujka w wersji 12–24 V.</li>
+        <li>Styk musi być <b>bezpotencjałowy</b> (dry contact). Czujka podająca własne napięcie na wyjście wymaga innego podłączenia.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Taśmy — wspólny plus, osobny kanał</h3>
+      <svg class="dwg dwg--sm" viewBox="0 0 520 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="f7-t f7-d" style="margin-bottom:14px">
+        <title id="f7-t">Podłączenie dwóch taśm do modułu</title>
+        <desc id="f7-d">Obie taśmy mają wspólny plus z modułu. Powrót każdej taśmy idzie na własny kanał, dzięki czemu można je ściemniać niezależnie.</desc>
+        <rect x="30" y="50" width="170" height="150" rx="12" fill="var(--d-box)"/>
+        <text x="115" y="80" font-size="12.5" font-weight="700" fill="var(--d-box-text)" text-anchor="middle">MÓZG TAŚM</text>
+        <text x="115" y="96" font-size="10.5" fill="var(--d-box-dim)" text-anchor="middle">RGBW PM</text>
+
+        <path d="M 205 122 L 300 122" stroke="var(--light)" stroke-width="3"/>
+        <path d="M 300 122 L 300 80 L 390 80" fill="none" stroke="var(--light)" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M 300 122 L 300 162 L 390 162" fill="none" stroke="var(--light)" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M 205 156 L 340 156 L 340 96 L 390 96" fill="none" stroke="var(--light)" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M 205 182 L 390 182" stroke="var(--light)" stroke-width="3"/>
+        <circle cx="300" cy="122" r="5" fill="var(--light)"/>
+        <circle cx="200" cy="122" r="5" fill="var(--light)"/>
+        <circle cx="200" cy="156" r="5" fill="var(--light)"/>
+        <circle cx="200" cy="182" r="5" fill="var(--light)"/>
+        <text class="m" x="186" y="126" font-size="10" font-weight="600" fill="var(--on-box-light)" text-anchor="end">V+</text>
+        <text class="m" x="186" y="160" font-size="10" font-weight="600" fill="var(--on-box-light)" text-anchor="end">CH1</text>
+        <text class="m" x="186" y="186" font-size="10" font-weight="600" fill="var(--on-box-light)" text-anchor="end">CH2</text>
+
+        <rect x="390" y="66" width="100" height="44" rx="8" fill="var(--light-bg)" stroke="var(--light)" stroke-width="2"/>
+        <text x="440" y="86" font-size="11" font-weight="700" fill="var(--light-ink)" text-anchor="middle">TAŚMA 1</text>
+        <text class="m" x="440" y="101" font-size="9" fill="var(--ink-3)" text-anchor="middle">V+ · CH1</text>
+        <rect x="390" y="146" width="100" height="44" rx="8" fill="var(--light-bg)" stroke="var(--light)" stroke-width="2"/>
+        <text x="440" y="166" font-size="11" font-weight="700" fill="var(--light-ink)" text-anchor="middle">TAŚMA 2</text>
+        <text class="m" x="440" y="181" font-size="9" fill="var(--ink-3)" text-anchor="middle">V+ · CH2</text>
+
+        <text x="260" y="224" font-size="9.5" fill="var(--ink-3)" text-anchor="middle">wspólny plus rozgałęziony · powrót osobno na kanał</text>
+      </svg>
+      <ul>
+        <li><b>Plus jest wspólny</b> dla obu taśm, powrót każdej idzie na własny kanał. Dlatego <code>OWY 3×1,5</code> wystarcza: plus, powrót i jedna żyła w zapasie.</li>
+        <li><b>Polaryzacja ma znaczenie.</b> Taśma podłączona odwrotnie po prostu nie zaświeci — nie uszkodzi się, ale poszukasz błędu.</li>
+        <li>Dwa kanały zostają wolne. Możesz je później wykorzystać na trzecią taśmę albo na drugą strefę korytarza.</li>
+        <li>W aplikacji <b>połącz oba kanały w grupę</b>, żeby reagowały jak jedno światło.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     07 — SCENY
+     ============================================================ -->
+<section class="section" id="sceny">
+  <div class="section__head">
+    <span class="section__no">07</span>
+    <h2>Co się zapala o której <span class="sub">— i dlaczego nie zawsze wszystko</span></h2>
+  </div>
+  <p style="margin:0 0 16px;color:var(--ink-2);font-size:14.5px;max-width:80ch">Okablowanie pozwala zapalić oba obwody naraz. Ale <b>fizyka obu źródeł jest różna</b> i to scena, a nie kabel, decyduje, co ma się włączyć o danej porze.</p>
+
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Pora</th>
+            <th scope="col">Taśmy 24 V</th>
+            <th scope="col">Punkty AQForm</th>
+            <th scope="col">Dlaczego tak</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="rowhead">Noc 23:00–6:30</td>
+            <td class="lvl lvl--tape">2%</td>
+            <td class="lvl lvl--off">zgaszone</td>
+            <td>Punkty nie zejdą poniżej 10–30%. Z sufitu, w nocy, to nadal razi. Taśma przy podłodze robi całą robotę.</td>
+          </tr>
+          <tr>
+            <td class="rowhead">Wieczór 18:00–23:00</td>
+            <td class="lvl lvl--tape">20%</td>
+            <td class="lvl lvl--spot">30%</td>
+            <td>Oba przygaszone, światło jest miękkie i pełne. Tu układ pokazuje, po co w ogóle łączyć dwa rodzaje.</td>
+          </tr>
+          <tr>
+            <td class="rowhead">Dzień</td>
+            <td class="lvl lvl--off">zgaszone</td>
+            <td class="lvl lvl--spot">100%</td>
+            <td>Taśma nic nie wnosi przy dziennym świetle. Czujka może zapalać same punkty albo nie robić nic.</td>
+          </tr>
+          <tr>
+            <td class="rowhead">Przycisk</td>
+            <td class="lvl" colspan="2">nadpisuje wszystko</td>
+            <td>Klik na ścianie wygrywa z czujką i ze sceną — jak we wszystkich pozostałych arkuszach.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Skąd moduły wiedzą, która pora?</b> Nie wiedzą — wie serwer domu albo harmonogram w samym module Shelly. Gdyby serwer padł, oba moduły i tak zapalą światło z czujki, tylko na ostatnio ustawionym poziomie. Rozmowa czujka → przekaźnik → moduły jest w całości sprzętowa i sieci nie potrzebuje.
+  </div>
+</section>
+
+<!-- ============================================================
+     08 — WERSJA TECHNICZNA
+     ============================================================ -->
+<section class="section" id="technika">
+  <div class="section__head">
+    <span class="section__no">08</span>
+    <h2>Wersja techniczna <span class="sub">— dla elektryka i do zakupów</span></h2>
+  </div>
+
+  <div class="spec">
+    <div class="card">
+      <h3>Kable</h3>
+      <ul>
+        <li><b>Zasilanie:</b> <code>YDYp 3×1,5</code> z obwodu oświetlenia do głębokiej puszki. Z puszki na półkę techniczną już <b><code>YDYp 5×1,5</code></b> — L, N, PE plus dwie żyły zapasowe. Jedna z nich wozi powrót styku 2 przekaźnika, bo to obwód sieciowy i nie wolno go prowadzić w YTDY.</li>
+        <li><b>Do punktów AQForm:</b> <code>YDYp 3×1,5</code> ze ściemniacza w górę i po półce, pętlą przez trzy punkty. Rozważ <code>5×1,5</code> — dwie żyły w zapasie pod DALI albo switchDIM, gdyby ściemnianie fazowe rozczarowało.</li>
+        <li><b>Do taśm:</b> <code>OWY 3×1,5</code> (norma <code>H05VV-F 3G1,5</code>) z modułu do każdej taśmy, max ~5 m na odnogę.</li>
+        <li><b>Czujka:</b> <code>YTDY 4×0,5</code> od czujki do przekaźnika — dwie żyły zasilają czujkę, dwie niosą jej styk. To dokładnie cztery, więc bez zapasu; rozważ <code>6×0,5</code>.</li>
+        <li class="warn"><b>Separacja:</b> na półce technicznej spotykają się 230 V i 24 V. <code>YTDY</code> w peszlu, kabel 230 V z <b>nienaruszoną powłoką</b>, a zasilacz i moduł 24 V odseparowane od strony sieciowej — jak w Schemacie LED.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Sprzęt na jeden korytarz</h3>
+      <ul>
+        <li><b>Zasilacz 24 V:</b> Mean Well, moc = suma taśm × 1,25. Przy dwóch taśmach po ~5 m i 5 W/m wystarczy seria 60–75 W.</li>
+        <li><b>Moduł taśm:</b> Shelly RGBW PM — cztery kanały, po jednym na taśmę, dwa w zapasie.</li>
+        <li><b>Ściemniacz:</b> Shelly Dimmer Gen3 w głębokiej puszce ≥ 60 mm, za przyciskiem.</li>
+        <li><b>Przekaźnik pośredniczący:</b> cewka 24 V, <b>dwa styki zwierne</b>. Styk 1 podaje 24 V na <code>WE1</code> modułu, styk 2 zwiera fazę na <code>SW2</code> ściemniacza.</li>
+        <li><b>Czujka:</b> PIR ze stykiem przekaźnika. Sprawdź, czy jej zasilanie znosi 24 V — jeśli nie, dołóż konwerter 24 → 12 V.</li>
+        <li><b>Bezpiecznik:</b> ~10 A zwłoczny na wyjściu zasilacza, przed modułem taśm.</li>
+        <li><b>Dwie kostki WAGO na 24 V:</b> jedna na plus, jedna na zero. Z nich zasilasz moduł, czujkę i styk 1 przekaźnika — patrz rysunek 4b.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Zasady i pułapki</h3>
+      <ul>
+        <li class="warn"><b>Minimalne obciążenie ściemniacza.</b> Trzy punkty AQForm to ~25 W na module o zakresie 200 W. To bardzo małe obciążenie i typowa przyczyna migotania. <b>Zrób test na stole</b> jedną oprawą, zanim zamówisz resztę.</li>
+        <li><b>Klapka rewizyjna obowiązkowa</b> — zasilacz i przekaźnik kiedyś wymienisz.</li>
+        <li class="warn"><b>Przycisk na SW1, czujka na SW2.</b> Nigdy oba na jedno wejście: przycisk daje impuls, czujka trzyma styk zwarty przez cały czas wykrywania — na wejściu chwilowym to „przytrzymanie”, czyli lampa zacznie jeździć jasnością.</li>
+        <li><b>Dimmer w trailing edge:</b> Gen3 pracuje tak z natury. Po montażu uruchom kalibrację — sama znajdzie minimalną jasność.</li>
+        <li><b>Taśma:</b> 24 V · COB · 2400–2700 K · CRI ≥ 90 · profil z mlecznym kloszem przy cokole.</li>
+        <li><b>Nie licz na zgodność poziomów.</b> Taśmy i punkty ściemniają się w różnych zakresach i według różnych krzywych. „30% na obu” nie da tej samej jasności — poziomy dobiera się okiem, raz, i zapisuje w scenie.</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="footnote">Arkusz pokrewny do: <b>LED.html</b> (strefa 24 V i granica napięć), <b>aqform.html</b> (ściemnianie fazowe punktów), <b>czujka.html</b> (czujki PIR i mmWave, reguła nocy).</p>
+</section>
+
+</div>
+</body>
+</html>

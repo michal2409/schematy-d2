@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schemat światła nocnego — czujka prowadzi do łazienki</title>
+<meta name="description" content="Wstajesz o 3:00, a dom sam zapala przygaszoną ścieżkę do łazienki. Dwie czujki do wyboru (PIR i mmWave), dwa warianty światła (taśma 24 V i żarówka 230 V) oraz lista kabli, które trzymają obie opcje otwarte.">
+<meta name="color-scheme" content="light">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   TOKENY
+   Teza tego arkusza: czujka to przycisk, który sam się wciska.
+   Dlatego sygnał czujki ma własny kolor i wraca w każdym rysunku,
+   a granica 24 V / 230 V działa tak samo jak w LED.html.
+   ============================================================ */
+:root{
+  --f-body:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;
+  --f-cond:'IBM Plex Sans Condensed','IBM Plex Sans','Segoe UI',system-ui,sans-serif;
+  --f-mono:'IBM Plex Mono','SFMono-Regular',Consolas,'Liberation Mono',monospace;
+
+  /* powierzchnie */
+  --bg:#FFFFFF;
+  --panel:#FFFFFF;
+  --panel-2:#F7F8F9;
+  --line:#E7E9EC;
+  --line-2:#D3D8DD;
+
+  /* tekst */
+  --ink:#11181C;
+  --ink-2:#4E5964;
+  --ink-3:#6E767D;
+
+  /* znaczenia */
+  --night:#FFB224; --night-ink:#AD5700; --night-bg:#FFF4DC;  /* światło nocne 2–5% */
+  --v230:#E5484D;  --v230-ink:#CD2B31;  --v230-bg:#FFF0EE;   /* groźne 230 V */
+  --sig:#3E63DD;   --sig-ink:#3451B2;   --sig-bg:#EDF2FE;    /* sygnał czujki */
+  --ok:#30A46C;    --ok-ink:#18794E;    --ok-bg:#E9F9EE;     /* widzi / działa */
+
+  /* elementy rysunku */
+  --d-slab:#EDEFF1;      --d-hatch:#D6DADE;
+  --d-floor:#C6CBD0;
+  --d-box:#11181C;
+  --d-box-text:#FFFFFF;  --d-box-dim:#A9B1B8;
+  --d-furn:#DCE0E3;
+  /* akcenty NA ciemnej obudowie — zawsze jasne */
+  --on-box-sig:#93B4FF; --on-box-night:#FFCE83; --on-box-v230:#FF9B96;
+
+  --shadow:0 1px 2px rgba(17,24,28,.04),0 10px 30px -18px rgba(17,24,28,.26);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--f-body);font-size:15.5px;line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--night-bg);color:var(--night-ink)}
+
+.sheet{max-width:1180px;margin:0 auto;padding:28px 22px 96px}
+
+a{color:var(--ink);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line-2)}
+a:hover{color:var(--night-ink);text-decoration-color:var(--night)}
+:focus-visible{outline:2.5px solid var(--sig);outline-offset:3px;border-radius:3px}
+
+h1,h2,h3{font-family:var(--f-cond);font-weight:600;letter-spacing:-.01em;margin:0}
+.mono{font-family:var(--f-mono);font-size:.94em;font-weight:500}
+
+/* ============================================================
+   NAGŁÓWEK
+   ============================================================ */
+.titleblock{padding:26px 0 38px}
+.titleblock h1{
+  font-size:clamp(31px,5.8vw,58px);line-height:1.02;
+  letter-spacing:-.035em;font-weight:700;margin:0;
+}
+.titleblock hr{border:0;height:1px;background:var(--ink);margin:30px 0 0}
+
+/* ============================================================
+   SEKCJE
+   ============================================================ */
+.section{margin-bottom:28px;scroll-margin-top:16px}
+.section__head{display:flex;gap:16px;align-items:baseline;margin-bottom:14px}
+.section__no{
+  font-family:var(--f-mono);font-size:13px;font-weight:500;color:var(--ink-3);
+  padding-top:2px;flex:none;
+}
+.section__head h2{font-size:clamp(20px,2.5vw,27px);letter-spacing:-.027em}
+.section__head .sub{font-family:var(--f-body);font-weight:400;font-size:15px;color:var(--ink-3)}
+
+/* ---- panel rysunku ---- */
+.figure{
+  background:var(--panel);border:1px solid var(--line);border-radius:16px;
+  box-shadow:var(--shadow);margin:0;overflow:hidden;
+}
+.figure__head{padding:24px 26px 16px}
+.figure__head .section__head{margin-bottom:0}
+.figure__head p{margin:8px 0 0;color:var(--ink-2);font-size:14.5px;max-width:80ch}
+.figure__body{padding:0 22px}
+.figure__body--pad{padding-bottom:26px}
+.dwg-wrap{overflow-x:auto;overscroll-behavior-x:contain}
+.dwg{display:block;width:100%;height:auto}
+.dwg text{font-family:var(--f-cond)}
+.dwg .m{font-family:var(--f-mono)}
+.dwg .halo{paint-order:stroke;stroke:var(--panel);stroke-width:4.5px;stroke-linejoin:round}
+.dwg .bal circle{fill:var(--panel);stroke:var(--ink);stroke-width:2}
+.dwg .bal text{font-family:var(--f-cond);font-weight:700;font-size:15px;fill:var(--ink);text-anchor:middle}
+.scroll-hint{display:none;padding:0 26px 14px;font-size:12.5px;color:var(--ink-3)}
+
+/* ---- klucz ---- */
+.key{
+  display:grid;gap:0;border-top:1px solid var(--line);margin-top:20px;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+}
+.key__item{
+  display:flex;gap:12px;align-items:flex-start;padding:15px 26px;
+  border-bottom:1px solid var(--line);
+  font-size:13px;line-height:1.45;
+}
+.key__item b{display:block;font-family:var(--f-cond);font-size:14px;font-weight:600;color:var(--ink)}
+.key__item span{color:var(--ink-3)}
+.key__swatch{flex:none;width:26px;margin-top:7px}
+.key__line{display:block;height:5px;border-radius:3px}
+.key__dash{display:block;border-top:3px dashed var(--ink-3)}
+.key__bal{
+  flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--ink);
+  display:flex;align-items:center;justify-content:center;margin-top:2px;
+  font-family:var(--f-cond);font-weight:700;font-size:13px;
+}
+
+/* ---- jak system się zachowuje ---- */
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:0}
+.rule{padding:19px 26px 21px;border-right:1px solid var(--line)}
+.rule:last-child{border-right:0}
+.rule dt{font-family:var(--f-cond);font-size:16.5px;font-weight:700;letter-spacing:.01em}
+.rule dd{margin:3px 0 0;font-size:14px;color:var(--ink-2)}
+
+/* ============================================================
+   KROKI
+   ============================================================ */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:12px;list-style:none;margin:0;padding:0}
+.step{
+  background:var(--panel);border:1px solid var(--line);border-radius:16px;
+  padding:19px 21px 20px;display:grid;
+  grid-template-columns:36px 1fr;gap:7px 15px;
+  align-items:start;align-content:start; /* bez tego krótsze karty rozjeżdżają wiersz */
+}
+.step__no{
+  grid-row:span 2;width:36px;height:36px;border-radius:50%;
+  border:2px solid var(--ink);display:flex;align-items:center;justify-content:center;
+  font-family:var(--f-cond);font-weight:700;font-size:17px;
+}
+.step__tag{
+  justify-self:start;font-family:var(--f-mono);font-size:10.5px;font-weight:500;
+  letter-spacing:.09em;text-transform:uppercase;padding:3px 10px;border-radius:99px;
+}
+.tag-sig{background:var(--sig-bg);color:var(--sig-ink)}
+.tag-night{background:var(--night-bg);color:var(--night-ink)}
+.tag-mix{background:var(--panel-2);color:var(--ink-2)}
+.step p{margin:0;font-size:14.8px;color:var(--ink-2)}
+.step p b{font-family:var(--f-cond);font-size:16px;font-weight:700;letter-spacing:-.005em;color:var(--ink)}
+
+/* ============================================================
+   KARTY, PORÓWNANIA, WARIANTY
+   ============================================================ */
+.spec{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px;align-items:start}
+.card{
+  background:var(--panel);border:1px solid var(--line);border-radius:16px;
+  padding:24px 26px 26px;box-shadow:var(--shadow);
+}
+.card--flat{box-shadow:none}
+.card h3{
+  font-size:14px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;
+  padding-bottom:12px;margin-bottom:16px;border-bottom:1px solid var(--ink);
+}
+.card ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:13px;font-size:14px;color:var(--ink-2)}
+.card li{padding-left:16px;position:relative}
+.card li::before{content:"";position:absolute;left:0;top:.62em;width:7px;height:1.5px;background:var(--ink-3)}
+.card li b{font-family:var(--f-cond);font-weight:700;font-size:15px;color:var(--ink)}
+.card code{
+  font-family:var(--f-mono);font-size:.9em;font-weight:500;color:var(--ink);
+  background:var(--panel-2);border:1px solid var(--line);
+  padding:1px 6px;border-radius:5px;white-space:nowrap;
+}
+.card li.warn{
+  background:var(--v230-bg);border-left:3px solid var(--v230);border-radius:0 10px 10px 0;
+  padding:12px 15px 12px 17px;color:var(--ink-2);
+}
+.card li.warn::before{display:none}
+.card li.warn b{color:var(--v230-ink)}
+.card li.good{
+  background:var(--ok-bg);border-left:3px solid var(--ok);border-radius:0 10px 10px 0;
+  padding:12px 15px 12px 17px;color:var(--ink-2);
+}
+.card li.good::before{display:none}
+.card li.good b{color:var(--ok-ink)}
+
+/* chip przy nagłówku porównania */
+.chip{
+  display:inline-block;font-family:var(--f-mono);font-size:11px;font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase;padding:3px 11px;border-radius:99px;
+  color:#fff;margin-right:10px;vertical-align:2px;
+}
+.cmp__head{display:flex;align-items:baseline;gap:0;margin-bottom:14px;flex-wrap:wrap}
+.cmp__head h3{
+  font-size:16px;text-transform:none;letter-spacing:-.01em;
+  border-bottom:0;padding-bottom:0;margin-bottom:0;font-weight:600;
+}
+.cmp__dwg{margin:0 0 16px}
+
+/* nagłówek wariantu A / B */
+.variant{display:flex;align-items:center;gap:14px}
+.variant__badge{
+  flex:none;width:42px;height:42px;border-radius:12px;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--f-cond);font-size:21px;font-weight:700;
+}
+
+/* blok wyjaśniający */
+.note{
+  background:var(--panel-2);border:1px solid var(--line);border-radius:14px;
+  padding:18px 22px;margin-top:14px;font-size:14px;color:var(--ink-2);
+}
+.note b{font-family:var(--f-cond);font-weight:700;font-size:15px;color:var(--ink)}
+
+/* ============================================================
+   TABELA DECYZYJNA
+   ============================================================ */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px;color:var(--ink-2)}
+th{
+  text-align:left;font-family:var(--f-mono);font-size:10.5px;font-weight:500;
+  letter-spacing:.1em;text-transform:uppercase;
+  border-bottom:1px solid var(--ink);padding:8px 12px 8px 0;
+}
+th.col-a{color:var(--night-ink)}
+th.col-b{color:var(--v230-ink)}
+td{padding:12px 12px 12px 0;border-bottom:1px solid var(--line);vertical-align:top}
+th:last-child,td:last-child{padding-right:0}
+tr:last-child td{border-bottom:0}
+.rowhead{font-family:var(--f-cond);font-weight:700;font-size:14.5px;color:var(--ink);white-space:nowrap}
+
+.footnote{
+  margin:30px 0 0;padding-top:20px;border-top:1px solid var(--line);
+  font-size:13px;color:var(--ink-3);
+}
+
+/* ============================================================
+   RESPONSYWNOŚĆ
+   ============================================================ */
+@media (max-width:880px){
+  .sheet{padding:16px 14px 68px}
+  .titleblock{padding:14px 0 30px}
+  .titleblock hr{margin-top:24px}
+  /* duże rysunki przewijamy w bok; małe mieszczą się same */
+  .dwg{min-width:900px}
+  .dwg--sm{min-width:0}
+  .scroll-hint{display:block}
+  .figure__head,.rule,.key__item{padding-left:20px;padding-right:20px}
+  .figure__body{padding:0 16px}
+}
+@media (max-width:520px){
+  body{font-size:15px}
+  .step{grid-template-columns:32px 1fr;gap:6px 13px;padding:17px 18px 18px}
+  .step__no{width:32px;height:32px;font-size:15.5px}
+}
+@media (prefers-reduced-motion:no-preference){
+  a{transition:color .15s ease}
+}
+
+/* ============================================================
+   DRUK
+   ============================================================ */
+@media print{
+  :root{--shadow:none}
+  body{font-size:10.5pt}
+  .sheet{max-width:none;padding:0}
+  .figure,.card,.step{border-radius:0}
+  .scroll-hint{display:none}
+  .dwg-wrap{overflow:visible}
+  .dwg{min-width:0}
+  .figure,.section,.card,.step,.key__item,.note{break-inside:avoid;page-break-inside:avoid}
+  .section{break-before:page;page-break-before:always}
+  .section:first-of-type{break-before:auto;page-break-before:auto}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+
+<body>
+<div class="sheet">
+
+<header class="titleblock">
+  <h1>Schemat światła nocnego — czujka prowadzi do łazienki</h1>
+  <hr>
+</header>
+
+<!-- ============================================================
+     01 — PRZEKRÓJ NOCNEJ WĘDRÓWKI
+     ============================================================ -->
+<section class="section" id="przekroj">
+  <figure class="figure">
+    <div class="figure__head">
+      <div class="section__head">
+        <span class="section__no">01</span>
+        <div>
+          <h2>Przekrój nocnej wędrówki — sypialnia, korytarz, łazienka</h2>
+          <p>Wstajesz o 3:00, a dom sam zapala przygaszoną ścieżkę: najpierw korytarz, potem łazienka — 2–5% ciepłego światła zamiast jarzeniówki w oczy. Czytaj po numerkach <span class="mono">1 → 8</span>. Rysunek pokazuje <b>oba warianty światła w korytarzu</b> naraz — taśmę przy podłodze i oczko pod sufitem. Wybierzesz jeden z nich niżej.</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="scroll-hint">Rysunek jest szeroki — przesuń go palcem w bok, żeby zobaczyć całość.</p>
+
+    <div class="figure__body">
+      <div class="dwg-wrap">
+<svg class="dwg" viewBox="0 0 1180 660" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="f1-t f1-d">
+  <title id="f1-t">Przekrój trzech pomieszczeń podczas nocnej wędrówki do łazienki</title>
+  <desc id="f1-d">W sypialni ktoś wstaje z łóżka. Czujka PIR na suficie korytarza wykrywa ruch i cienkim kabelkiem melduje to mózgowi światła. Mózg sprawdza porę i zapala tylko 2–5% ciepłego światła: taśmę przy podłodze albo oczko pod sufitem. W łazience czujka mmWave wykrywa samą obecność, więc światło nie gaśnie przy bezruchu, i ściemnia do 2% istniejące taśmy z osobnego schematu. Po powrocie światło odlicza i gaśnie samo. Reguła nocy mieszka w serwerze domu w garażu.</desc>
+
+  <defs>
+    <pattern id="hatch" width="9" height="9" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="9" stroke="var(--d-hatch)" stroke-width="2"/>
+    </pattern>
+  </defs>
+
+  <!-- ===== przegrody ===== -->
+  <rect x="40" y="40" width="1100" height="26" fill="var(--d-slab)"/>
+  <rect x="40" y="40" width="1100" height="26" fill="url(#hatch)"/>
+  <text class="halo" x="1128" y="58" font-size="12.5" font-weight="600" fill="var(--ink-2)" text-anchor="end">strop</text>
+  <rect x="40" y="560" width="1100" height="18" fill="var(--d-floor)"/>
+  <text class="halo" x="1128" y="596" font-size="12" fill="var(--ink-2)" text-anchor="end">podłoga</text>
+  <rect x="40" y="66" width="30" height="494" fill="var(--d-slab)"/>
+  <rect x="40" y="66" width="30" height="494" fill="url(#hatch)"/>
+  <rect x="1110" y="66" width="30" height="494" fill="var(--d-slab)"/>
+  <rect x="1110" y="66" width="30" height="494" fill="url(#hatch)"/>
+  <rect x="360" y="66" width="44" height="334" fill="var(--d-slab)"/>
+  <rect x="360" y="66" width="44" height="334" fill="url(#hatch)"/>
+  <line x1="404" y1="560" x2="360" y2="430" stroke="var(--ink-3)" stroke-width="5"/>
+  <text x="382" y="422" font-size="11" fill="var(--ink-3)" text-anchor="middle">drzwi</text>
+  <rect x="770" y="66" width="44" height="334" fill="var(--d-slab)"/>
+  <rect x="770" y="66" width="44" height="334" fill="url(#hatch)"/>
+  <line x1="770" y1="560" x2="814" y2="430" stroke="var(--ink-3)" stroke-width="5"/>
+  <text x="792" y="422" font-size="11" fill="var(--ink-3)" text-anchor="middle">drzwi</text>
+
+  <text x="215" y="96" font-size="13" font-weight="700" fill="var(--ink-3)" letter-spacing="1.2">SYPIALNIA</text>
+  <text x="466" y="96" font-size="13" font-weight="700" fill="var(--ink-3)" text-anchor="middle" letter-spacing="1.2">KORYTARZ</text>
+  <text x="960" y="96" font-size="13" font-weight="700" fill="var(--ink-3)" text-anchor="middle" letter-spacing="1.2">ŁAZIENKA</text>
+
+  <rect x="90" y="112" width="152" height="32" rx="16" fill="var(--d-box)"/>
+  <text x="166" y="133" font-size="13.5" font-weight="700" fill="var(--night)" text-anchor="middle">☾ 3:00 w nocy</text>
+
+  <!-- ===== 1 · sypialnia ===== -->
+  <rect x="95" y="505" width="150" height="42" rx="6" fill="var(--d-furn)"/>
+  <rect x="102" y="492" width="42" height="16" rx="6" fill="var(--panel-2)" stroke="var(--line-2)"/>
+  <rect x="95" y="547" width="150" height="13" fill="var(--d-floor)"/>
+  <text x="170" y="536" font-size="11.5" fill="var(--ink-3)" text-anchor="middle">łóżko</text>
+  <circle cx="295" cy="462" r="12" fill="var(--ink-3)"/>
+  <line x1="295" y1="474" x2="295" y2="520" stroke="var(--ink-3)" stroke-width="7"/>
+  <line x1="295" y1="520" x2="284" y2="558" stroke="var(--ink-3)" stroke-width="6"/>
+  <line x1="295" y1="520" x2="306" y2="558" stroke="var(--ink-3)" stroke-width="6"/>
+  <line x1="295" y1="488" x2="313" y2="510" stroke="var(--ink-3)" stroke-width="5"/>
+  <g class="bal"><circle cx="295" cy="410" r="17"/><text x="295" y="416">1</text></g>
+  <text x="295" y="384" font-size="12.5" font-weight="600" fill="var(--ink-2)" text-anchor="middle">wstajesz</text>
+
+  <!-- ===== 2 · czujka PIR w korytarzu ===== -->
+  <path d="M 588 84 L 480 558 L 700 558 Z" fill="var(--night)" opacity=".2"/>
+  <line x1="588" y1="84" x2="480" y2="558" stroke="var(--night)" stroke-width="2" stroke-dasharray="6 5" opacity=".85"/>
+  <line x1="588" y1="84" x2="700" y2="558" stroke="var(--night)" stroke-width="2" stroke-dasharray="6 5" opacity=".85"/>
+  <rect x="570" y="66" width="36" height="18" rx="5" fill="var(--d-box)"/>
+  <g class="bal"><circle cx="654" cy="120" r="17"/><text x="654" y="126">2</text></g>
+  <text x="678" y="126" font-size="12.5" font-weight="600" fill="var(--ink-2)">czujka ruchu (PIR)</text>
+
+  <!-- ===== 4 · mózg światła ===== -->
+  <rect x="418" y="130" width="132" height="66" rx="9" fill="var(--panel)" stroke="var(--ink-3)" stroke-width="2" stroke-dasharray="6 4"/>
+  <text x="484" y="152" font-size="12.5" font-weight="700" fill="var(--ink)" text-anchor="middle">MÓZG ŚWIATŁA</text>
+  <text x="484" y="168" font-size="11.5" fill="var(--ink-2)" text-anchor="middle">czy noc? → tak</text>
+  <text x="484" y="184" font-size="11.5" font-weight="700" fill="var(--night-ink)" text-anchor="middle">→ zapal 2–5%</text>
+  <g class="bal"><circle cx="412" cy="124" r="17"/><text x="412" y="130">4</text></g>
+  <text x="484" y="216" font-size="11" fill="var(--ink-3)" text-anchor="middle">schowany — gdzie dokładnie,</text>
+  <text x="484" y="230" font-size="11" fill="var(--ink-3)" text-anchor="middle">zależy od wariantu A albo B niżej</text>
+
+  <!-- ===== 3 · sygnał czujki ===== -->
+  <path d="M 570 78 L 530 78 L 530 110 L 502 128" fill="none" stroke="var(--sig)" stroke-width="2.5" stroke-linejoin="round"/>
+  <g class="bal"><circle cx="548" cy="84" r="15"/><text x="548" y="90" font-size="13.5">3</text></g>
+
+  <!-- ===== 5 · wariant A: taśma przy podłodze ===== -->
+  <line x1="412" y1="552" x2="766" y2="552" stroke="var(--night)" stroke-width="13" opacity=".35"/>
+  <line x1="412" y1="552" x2="766" y2="552" stroke="var(--night)" stroke-width="4.5"/>
+  <g class="bal"><circle cx="437" cy="512" r="17"/><text x="437" y="518">5</text></g>
+  <text x="462" y="518" font-size="12.5" font-weight="600" fill="var(--night-ink)">wariant A: taśma przy podłodze</text>
+
+  <!-- wariant B: oczko pod sufitem -->
+  <path d="M 726 66 A 12 12 0 0 0 750 66 Z" fill="var(--night)"/>
+  <path d="M 738 70 L 712 130 L 764 130 Z" fill="var(--night)" opacity=".28"/>
+  <text x="738" y="152" font-size="11.5" font-weight="600" fill="var(--night-ink)" text-anchor="middle">wariant B:</text>
+  <text x="738" y="166" font-size="11.5" font-weight="600" fill="var(--night-ink)" text-anchor="middle">oczko 230 V</text>
+
+  <!-- ===== 6 · czujka mmWave w łazience ===== -->
+  <rect x="1062" y="112" width="36" height="24" rx="6" fill="var(--d-box)"/>
+  <g stroke="var(--sig)" stroke-width="2.5" stroke-dasharray="5 4" fill="none">
+    <path d="M 1052 146 A 42 42 0 0 1 1052 100" transform="rotate(180 1052 123)"/>
+    <path d="M 1032 160 A 66 66 0 0 1 1032 86" transform="rotate(180 1032 123)"/>
+    <path d="M 1012 176 A 92 92 0 0 1 1012 70" transform="rotate(180 1012 123)"/>
+  </g>
+  <g class="bal"><circle cx="1038" cy="200" r="17"/><text x="1038" y="206">6</text></g>
+  <text x="1014" y="206" font-size="12.5" font-weight="600" fill="var(--ink-2)" text-anchor="end">czujka obecności (mmWave)</text>
+
+  <!-- ===== 7 · istniejące taśmy w łazience ===== -->
+  <line x1="856" y1="210" x2="856" y2="545" stroke="var(--night)" stroke-width="11" opacity=".35"/>
+  <line x1="856" y1="210" x2="856" y2="545" stroke="var(--night)" stroke-width="4"/>
+  <rect x="884" y="390" width="130" height="62" rx="7" fill="var(--d-furn)"/>
+  <text x="949" y="426" font-size="11.5" fill="var(--ink-3)" text-anchor="middle">szafka</text>
+  <line x1="890" y1="458" x2="1008" y2="458" stroke="var(--night)" stroke-width="11" opacity=".35"/>
+  <line x1="890" y1="458" x2="1008" y2="458" stroke="var(--night)" stroke-width="4"/>
+  <g class="bal"><circle cx="920" cy="330" r="17"/><text x="920" y="336">7</text></g>
+  <text class="halo" x="946" y="326" font-size="12.5" font-weight="600" fill="var(--night-ink)">istniejące taśmy</text>
+  <text class="halo" x="946" y="342" font-size="12.5" font-weight="600" fill="var(--night-ink)">ze Schematu LED — nocą 2%</text>
+
+  <!-- ===== 8 · odliczanie ===== -->
+  <circle cx="742" cy="480" r="15" fill="var(--panel)" stroke="var(--ink-2)" stroke-width="2"/>
+  <line x1="742" y1="480" x2="742" y2="470" stroke="var(--ink-2)" stroke-width="2"/>
+  <line x1="742" y1="480" x2="750" y2="484" stroke="var(--ink-2)" stroke-width="2"/>
+  <g class="bal"><circle cx="704" cy="466" r="17"/><text x="704" y="472">8</text></g>
+  <text class="halo" x="726" y="440" font-size="12.5" font-weight="600" fill="var(--ink-2)" text-anchor="middle">wracasz → światło</text>
+  <text class="halo" x="726" y="455" font-size="12.5" font-weight="600" fill="var(--ink-2)" text-anchor="middle">samo odlicza i gaśnie</text>
+
+  <!-- ===== serwer domu ===== -->
+  <line x1="930" y1="600" x2="560" y2="176" stroke="var(--ink-3)" stroke-width="2" stroke-dasharray="4 5"/>
+  <line x1="1060" y1="600" x2="1078" y2="142" stroke="var(--ink-3)" stroke-width="2" stroke-dasharray="4 5"/>
+  <text class="halo" x="714" y="392" font-size="12.5" font-weight="600" fill="var(--ink-2)">〜 Wi-Fi</text>
+  <rect x="850" y="600" width="290" height="48" rx="10" fill="var(--panel)" stroke="var(--line-2)" stroke-width="1.5"/>
+  <text x="995" y="620" font-size="13" font-weight="700" fill="var(--ink)" text-anchor="middle">SERWER DOMU (garaż)</text>
+  <text x="995" y="637" font-size="11.5" fill="var(--ink-3)" text-anchor="middle">tu mieszka reguła nocy, sceny i godziny</text>
+</svg>
+      </div>
+    </div>
+
+    <div class="key">
+      <div class="key__item">
+        <span class="key__swatch"><span class="key__line" style="background:var(--night)"></span></span>
+        <span><b>Światło nocne 2–5%</b><span>zawsze ciepła barwa, nigdy pełna jasność</span></span>
+      </div>
+      <div class="key__item">
+        <span class="key__swatch"><span class="key__line" style="background:var(--sig)"></span></span>
+        <span><b>Sygnał czujki</b><span>kabelkiem albo radiem — do mózgu światła</span></span>
+      </div>
+      <div class="key__item">
+        <span class="key__swatch"><span class="key__line" style="background:var(--v230);height:7px"></span></span>
+        <span><b>230 V</b><span>groźny prąd — robi to elektryk</span></span>
+      </div>
+      <div class="key__item">
+        <span class="key__swatch" style="margin-top:12px"><span class="key__dash"></span></span>
+        <span><b>Linia przerywana</b><span>schowane w ścianie albo nad sufitem</span></span>
+      </div>
+    </div>
+
+    <dl class="rules">
+      <div class="rule">
+        <dt>Ruch w korytarzu</dt>
+        <dd>ścieżka zapala się na 2–5% ciepłego światła</dd>
+      </div>
+      <div class="rule">
+        <dt>Obecność w łazience</dt>
+        <dd>światło nie gaśnie, póki tam jesteś — nawet bez ruchu</dd>
+      </div>
+      <div class="rule">
+        <dt>Przycisk wygrywa</dt>
+        <dd>klik na ścianie zawsze nadpisuje czujkę i automatykę</dd>
+      </div>
+    </dl>
+  </figure>
+</section>
+
+<!-- ============================================================
+     02 — KROK PO KROKU
+     ============================================================ -->
+<section class="section" id="kroki">
+  <div class="section__head">
+    <span class="section__no">02</span>
+    <h2>Krok po kroku <span class="sub">— jedna nocna wyprawa</span></h2>
+  </div>
+
+  <ol class="steps">
+    <li class="step">
+      <span class="step__no" aria-hidden="true">1</span>
+      <span class="step__tag tag-mix">start</span>
+      <p><b>Wstajesz w środku nocy.</b> Dom śpi, wszystkie światła zgaszone. Nie szukasz łącznika po omacku — od tego jest czujka.</p>
+    </li>
+    <li class="step">
+      <span class="step__no" aria-hidden="true">2</span>
+      <span class="step__tag tag-sig">czujka</span>
+      <p><b>Czujka ruchu widzi Cię od razu.</b> PIR w korytarzu wykrywa ciepło Twojego ciała przecinające jego pole widzenia — dokładnie jak lampa z czujnikiem przed garażem.</p>
+    </li>
+    <li class="step">
+      <span class="step__no" aria-hidden="true">3</span>
+      <span class="step__tag tag-sig">sygnał</span>
+      <p><b>Meldunek do mózgu: ktoś idzie.</b> Najlepiej cienkim kabelkiem — działa zawsze, nawet bez Wi-Fi. Bez kabla melduje się radiem, po Bluetooth.</p>
+    </li>
+    <li class="step">
+      <span class="step__no" aria-hidden="true">4</span>
+      <span class="step__tag tag-mix">reguła</span>
+      <p><b>Mózg patrzy na zegar.</b> Noc, na przykład 23:00–6:30? To zapala tylko 2–5%, wyłącznie ciepłą barwą. W dzień ta sama czujka może zapalać pełne światło albo nie robić nic — to tylko reguła, którą zmienisz w telefonie.</p>
+    </li>
+    <li class="step">
+      <span class="step__no" aria-hidden="true">5</span>
+      <span class="step__tag tag-night">światło</span>
+      <p><b>Korytarz zapala się łagodnie.</b> Światło jest nisko i przygaszone — widzisz drogę, a nikt w domu się nie budzi.</p>
+    </li>
+    <li class="step">
+      <span class="step__no" aria-hidden="true">6</span>
+      <span class="step__tag tag-sig">czujka</span>
+      <p><b>Radar w łazience widzi oddech.</b> Czujka obecności (mmWave) wie, że tam jesteś, choćbyś siedział bez ruchu. Zwykły PIR by Cię zgubił i zgasił światło w najgorszym momencie.</p>
+    </li>
+    <li class="step">
+      <span class="step__no" aria-hidden="true">7</span>
+      <span class="step__tag tag-night">światło</span>
+      <p><b>Łazienka świeci nocnym minimum.</b> To te same taśmy, które znasz ze <b>Schematu LED</b> — grupa „RESZTA”, tylko przykręcona do 2%. Nic nowego nie trzeba tam budować.</p>
+    </li>
+    <li class="step">
+      <span class="step__no" aria-hidden="true">8</span>
+      <span class="step__tag tag-mix">powrót</span>
+      <p><b>Wracasz — światło samo gaśnie.</b> Korytarz odlicza około 2 minut od ostatniego ruchu i gaśnie. Łazienka gaśnie, gdy radar przestaje kogokolwiek widzieć. Zero łączników, zero myślenia.</p>
+    </li>
+  </ol>
+</section>
+
+<!-- ============================================================
+     03 — PIR KONTRA mmWave
+     ============================================================ -->
+<section class="section" id="czujki">
+  <div class="section__head">
+    <span class="section__no">03</span>
+    <h2>Czujka czujce nierówna <span class="sub">— PIR kontra mmWave</span></h2>
+  </div>
+  <p style="margin:0 0 16px;color:var(--ink-2);font-size:14.5px;max-width:80ch">Obie widzą człowieka, ale zupełnie inaczej — i dlatego każda pasuje gdzie indziej. Nie musisz wybierać jednej na cały dom.</p>
+
+  <div class="spec">
+    <div class="card">
+      <div class="cmp__head">
+        <span class="chip" style="background:var(--night-ink)">PIR</span>
+        <h3>czujka ruchu — widzi ciepło w ruchu</h3>
+      </div>
+      <svg class="dwg dwg--sm cmp__dwg" viewBox="0 0 480 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="f2-t f2-d">
+        <title id="f2-t">Zasada działania czujki PIR</title>
+        <desc id="f2-d">Czujka na suficie ma stożkowe pole widzenia. Osoba idąca przez ten stożek zostaje wykryta. Osoba siedząca nieruchomo poza ruchem przestaje być dla czujki widoczna.</desc>
+        <rect x="10" y="10" width="34" height="20" rx="5" fill="var(--d-box)"/>
+        <path d="M 27 30 L 120 140 L 320 140 Z" fill="var(--night)" opacity=".22"/>
+        <line x1="27" y1="30" x2="120" y2="140" stroke="var(--night)" stroke-width="2" stroke-dasharray="5 4"/>
+        <line x1="27" y1="30" x2="320" y2="140" stroke="var(--night)" stroke-width="2" stroke-dasharray="5 4"/>
+        <circle cx="190" cy="88" r="9" fill="var(--ink-2)"/>
+        <line x1="190" y1="97" x2="190" y2="126" stroke="var(--ink-2)" stroke-width="5"/>
+        <line x1="190" y1="126" x2="182" y2="145" stroke="var(--ink-2)" stroke-width="4"/>
+        <line x1="190" y1="126" x2="200" y2="145" stroke="var(--ink-2)" stroke-width="4"/>
+        <text x="222" y="100" font-size="12.5" font-weight="700" fill="var(--ok-ink)">idzie → widzi ✓</text>
+        <circle cx="392" cy="100" r="9" fill="var(--line-2)"/>
+        <rect x="380" y="109" width="26" height="24" rx="6" fill="var(--line-2)"/>
+        <text x="392" y="60" font-size="12.5" font-weight="700" fill="var(--ink-3)" text-anchor="middle">siedzi bez ruchu</text>
+        <text x="392" y="76" font-size="12.5" font-weight="700" fill="var(--ink-3)" text-anchor="middle">→ znika ✗</text>
+      </svg>
+      <ul>
+        <li><b>Plusy:</b> tania, reaguje natychmiast, na baterii działa latami — a na kabelku bez baterii w ogóle.</li>
+        <li><b>Minus:</b> człowiek, który przestał się ruszać, dla niej nie istnieje. Po chwili zgasi mu światło.</li>
+        <li class="good"><b>Werdykt: idealna do korytarza</b> — tam zawsze jesteś w ruchu.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="cmp__head">
+        <span class="chip" style="background:var(--sig-ink)">mmWave</span>
+        <h3>czujka obecności — mini-radar, widzi oddech</h3>
+      </div>
+      <svg class="dwg dwg--sm cmp__dwg" viewBox="0 0 480 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="f3-t f3-d">
+        <title id="f3-t">Zasada działania czujki mmWave</title>
+        <desc id="f3-d">Czujka radarowa wysyła fale, które odbijają się od osoby siedzącej nieruchomo. Wykrywa nawet oddech, więc światło nie gaśnie przy bezruchu.</desc>
+        <rect x="10" y="45" width="34" height="22" rx="5" fill="var(--d-box)"/>
+        <g fill="none" stroke="var(--sig)" stroke-width="2" stroke-dasharray="5 4">
+          <path d="M 42 30 A 30 30 0 0 1 42 82"/>
+          <path d="M 55 8 A 55 55 0 0 1 55 104"/>
+          <path d="M 82 2 A 78 78 0 0 1 82 110"/>
+        </g>
+        <circle cx="240" cy="95" r="9" fill="var(--ink-2)"/>
+        <rect x="228" y="104" width="26" height="28" rx="6" fill="var(--ink-2)"/>
+        <text x="240" y="146" font-size="11.5" fill="var(--ink-3)" text-anchor="middle">siedzi nieruchomo</text>
+        <text x="290" y="80" font-size="12.5" font-weight="700" fill="var(--ok-ink)">widzi oddech ✓</text>
+        <text x="290" y="98" font-size="12.5" font-weight="700" fill="var(--ok-ink)">światło nie gaśnie</text>
+      </svg>
+      <ul>
+        <li><b>Plus:</b> wykrywa obecność, nie ruch. Siedzisz, czytasz, kąpiesz się — światło trwa.</li>
+        <li><b>Minusy:</b> potrzebuje stałego zasilania (zwykle USB), jest droższa i bywa przewrażliwiona — wentylator, wiatrak, a nawet lustro odbijające fale radaru potrafią udawać człowieka. Para po prysznicu też.</li>
+        <li class="good"><b>Werdykt: idealna do łazienki</b> — montaż wysoko, poza strefą prysznica, nie celować w wentylator ani w lustro.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Skąd czujka wie, że jest noc?</b> Nie wie — wie mózg. Reguła „w nocy 2–5%, w dzień normalnie” mieszka w serwerze domu albo w harmonogramie samego modułu Shelly. Gdyby serwer padł, moduł i tak zapali światło z czujki — najwyżej nie w idealnej jasności. A przycisk na ścianie zawsze działa i zawsze wygrywa z automatyką.
+  </div>
+</section>
+
+<!-- ============================================================
+     04 — WARIANT A
+     ============================================================ -->
+<section class="section" id="wariant-a">
+  <figure class="figure">
+    <div class="figure__head">
+      <div class="section__head">
+        <span class="section__no">04</span>
+        <div>
+          <div class="variant">
+            <span class="variant__badge" style="background:var(--night-ink)">A</span>
+            <h2>Wariant A — taśma LED przy podłodze (bezpieczne 24 V)</h2>
+          </div>
+          <p>Ta sama architektura co w łazience ze <b>Schematu LED</b>: zasilacz zamienia groźne 230 V na łagodne 24 V, a mózg dawkuje jasność taśmie w aluminiowym profilu przy cokole. Światło pada pod nogi, nie w oczy — nocą to robi ogromną różnicę.</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="scroll-hint">Rysunek jest szeroki — przesuń go palcem w bok, żeby zobaczyć całość.</p>
+
+    <div class="figure__body figure__body--pad">
+      <div class="dwg-wrap">
+<svg class="dwg" viewBox="0 0 1180 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="f4-t f4-d">
+  <title id="f4-t">Wariant A: droga prądu od rozdzielnicy przez zasilacz 24 V do taśmy przy cokole</title>
+  <desc id="f4-d">Z rozdzielnicy kabel YDYp 3×1,5 doprowadza 230 V do zasilacza na półce technicznej. Zasilacz zamienia je na 24 V i karmi moduł Shelly RGBW PM. Z modułu przewód OMY prowadzi do taśmy COB w profilu przy cokole. Czujka PIR podłączona kabelkiem YTDY do wejścia WE1 modułu działa jak przycisk.</desc>
+
+  <rect x="300" y="36" width="470" height="206" rx="12" fill="var(--panel-2)" stroke="var(--line-2)" stroke-width="2" stroke-dasharray="7 5"/>
+  <text x="316" y="60" font-size="12.5" font-weight="700" fill="var(--ink-2)">PÓŁKA TECHNICZNA / SZAFA — dostęp serwisowy obowiązkowy</text>
+
+  <rect x="60" y="100" width="170" height="90" rx="11" fill="var(--panel)" stroke="var(--ink)" stroke-width="2"/>
+  <text x="145" y="135" font-size="13.5" font-weight="700" fill="var(--ink)" text-anchor="middle">ROZDZIELNICA</text>
+  <text x="145" y="153" font-size="11.5" fill="var(--ink-3)" text-anchor="middle">obwód oświetlenia</text>
+  <text class="m" x="145" y="170" font-size="11.5" fill="var(--v230-ink)" text-anchor="middle">230 V</text>
+
+  <line x1="230" y1="145" x2="330" y2="145" stroke="var(--v230)" stroke-width="6"/>
+  <text class="m halo" x="280" y="130" font-size="11.5" font-weight="600" fill="var(--v230-ink)" text-anchor="middle">YDYp 3×1,5</text>
+
+  <rect x="330" y="105" width="170" height="80" rx="11" fill="var(--d-box)"/>
+  <text x="415" y="135" font-size="13.5" font-weight="700" fill="var(--d-box-text)" text-anchor="middle">ZASILACZ</text>
+  <text x="415" y="152" font-size="11.5" fill="var(--d-box-dim)" text-anchor="middle">Mean Well</text>
+  <rect x="352" y="160" width="126" height="20" rx="10" fill="var(--panel)"/>
+  <text class="m" x="415" y="175" font-size="11" font-weight="600" fill="var(--ink)" text-anchor="middle">230 V → 24 V</text>
+
+  <line x1="500" y1="145" x2="565" y2="145" stroke="var(--night)" stroke-width="5"/>
+  <text class="m halo" x="532" y="130" font-size="11" font-weight="600" fill="var(--night-ink)" text-anchor="middle">OMY 3×1,5</text>
+
+  <rect x="565" y="95" width="180" height="100" rx="11" fill="var(--d-box)"/>
+  <text x="655" y="122" font-size="13.5" font-weight="700" fill="var(--d-box-text)" text-anchor="middle">MÓZG ŚWIATŁA</text>
+  <text x="655" y="139" font-size="11.5" fill="var(--d-box-dim)" text-anchor="middle">Shelly Plus RGBW PM</text>
+  <text x="655" y="155" font-size="11.5" fill="var(--d-box-dim)" text-anchor="middle">4 kanały · 24 V</text>
+  <text class="m" x="655" y="180" font-size="11" font-weight="600" fill="var(--on-box-sig)" text-anchor="middle">WE1 ◂ czujka</text>
+
+  <line x1="745" y1="145" x2="820" y2="145" stroke="var(--night)" stroke-width="5"/>
+  <text class="m halo" x="782" y="130" font-size="11" font-weight="600" fill="var(--night-ink)" text-anchor="middle">OMY 3×1,5</text>
+  <text x="782" y="164" font-size="10.5" fill="var(--ink-3)" text-anchor="middle">max ~5 m</text>
+
+  <line x1="820" y1="145" x2="1120" y2="145" stroke="var(--night)" stroke-width="14" opacity=".35"/>
+  <line x1="820" y1="145" x2="1120" y2="145" stroke="var(--night)" stroke-width="5"/>
+  <text class="halo" x="970" y="120" font-size="13" font-weight="700" fill="var(--night-ink)" text-anchor="middle">TAŚMA W PROFILU PRZY COKOLE</text>
+  <text class="halo" x="970" y="178" font-size="11.5" fill="var(--ink-2)" text-anchor="middle">COB 24 V · bardzo ciepła 2400–2700 K · mleczny klosz</text>
+
+  <rect x="580" y="262" width="180" height="52" rx="11" fill="var(--panel)" stroke="var(--sig)" stroke-width="2"/>
+  <text x="670" y="284" font-size="12.5" font-weight="700" fill="var(--sig-ink)" text-anchor="middle">CZUJKA PIR (na kabelku)</text>
+  <text x="670" y="301" font-size="11.5" fill="var(--ink-2)" text-anchor="middle">styk przekaźnika = przycisk</text>
+  <path d="M 640 262 L 640 220 L 622 197" fill="none" stroke="var(--sig)" stroke-width="2.5" stroke-linejoin="round"/>
+  <text class="m" x="598" y="237" font-size="11" font-weight="600" fill="var(--sig-ink)" text-anchor="end">YTDY 4×0,5</text>
+
+  <text x="60" y="332" font-size="12" fill="var(--ink-2)">Bez kabla? <tspan font-weight="700" fill="var(--sig-ink)">Shelly BLU Motion</tspan> melduje się mózgowi radiem po Bluetooth — reguła dalej działa lokalnie, bez serwera.</text>
+</svg>
+      </div>
+    </div>
+
+    <div class="key">
+      <div class="key__item" style="border-right:0">
+        <span class="key__swatch"><span class="key__line" style="background:var(--v230);height:7px"></span></span>
+        <span><b>230 V</b><span>tylko do zasilacza — dalej już bezpiecznie</span></span>
+      </div>
+      <div class="key__item">
+        <span class="key__swatch"><span class="key__line" style="background:var(--night)"></span></span>
+        <span><b>24 V</b><span>cała reszta: moduł, zejścia i taśma</span></span>
+      </div>
+      <div class="key__item">
+        <span class="key__swatch"><span class="key__line" style="background:var(--sig)"></span></span>
+        <span><b>Sygnał czujki</b><span>YTDY do wejścia WE1 — montaż własny</span></span>
+      </div>
+    </div>
+  </figure>
+
+  <div class="spec" style="margin-top:12px">
+    <div class="card">
+      <h3>Dla elektryka i do zakupów — wariant A</h3>
+      <ul>
+        <li><b>Zasilanie:</b> <code>YDYp 3×1,5</code> z obwodu oświetlenia do zasilacza na półce technicznej lub w szafie, z klapką rewizyjną — zasilacz kiedyś wymienisz.</li>
+        <li><b>Zasilacz:</b> Mean Well, moc = suma taśm × 1,25. Nocna taśma to małe moce: przy ~8 m × 5 W/m wystarczy seria 50–60 W.</li>
+        <li><b>Taśma:</b> 24 V · COB · 2400–2700 K · CRI ≥ 90 · profil aluminiowy z mlecznym kloszem przy cokole albo w cokole schodów.</li>
+        <li><b>Zejście:</b> <code>OMY 3×1,5</code> do taśmy, max ~5 m na odnogę — jak w Schemacie LED.</li>
+        <li><b>Czujka:</b> <code>YTDY 4×0,5</code> od miejsca czujki do mózgu (WE1). Czujka ze stykiem przekaźnika udaje przycisk. Uwaga na jej zasilanie: musi znosić 24 V albo dostać mały konwerter 24 → 12 V.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Dlaczego taśma jest świetna nocą</h3>
+      <ul>
+        <li>Ściemnia się <b>płynnie poniżej 1%</b> — prawdziwe świetlne minimum bez migotania. To zasługa sterowania na 24 V.</li>
+        <li>Świeci <b>przy podłodze</b> — oświetla drogę, nie twarz. Oczy nie muszą się budzić.</li>
+        <li>W łazience nic nie dobudowujesz — nocne 2% to po prostu istniejąca grupa „RESZTA” ze Schematu LED.</li>
+        <li><b>Minus:</b> najwięcej roboty — profil, zasilacz, miejsce serwisowe i kable 24 V.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     05 — WARIANT B
+     ============================================================ -->
+<section class="section" id="wariant-b">
+  <figure class="figure">
+    <div class="figure__head">
+      <div class="section__head">
+        <span class="section__no">05</span>
+        <div>
+          <div class="variant">
+            <span class="variant__badge" style="background:var(--v230-ink)">B</span>
+            <h2>Wariant B — żarówka albo oczka LED ściemniane (230 V)</h2>
+          </div>
+          <p>Ta sama sztuczka co w <b>Schemacie lamp AQForm</b>: mały mózg (Shelly Dimmer Gen3) chowa się w głębokiej puszce i przycina falę prądu, a żarówka rozumie przycięcie jako polecenie „świeć słabiej”. Najmniej roboty — żadnych zasilaczy, profili ani stref 24 V.</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="scroll-hint">Rysunek jest szeroki — przesuń go palcem w bok, żeby zobaczyć całość.</p>
+
+    <div class="figure__body figure__body--pad">
+      <div class="dwg-wrap">
+<svg class="dwg" viewBox="0 0 1180 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="f5-t f5-d">
+  <title id="f5-t">Wariant B: ściemniacz fazowy w głębokiej puszce sterujący oczkami 230 V</title>
+  <desc id="f5-d">Z rozdzielnicy kabel YDYp 3×1,5 doprowadza pełną falę 230 V do głębokiej puszki, w której za przyciskiem siedzi Shelly Dimmer Gen3. Moduł przycina falę i wysyła ją do oczek sufitowych w wersji ściemnialnej. Czujka melduje się do modułu radiowo albo stykiem przekaźnika na wejście SW.</desc>
+
+  <rect x="60" y="100" width="170" height="90" rx="11" fill="var(--panel)" stroke="var(--ink)" stroke-width="2"/>
+  <text x="145" y="135" font-size="13.5" font-weight="700" fill="var(--ink)" text-anchor="middle">ROZDZIELNICA</text>
+  <text x="145" y="153" font-size="11.5" fill="var(--ink-3)" text-anchor="middle">obwód oświetlenia</text>
+  <text class="m" x="145" y="170" font-size="11.5" fill="var(--v230-ink)" text-anchor="middle">230 V</text>
+
+  <line x1="230" y1="145" x2="420" y2="145" stroke="var(--v230)" stroke-width="6"/>
+  <text class="halo" x="325" y="128" font-size="12" font-weight="700" fill="var(--v230-ink)" text-anchor="middle">YDYp 3×1,5 — pełna fala</text>
+
+  <rect x="420" y="70" width="280" height="180" rx="12" fill="var(--panel-2)" stroke="var(--line-2)" stroke-width="2" stroke-dasharray="7 5"/>
+  <text x="560" y="94" font-size="12.5" font-weight="700" fill="var(--ink-2)" text-anchor="middle">GŁĘBOKA PUSZKA ≥ 60 mm (w ścianie)</text>
+  <circle cx="480" cy="150" r="17" fill="var(--panel)" stroke="var(--ink-2)" stroke-width="2.5"/>
+  <circle cx="480" cy="150" r="6" fill="var(--night)"/>
+  <text x="480" y="188" font-size="11.5" fill="var(--ink-2)" text-anchor="middle">przycisk</text>
+  <text x="480" y="203" font-size="11.5" font-weight="700" fill="var(--ink)" text-anchor="middle">zawsze wygrywa</text>
+  <rect x="530" y="120" width="150" height="60" rx="9" fill="var(--d-box)"/>
+  <text x="605" y="144" font-size="12" font-weight="700" fill="var(--d-box-text)" text-anchor="middle">Shelly Dimmer Gen3</text>
+  <text x="605" y="161" font-size="10.5" fill="var(--d-box-dim)" text-anchor="middle">chowa się ZA przyciskiem</text>
+  <text x="605" y="224" font-size="11.5" fill="var(--ink-3)" text-anchor="middle">reaguje też na czujkę</text>
+  <text x="605" y="238" font-size="11.5" fill="var(--ink-3)" text-anchor="middle">i na telefon po Wi-Fi</text>
+
+  <line x1="700" y1="145" x2="870" y2="145" stroke="var(--night)" stroke-width="5" stroke-dasharray="10 6"/>
+  <text class="halo" x="785" y="126" font-size="12" font-weight="700" fill="var(--night-ink)" text-anchor="middle">fala przycięta = świeć słabiej</text>
+
+  <rect x="870" y="60" width="250" height="14" fill="var(--d-slab)"/>
+  <path d="M 902 74 A 11 11 0 0 0 924 74 Z" fill="var(--night)"/>
+  <path d="M 982 74 A 11 11 0 0 0 1004 74 Z" fill="var(--night)"/>
+  <path d="M 1062 74 A 11 11 0 0 0 1084 74 Z" fill="var(--night)"/>
+  <path d="M 913 78 L 889 150 L 937 150 Z" fill="var(--night)" opacity=".26"/>
+  <path d="M 993 78 L 969 150 L 1017 150 Z" fill="var(--night)" opacity=".26"/>
+  <path d="M 1073 78 L 1049 150 L 1097 150 Z" fill="var(--night)" opacity=".26"/>
+  <line x1="870" y1="145" x2="870" y2="67" stroke="var(--night)" stroke-width="4"/>
+  <text class="halo" x="995" y="180" font-size="13" font-weight="700" fill="var(--night-ink)" text-anchor="middle">OCZKA / ŻARÓWKA — koniecznie „dimmable”</text>
+  <text class="halo" x="995" y="198" font-size="11.5" fill="var(--ink-2)" text-anchor="middle">bardzo ciepła barwa, do 2700 K</text>
+
+  <rect x="300" y="262" width="230" height="52" rx="11" fill="var(--panel)" stroke="var(--sig)" stroke-width="2"/>
+  <text x="415" y="284" font-size="12.5" font-weight="700" fill="var(--sig-ink)" text-anchor="middle">CZUJKA (np. Shelly BLU Motion)</text>
+  <text x="415" y="301" font-size="11" fill="var(--ink-2)" text-anchor="middle">Bluetooth wprost do dimmera — bez serwera</text>
+  <path d="M 532 278 Q 570 258 592 240" fill="none" stroke="var(--sig)" stroke-width="2" stroke-dasharray="4 5"/>
+  <text x="556" y="266" font-size="13" fill="var(--sig)">〜</text>
+
+  <text x="620" y="300" font-size="11.5" fill="var(--ink-2)">Wersja na kabelku: styk przekaźnika łączy L → SW, jak zwykły łącznik <tspan font-weight="700" fill="var(--v230-ink)">(230 V — robi elektryk)</tspan></text>
+</svg>
+      </div>
+    </div>
+  </figure>
+
+  <div class="spec" style="margin-top:12px">
+    <div class="card">
+      <h3>Dla elektryka i do zakupów — wariant B</h3>
+      <ul>
+        <li><b>Puszka:</b> głęboka ≥ 60 mm w miejscu przycisku — Dimmer Gen3 mieszka za przyciskiem. Kabel <code>YDYp 3×1,5</code> (L, N, PE) z obwodu oświetlenia.</li>
+        <li><b>Oprawa:</b> żarówka albo oczka z napisem <b>dimmable</b>, bardzo ciepła barwa. Kup <b>jedną na próbę</b> i sprawdź, jak nisko zejdzie bez migotania — dopiero potem resztę.</li>
+        <li><b>Ustawienia:</b> w aplikacji Shelly ustawiasz minimalną jasność. Poniżej niej żarówki potrafią migotać albo gasnąć.</li>
+        <li><b>Czujka:</b> najprościej Shelly BLU Motion po Bluetooth, sparowana wprost z dimmerem. Wersja przewodowa: styk przekaźnika L → SW.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Słabość wariantu B przy świetle nocnym</h3>
+      <ul>
+        <li class="warn"><b>Żarówka 230 V realnie schodzi do 5–15%</b>, zależnie od modelu — celu 2% może nie osiągnąć. Niżej pojawia się migotanie.</li>
+        <li>Świeci <b>z sufitu w dół</b> — nawet przygaszona potrafi razić zaspane oczy.</li>
+        <li>Wybieraj żarówki znanych marek z deklarowanym głębokim ściemnianiem. Tania „dimmable” często ściemnia skokami.</li>
+        <li><b>Plus w zamian:</b> montaż najprostszy z możliwych, a żarówkę wymienisz w dziesięć sekund.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     06 — CZUJKA JAKO PRZYCISK
+     ============================================================ -->
+<section class="section" id="zbliżenie">
+  <div class="section__head">
+    <span class="section__no">06</span>
+    <h2>Zbliżenie: czujka na kabelku to przycisk, który sam się wciska</h2>
+  </div>
+  <p style="margin:0 0 16px;color:var(--ink-2);font-size:14.5px;max-width:80ch">W środku czujki siedzi mały przekaźnik — dwa zaciski, które zwierają się, gdy czujka kogoś widzi. Dla mózgu to nie do odróżnienia od wciśnięcia przycisku. Dlatego podłącza się ją dokładnie tak samo jak przyciski ze <b>Schematu LED</b>.</p>
+
+  <div class="spec">
+    <div class="card">
+      <div class="cmp__head">
+        <span class="chip" style="background:var(--night-ink)">A · 24 V</span>
+        <h3>do mózgu taśm (RGBW PM)</h3>
+      </div>
+      <svg class="dwg dwg--sm" viewBox="0 0 480 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="f6-t f6-d">
+        <title id="f6-t">Podłączenie czujki PIR do modułu 24 V</title>
+        <desc id="f6-d">Moduł wysyła 24 V żyłą V plus do jednego zacisku czujki. Styk przekaźnika w czujce zwiera się przy wykryciu ruchu i napięcie wraca drugą żyłą na wejście WE1 modułu.</desc>
+        <rect x="20" y="30" width="150" height="130" rx="11" fill="var(--d-box)"/>
+        <text x="95" y="58" font-size="13" font-weight="700" fill="var(--d-box-text)" text-anchor="middle">MÓZG</text>
+        <circle cx="170" cy="85" r="5" fill="var(--night)"/>
+        <text class="m" x="150" y="89" font-size="11" font-weight="600" fill="var(--on-box-night)" text-anchor="end">V+</text>
+        <circle cx="170" cy="130" r="5" fill="var(--sig)"/>
+        <text class="m" x="150" y="134" font-size="11" font-weight="600" fill="var(--on-box-sig)" text-anchor="end">WE1</text>
+        <rect x="310" y="30" width="150" height="130" rx="11" fill="var(--panel)" stroke="var(--sig)" stroke-width="2.5"/>
+        <text x="385" y="58" font-size="13" font-weight="700" fill="var(--sig-ink)" text-anchor="middle">CZUJKA PIR</text>
+        <circle cx="310" cy="85" r="5" fill="var(--ink-2)"/>
+        <circle cx="310" cy="130" r="5" fill="var(--ink-2)"/>
+        <line x1="330" y1="85" x2="352" y2="122" stroke="var(--ink-2)" stroke-width="3.5"/>
+        <text x="392" y="112" font-size="11" fill="var(--ink-3)">styk przekaźnika</text>
+        <line x1="175" y1="85" x2="305" y2="85" stroke="var(--night)" stroke-width="3"/>
+        <line x1="175" y1="130" x2="305" y2="130" stroke="var(--sig)" stroke-width="3"/>
+        <text x="240" y="74" font-size="11" font-weight="600" fill="var(--night-ink)" text-anchor="middle">24 V pod drzwi styku</text>
+        <text x="240" y="150" font-size="11" font-weight="600" fill="var(--sig-ink)" text-anchor="middle">wraca, gdy czujka widzi ruch</text>
+        <text x="240" y="180" font-size="11" fill="var(--ink-3)" text-anchor="middle">kabelek YTDY 4×0,5 · bezpieczne 24 V — montaż własny</text>
+      </svg>
+    </div>
+
+    <div class="card">
+      <div class="cmp__head">
+        <span class="chip" style="background:var(--v230-ink)">B · 230 V</span>
+        <h3>do dimmera w puszce</h3>
+      </div>
+      <svg class="dwg dwg--sm" viewBox="0 0 480 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="f7-t f7-d">
+        <title id="f7-t">Podłączenie czujki 230 V do ściemniacza</title>
+        <desc id="f7-d">Ściemniacz podaje fazę na jeden zacisk czujki. Styk przekaźnika zwiera się przy wykryciu ruchu i faza wraca na wejście SW modułu. Cały obwód pracuje pod napięciem sieciowym.</desc>
+        <rect x="20" y="30" width="150" height="130" rx="11" fill="var(--d-box)"/>
+        <text x="95" y="58" font-size="13" font-weight="700" fill="var(--d-box-text)" text-anchor="middle">DIMMER</text>
+        <circle cx="170" cy="85" r="5" fill="var(--v230)"/>
+        <text class="m" x="150" y="89" font-size="11" font-weight="600" fill="var(--on-box-v230)" text-anchor="end">L</text>
+        <circle cx="170" cy="130" r="5" fill="var(--d-box-dim)"/>
+        <text class="m" x="150" y="134" font-size="11" font-weight="600" fill="var(--d-box-dim)" text-anchor="end">SW</text>
+        <rect x="310" y="30" width="150" height="130" rx="11" fill="var(--panel)" stroke="var(--v230)" stroke-width="2.5"/>
+        <text x="385" y="58" font-size="13" font-weight="700" fill="var(--v230-ink)" text-anchor="middle">CZUJKA 230 V</text>
+        <circle cx="310" cy="85" r="5" fill="var(--ink-2)"/>
+        <circle cx="310" cy="130" r="5" fill="var(--ink-2)"/>
+        <line x1="330" y1="85" x2="352" y2="122" stroke="var(--ink-2)" stroke-width="3.5"/>
+        <text x="392" y="112" font-size="11" fill="var(--ink-3)">styk przekaźnika</text>
+        <line x1="175" y1="85" x2="305" y2="85" stroke="var(--v230)" stroke-width="3"/>
+        <line x1="175" y1="130" x2="305" y2="130" stroke="var(--ink-2)" stroke-width="3"/>
+        <text x="240" y="74" font-size="11" font-weight="600" fill="var(--v230-ink)" text-anchor="middle">faza pod drzwi styku</text>
+        <text x="240" y="150" font-size="11" font-weight="600" fill="var(--ink-2)" text-anchor="middle">wraca na SW, gdy czujka widzi</text>
+        <text x="240" y="180" font-size="11" font-weight="700" fill="var(--v230-ink)" text-anchor="middle">230 V — podłącza wyłącznie elektryk</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>A czujka mmWave?</b> Ona zwykle nie ma styku — melduje się radiem: Aqara FP2 przez Wi-Fi do serwera domu, FP1E przez Zigbee. Serwer po chwili mówi mózgowi „zapal” albo „zgaś”. Potrzebuje tylko drobiazgu od elektryka: <b>zasilania USB wysoko w rogu łazienki</b>, czyli puszki z 230 V i małego zasilacza USB. Bez serwera nocna reguła mmWave nie zadziała — dlatego w łazience warto zostawić też zwykły przycisk, który i tak zawsze wygrywa.
+  </div>
+</section>
+
+<!-- ============================================================
+     07 — CO POŁOŻYĆ TERAZ
+     ============================================================ -->
+<section class="section" id="kable">
+  <div class="section__head">
+    <span class="section__no">07</span>
+    <h2>Co położyć w ścianach już teraz <span class="sub">— zanim wybierzesz wariant</span></h2>
+  </div>
+  <p style="margin:0 0 16px;color:var(--ink-2);font-size:14.5px;max-width:80ch">Kable są tanie, kucie ścian po remoncie — nie. Ta lista trzyma <b>oba warianty i obie czujki otwarte</b>: decyzję podejmiesz, kiedy zechcesz.</p>
+
+  <div class="spec">
+    <div class="card">
+      <h3>Korytarz — każdy ciąg do łazienki</h3>
+      <ul>
+        <li><b><code>YDYp 3×1,5</code></b> z obwodu oświetlenia do miejsca na mózg: półka lub szafa techniczna (wariant A) <b>i</b> głęboka puszka ≥ 60 mm przy przycisku (wariant B). Jedna bruzda, dwie możliwości.</li>
+        <li><b><code>YTDY 4×0,5</code></b> od miejsca czujki — sufit, środek korytarza — do miejsca na mózg. Nawet jeśli skończy się na czujce radiowej, kabel zostaje na zawsze.</li>
+        <li><b>Peszel przy cokole</b> tam, gdzie mogłaby pobiec taśma z wariantu A. Pusta rurka nic nie kosztuje.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Łazienka</h3>
+      <ul>
+        <li class="warn"><b>Zasilanie dla mmWave:</b> puszka z 230 V wysoko w rogu, poza strefą prysznica, z myślą o małym zasilaczu USB. <b>To jedyna rzecz, której później nie dołożysz bez kucia płytek.</b></li>
+        <li><b><code>YTDY 4×0,5</code></b> od tego rogu na półkę techniczną z mózgiem taśm — opcja na przewodową czujkę w przyszłości.</li>
+        <li><b>Taśmy nocne już są</b> — grupa „RESZTA” ze Schematu LED. Nic nie dokładasz.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Zasady wspólne</h3>
+      <ul>
+        <li><b>Separacja:</b> YTDY w peszlu, nie w jednej rurce z 230 V — jak w Schemacie LED.</li>
+        <li><b>Zapas żył:</b> w <code>YTDY 4×0,5</code> zostają wolne żyły. Zwiń je w puszce, przydadzą się.</li>
+        <li><b>Powtarzalność:</b> każdy kolejny korytarz — parter, piętro — to kopia tego samego wzoru.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     08 — TABELA DECYZYJNA
+     ============================================================ -->
+<section class="section" id="wybor">
+  <div class="section__head">
+    <span class="section__no">08</span>
+    <h2>Taśma czy żarówka? <span class="sub">— ściąga decyzyjna</span></h2>
+  </div>
+
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col" class="col-a">A · Taśma LED 24 V</th>
+            <th scope="col" class="col-b">B · Żarówka / oczka 230 V</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="rowhead">Efekt nocny</td>
+            <td>świeci przy podłodze, pod nogi — <b>nie razi</b></td>
+            <td>świeci z sufitu — nawet 5% potrafi razić zaspane oczy</td>
+          </tr>
+          <tr>
+            <td class="rowhead">Jak nisko zejdzie</td>
+            <td>płynnie <b>poniżej 1%</b>, bez migotania</td>
+            <td>realnie 5–15%, zależnie od żarówki; niżej migotanie</td>
+          </tr>
+          <tr>
+            <td class="rowhead">Robota przy montażu</td>
+            <td>najwięcej: profil, zasilacz, miejsce serwisowe, strefa 24 V</td>
+            <td><b>najmniej:</b> głęboka puszka i dimmer za przyciskiem</td>
+          </tr>
+          <tr>
+            <td class="rowhead">Koszt</td>
+            <td>wyraźnie wyższy — taśma, profil, zasilacz, moduł</td>
+            <td>niższy — dimmer i oprawa</td>
+          </tr>
+          <tr>
+            <td class="rowhead">Serwis</td>
+            <td>zasilacz wymieniasz przez klapkę rewizyjną</td>
+            <td>żarówkę wymieniasz w dziesięć sekund</td>
+          </tr>
+          <tr>
+            <td class="rowhead">Kiedy wybrać</td>
+            <td>nocna ścieżka ma <b>wyglądać i nie budzić</b> — priorytet komfort</td>
+            <td>ma być <b>prosto i tanio</b>, a 5–10% nocą wystarczy</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <p class="footnote">Ten arkusz współpracuje z pozostałymi: <b>LED.html</b> (taśmy w łazience), <b>aqform.html</b> (ściemnianie lamp 230 V), <b>okno.html</b> (rolety i kontaktrony). Czujki i reguła nocy są wspólne dla całego domu — wzór powtarzasz korytarz po korytarzu.</p>
+</section>
+
+</div>
+</body>
+</html>

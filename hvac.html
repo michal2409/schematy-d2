@@ -1,337 +1,634 @@
 <!DOCTYPE html>
-<html lang="pl"><head>
+<html lang="pl">
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Schemat HVAC — pompa, reku, klima, PV</title>
+<title>Schemat HVAC — pompa, rekuperator, klima, fotowoltaika</title>
+<meta name="description" content="Cztery maszyny klimatu i jeden dyrygent. Pompa ciepła, rekuperator, klimatyzacja i fotowoltaika — co trzeba okablować, co już jest położone, a co idzie radiem. Wersja dla domownika i wersja techniczna dla elektryka.">
+<meta name="color-scheme" content="light">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-  body{margin:0;background:#fafaf9}
-  a{color:#b45309;text-decoration:underline}
-  a:hover{color:#92400e}
+/* ============================================================
+   TOKENY
+   Teza tego arkusza: prawie nic nie trzeba kłaść.
+   Dlatego kolor niesie RODZAJ ŁĄCZA, a klucz i znaczniki kroków
+   dopowiadają najważniejsze: nowy kabel / już jest / bez kabla.
+   ============================================================ */
+:root{
+  --f-body:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;
+  --f-cond:'IBM Plex Sans Condensed','IBM Plex Sans','Segoe UI',system-ui,sans-serif;
+  --f-mono:'IBM Plex Mono','SFMono-Regular',Consolas,'Liberation Mono',monospace;
+
+  /* powierzchnie */
+  --bg:#FFFFFF;
+  --panel:#FFFFFF;
+  --panel-2:#F7F8F9;
+  --line:#E7E9EC;
+  --line-2:#D3D8DD;
+
+  /* tekst */
+  --ink:#11181C;
+  --ink-2:#4E5964;
+  --ink-3:#6E767D;
+
+  /* łącza */
+  --mod:#12A594;  --mod-ink:#067A6F;  --mod-bg:#E7F9F5;   /* Modbus — nowy kabel */
+  --sg:#8E4EC6;   --sg-ink:#6E31A0;   --sg-bg:#F7EDFE;    /* SG Ready — nowy kabel */
+  --pv:#FFB224;   --pv-ink:#AD5700;   --pv-bg:#FFF4DC;    /* RS485 do PV — już jest */
+  --lan:#3E63DD;  --lan-ink:#3451B2;  --lan-bg:#EDF2FE;   /* LAN */
+
+  /* elementy rysunku */
+  --d-slab:#EDEFF1;      --d-hatch:#D6DADE;
+  --d-box:#11181C;
+  --d-box-text:#FFFFFF;  --d-box-dim:#A9B1B8;
+
+  --shadow:0 1px 2px rgba(17,24,28,.04),0 10px 30px -18px rgba(17,24,28,.26);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--f-body);font-size:15.5px;line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--mod-bg);color:var(--mod-ink)}
+
+.sheet{max-width:1180px;margin:0 auto;padding:28px 22px 96px}
+
+a{color:var(--ink);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line-2)}
+a:hover{color:var(--mod-ink);text-decoration-color:var(--mod)}
+:focus-visible{outline:2.5px solid var(--mod);outline-offset:3px;border-radius:3px}
+
+h1,h2,h3{font-family:var(--f-cond);font-weight:600;letter-spacing:-.01em;margin:0}
+.mono{font-family:var(--f-mono);font-size:.94em;font-weight:500}
+
+/* ============================================================
+   NAGŁÓWEK — sam tytuł i kreska
+   ============================================================ */
+.titleblock{padding:26px 0 38px}
+.titleblock h1{
+  font-size:clamp(31px,5.6vw,56px);line-height:1.03;
+  letter-spacing:-.035em;font-weight:700;margin:0;
+}
+.titleblock hr{border:0;height:1px;background:var(--ink);margin:30px 0 0}
+
+/* ============================================================
+   SEKCJE
+   ============================================================ */
+.section{margin-bottom:28px;scroll-margin-top:16px}
+.section__head{display:flex;gap:16px;align-items:baseline;margin-bottom:14px}
+.section__no{
+  font-family:var(--f-mono);font-size:13px;font-weight:500;color:var(--ink-3);
+  padding-top:2px;flex:none;
+}
+.section__head h2{font-size:clamp(21px,2.7vw,28px);letter-spacing:-.027em}
+.section__head .sub{font-family:var(--f-body);font-weight:400;font-size:15px;color:var(--ink-3)}
+
+/* ---- panel rysunku ---- */
+.figure{
+  background:var(--panel);border:1px solid var(--line);border-radius:16px;
+  box-shadow:var(--shadow);margin:0;overflow:hidden;
+}
+.figure__head{padding:24px 26px 16px}
+.figure__head .section__head{margin-bottom:0}
+.figure__head p{margin:8px 0 0;color:var(--ink-2);font-size:14.5px;max-width:80ch}
+.figure__body{padding:0 22px}
+.dwg-wrap{overflow-x:auto;overscroll-behavior-x:contain}
+.dwg{display:block;width:100%;height:auto}
+.dwg text{font-family:var(--f-cond)}
+.dwg .m{font-family:var(--f-mono)}
+/* wybicie tła pod podpisem, żeby nie zlewał się z przewodem */
+.dwg .halo{paint-order:stroke;stroke:var(--panel);stroke-width:4.5px;stroke-linejoin:round}
+.dwg .bal circle{fill:var(--panel);stroke:var(--ink);stroke-width:2}
+.dwg .bal text{font-family:var(--f-cond);font-weight:700;font-size:15px;fill:var(--ink);text-anchor:middle}
+.scroll-hint{display:none;padding:0 26px 14px;font-size:12.5px;color:var(--ink-3)}
+
+/* ---- klucz rysunku: każda pozycja mówi też, CZY trzeba kłaść ---- */
+.key{
+  display:grid;gap:0;border-top:1px solid var(--line);margin-top:20px;
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+}
+.key__item{
+  display:flex;gap:12px;align-items:flex-start;padding:15px 26px;
+  border-bottom:1px solid var(--line);
+  font-size:13px;line-height:1.45;
+}
+.key__item b{display:block;font-family:var(--f-cond);font-size:14px;font-weight:600;color:var(--ink)}
+.key__item span{color:var(--ink-3)}
+.key__swatch{flex:none;width:26px;margin-top:7px}
+.key__line{display:block;height:5px;border-radius:3px}
+.key__dash{display:block;border-top:3px dashed var(--ink-3)}
+.key__bal{
+  flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--ink);
+  display:flex;align-items:center;justify-content:center;margin-top:2px;
+  font-family:var(--f-cond);font-weight:700;font-size:13px;
+}
+.key__tag{
+  display:inline-block;margin-top:4px;font-family:var(--f-mono);font-size:10px;font-weight:500;
+  letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:99px;
+}
+
+/* ---- sceny: co dom robi sam ---- */
+.scenes{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:0}
+.scene{padding:19px 26px 21px;border-right:1px solid var(--line)}
+.scene:last-child{border-right:0}
+.scene dt{font-family:var(--f-cond);font-size:16.5px;font-weight:700;letter-spacing:.01em}
+.scene dd{margin:3px 0 0;font-size:14px;color:var(--ink-2)}
+
+/* ============================================================
+   KROKI
+   ============================================================ */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:12px;list-style:none;margin:0;padding:0}
+.step{
+  background:var(--panel);border:1px solid var(--line);border-radius:16px;
+  padding:19px 21px 20px;display:grid;
+  grid-template-columns:36px 1fr;gap:7px 15px;
+  align-items:start;align-content:start; /* bez tego krótsze karty rozjeżdżają wiersz */
+}
+.step__no{
+  grid-row:span 2;width:36px;height:36px;border-radius:50%;
+  border:2px solid var(--ink);display:flex;align-items:center;justify-content:center;
+  font-family:var(--f-cond);font-weight:700;font-size:17px;
+}
+.step__tag{
+  justify-self:start;font-family:var(--f-mono);font-size:10.5px;font-weight:500;
+  letter-spacing:.09em;text-transform:uppercase;padding:3px 10px;border-radius:99px;
+}
+.tag-new{background:var(--mod-bg);color:var(--mod-ink)}
+.tag-sg{background:var(--sg-bg);color:var(--sg-ink)}
+.tag-have{background:var(--pv-bg);color:var(--pv-ink)}
+.tag-none{background:var(--panel-2);color:var(--ink-2)}
+.step p{margin:0;font-size:14.8px;color:var(--ink-2)}
+.step p b{font-family:var(--f-cond);font-size:16px;font-weight:700;letter-spacing:-.005em;color:var(--ink)}
+
+/* ============================================================
+   WERSJA TECHNICZNA
+   ============================================================ */
+.spec{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px;align-items:start}
+.card{
+  background:var(--panel);border:1px solid var(--line);border-radius:16px;
+  padding:24px 26px 26px;box-shadow:var(--shadow);
+}
+.card h3{
+  font-size:14px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;
+  padding-bottom:12px;margin-bottom:16px;border-bottom:1px solid var(--ink);
+}
+.card ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:13px;font-size:14px;color:var(--ink-2)}
+.card li{padding-left:16px;position:relative}
+.card li::before{content:"";position:absolute;left:0;top:.62em;width:7px;height:1.5px;background:var(--ink-3)}
+.card li b{font-family:var(--f-cond);font-weight:700;font-size:15px;color:var(--ink)}
+.card code{
+  font-family:var(--f-mono);font-size:.9em;font-weight:500;color:var(--ink);
+  background:var(--panel-2);border:1px solid var(--line);
+  padding:1px 6px;border-radius:5px;white-space:nowrap;
+}
+.card li.warn{
+  background:var(--sg-bg);border-left:3px solid var(--sg);border-radius:0 10px 10px 0;
+  padding:12px 15px 12px 17px;color:var(--ink-2);
+}
+.card li.warn::before{display:none}
+.card li.warn b{color:var(--sg-ink)}
+
+.footnote{
+  margin:30px 0 0;padding-top:20px;border-top:1px solid var(--line);
+  font-size:13px;color:var(--ink-3);
+}
+
+/* ============================================================
+   RESPONSYWNOŚĆ
+   ============================================================ */
+@media (max-width:880px){
+  .sheet{padding:16px 14px 68px}
+  .titleblock{padding:14px 0 30px}
+  .titleblock hr{margin-top:24px}
+  /* rysunki: lepiej przewinąć w bok niż zmniejszyć podpisy do nieczytelności */
+  .dwg{min-width:900px}
+  .scroll-hint{display:block}
+  .figure__head,.scene,.key__item{padding-left:20px;padding-right:20px}
+  .figure__body{padding:0 16px}
+}
+@media (max-width:520px){
+  body{font-size:15px}
+  .step{grid-template-columns:32px 1fr;gap:6px 13px;padding:17px 18px 18px}
+  .step__no{width:32px;height:32px;font-size:15.5px}
+}
+@media (prefers-reduced-motion:no-preference){
+  a{transition:color .15s ease}
+}
+
+/* ============================================================
+   DRUK
+   ============================================================ */
+@media print{
+  :root{--shadow:none}
+  body{font-size:10.5pt}
+  .sheet{max-width:none;padding:0}
+  .figure,.card,.step{border-radius:0}
+  .scroll-hint{display:none}
+  .dwg-wrap{overflow:visible}
+  .dwg{min-width:0}
+  .figure,.section,.card,.step,.key__item{break-inside:avoid;page-break-inside:avoid}
+  .section{break-before:page;page-break-before:always}
+  .section:first-of-type{break-before:auto;page-break-before:auto}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 </style>
 </head>
+
 <body>
-<div style="min-height:100vh; background:#fafaf9; color:#1c1917; font-family:var(--font-sans,'NVIDIA Sans',-apple-system,BlinkMacSystemFont,sans-serif); line-height:1.6">
-<div style="max-width:1220px; margin:0 auto; padding:40px 28px 72px">
+<div class="sheet">
 
-  <header style="border-bottom:4px solid #b45309; padding-bottom:20px; margin-bottom:32px; display:flex; flex-direction:column; gap:10px">
-    <span style="align-self:flex-start; background:#b45309; color:#fff; font-size:12px; font-weight:700; letter-spacing:.1em; padding:4px 14px; border-radius:99px; text-transform:uppercase">Dom D2 · Jaśminowy Mokotów</span>
-    <h1 style="margin:0; font-size:34px; letter-spacing:-.02em; font-weight:700">Schemat HVAC — cztery maszyny klimatu, jeden dyrygent</h1>
-    <p style="margin:0; color:#57534e; font-size:16px; max-width:760px">Pompa ciepła grzeje, rekuperator wymienia powietrze, klima chłodzi, fotowoltaika daje prąd. Każde z osobna już działa — ten schemat pokazuje, jakie kable położyć, żeby serwer domu został ich wspólnym dyrygentem. Spoiler: przez dom idzie tylko JEDEN nowy kabel.</p>
-  </header>
+<header class="titleblock">
+  <h1>Schemat HVAC — cztery maszyny klimatu, jeden dyrygent</h1>
+  <hr>
+</header>
 
-  <!-- LEGENDA -->
-  <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px">
-    <span style="display:inline-flex; align-items:center; gap:8px; background:#fff; border:1px solid #e7e5e4; border-radius:99px; padding:6px 14px; font-size:13.5px; font-weight:600"><span style="width:22px; height:6px; border-radius:3px; background:#0d9488"></span>magistrala Modbus — skrętka UTP</span>
-    <span style="display:inline-flex; align-items:center; gap:8px; background:#fff; border:1px solid #e7e5e4; border-radius:99px; padding:6px 14px; font-size:13.5px; font-weight:600"><span style="width:22px; height:6px; border-radius:3px; background:#ea580c"></span>styki SG Ready — YTDY 6×0,5</span>
-    <span style="display:inline-flex; align-items:center; gap:8px; background:#fff; border:1px solid #e7e5e4; border-radius:99px; padding:6px 14px; font-size:13.5px; font-weight:600"><span style="width:22px; height:6px; border-radius:3px; background:#ca8a04"></span>RS485 do PV — ✓ już położone</span>
-    <span style="display:inline-flex; align-items:center; gap:8px; background:#fff; border:1px solid #e7e5e4; border-radius:99px; padding:6px 14px; font-size:13.5px; font-weight:600"><span style="width:22px; height:6px; border-radius:3px; background:#2563eb"></span>LAN — UTP kat.6</span>
-    <span style="display:inline-flex; align-items:center; gap:8px; background:#fff; border:1px solid #e7e5e4; border-radius:99px; padding:6px 14px; font-size:13.5px; font-weight:600"><span style="width:22px; height:0; border-top:3px dashed #0ea5e9"></span>〜 Wi-Fi (bez kabla)</span>
-    <span style="display:inline-flex; align-items:center; gap:8px; background:#fff; border:1px solid #e7e5e4; border-radius:99px; padding:6px 14px; font-size:13.5px; font-weight:600"><span style="width:22px; height:0; border-top:3px dashed #78716c"></span>schowane w szachcie / ścianie</span>
+<!-- ============================================================
+     01 — PRZEKRÓJ DOMU
+     ============================================================ -->
+<section class="section" id="przekroj">
+  <figure class="figure">
+    <div class="figure__head">
+      <div class="section__head">
+        <span class="section__no">01</span>
+        <div>
+          <h2>Przekrój domu — kto gdzie mieszka i którędy melduje się serwerowi</h2>
+          <p>Pompa ciepła grzeje, rekuperator wymienia powietrze, klima chłodzi, fotowoltaika daje prąd. Każde z osobna już działa — ten rysunek pokazuje, jakie kable położyć, żeby serwer domu został ich wspólnym dyrygentem. <b>Przez dom idzie tylko jeden nowy kabel.</b> Czytaj po numerkach <span class="mono">1 → 8</span>.</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="scroll-hint">Rysunek jest szeroki — przesuń go palcem w bok, żeby zobaczyć całość.</p>
+
+    <div class="figure__body">
+      <div class="dwg-wrap">
+<svg class="dwg" viewBox="0 0 1180 910" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="f1-t f1-d">
+  <title id="f1-t">Przekrój czterokondygnacyjnego domu z rozmieszczeniem urządzeń HVAC</title>
+  <desc id="f1-d">W garażu stoi szafa RACK z serwerem Home Assistant, obok pompa ciepła i falownik fotowoltaiki. Na piętrze drugim, przy szachcie instalacyjnym, wisi rekuperator z portem Modbus. Jedyny nowy kabel przez dom to skrętka UTP z rekuperatora, szachtem, do szafy RACK. W garażu dochodzą dwa krótkie odcinki: LAN do pompy i YTDY do styków SG Ready. Kabel RS485 od falownika jest już położony. Klimatyzacja łączy się przez Wi-Fi, a regulatory podłogówki mają kable od dewelopera.</desc>
+
+  <defs>
+    <pattern id="hatch" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <rect width="8" height="8" fill="var(--d-slab)"/>
+      <line x1="0" y1="0" x2="0" y2="8" stroke="var(--d-hatch)" stroke-width="3"/>
+    </pattern>
+  </defs>
+
+  <!-- ===== agregaty na dachu ===== -->
+  <rect x="150" y="10" width="180" height="38" rx="9" fill="var(--panel)" stroke="var(--ink)" stroke-width="2"/>
+  <text x="240" y="28" font-size="12.5" font-weight="700" fill="var(--ink)" text-anchor="middle">AGREGATY KLIMY</text>
+  <text x="240" y="42" font-size="10.5" fill="var(--ink-3)" text-anchor="middle">dach, na wspornikach</text>
+  <text x="350" y="32" font-size="11" fill="var(--ink-3)">przejścia przez papę tylko z uszczelnieniem żywicą</text>
+
+  <!-- ===== przegrody budowlane ===== -->
+  <rect x="40" y="50" width="1100" height="24" fill="url(#hatch)" stroke="var(--line-2)"/>
+  <text x="1060" y="67" fill="var(--ink-3)" font-size="11" font-weight="700" letter-spacing="1.4">DACH</text>
+  <rect x="40" y="74" width="32" height="806" fill="url(#hatch)" stroke="var(--line-2)"/>
+  <rect x="1108" y="74" width="32" height="806" fill="url(#hatch)" stroke="var(--line-2)"/>
+  <rect x="72" y="252" width="1036" height="20" fill="url(#hatch)" stroke="var(--line-2)"/>
+  <rect x="72" y="452" width="1036" height="20" fill="url(#hatch)" stroke="var(--line-2)"/>
+  <rect x="72" y="652" width="1036" height="20" fill="url(#hatch)" stroke="var(--line-2)"/>
+  <rect x="40" y="880" width="1100" height="24" fill="url(#hatch)" stroke="var(--line-2)"/>
+
+  <text x="56" y="163" fill="var(--ink-3)" font-size="11" font-weight="700" text-anchor="middle" letter-spacing="1.5" transform="rotate(-90 56 163)">PIĘTRO 2</text>
+  <text x="56" y="362" fill="var(--ink-3)" font-size="11" font-weight="700" text-anchor="middle" letter-spacing="1.5" transform="rotate(-90 56 362)">PIĘTRO 1</text>
+  <text x="56" y="562" fill="var(--ink-3)" font-size="11" font-weight="700" text-anchor="middle" letter-spacing="1.5" transform="rotate(-90 56 562)">PARTER</text>
+  <text x="56" y="776" fill="var(--ink-3)" font-size="11" font-weight="700" text-anchor="middle" letter-spacing="1.5" transform="rotate(-90 56 776)">GARAŻ</text>
+
+  <rect x="950" y="74" width="56" height="806" fill="none" stroke="var(--ink-3)" stroke-width="1.5" stroke-dasharray="7 6"/>
+  <text x="1000" y="360" fill="var(--ink-3)" font-size="11" font-weight="700" text-anchor="middle" letter-spacing="1.2" transform="rotate(-90 1000 360)">SZACHT INSTALACYJNY</text>
+
+  <!-- ===== 2 · rekuperator ===== -->
+  <rect x="700" y="100" width="220" height="110" rx="11" fill="var(--panel)" stroke="var(--ink)" stroke-width="2"/>
+  <text x="810" y="128" font-size="14" font-weight="700" fill="var(--ink)" text-anchor="middle">REKUPERATOR</text>
+  <text x="810" y="146" font-size="11.5" fill="var(--ink-3)" text-anchor="middle">Frapol OnyX Pride 400</text>
+  <rect x="714" y="158" width="192" height="28" rx="7" fill="var(--mod-bg)" stroke="var(--mod)"/>
+  <text x="810" y="177" font-size="12" font-weight="600" fill="var(--mod-ink)" text-anchor="middle">port COM3: Modbus RTU</text>
+  <g class="bal"><circle cx="694" cy="88" r="17"/><text x="694" y="94">2</text></g>
+
+  <!-- klimatyzacja na trzech poziomach — wszędzie bez kabla -->
+  <rect x="120" y="100" width="120" height="34" rx="9" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.5"/>
+  <text x="180" y="122" font-size="11.5" font-weight="700" fill="var(--ink)" text-anchor="middle">KLIMA</text>
+  <text x="254" y="121" font-size="15" fill="var(--ink-3)">〜</text>
+  <rect x="420" y="150" width="24" height="24" rx="5" fill="var(--panel)" stroke="var(--line-2)" stroke-width="1.5"/>
+  <text x="432" y="192" font-size="10.5" fill="var(--ink-3)" text-anchor="middle">regulator podłog.</text>
+
+  <!-- ===== 6 · klimatyzacja ===== -->
+  <rect x="120" y="300" width="120" height="34" rx="9" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.5"/>
+  <text x="180" y="322" font-size="11.5" font-weight="700" fill="var(--ink)" text-anchor="middle">KLIMA</text>
+  <text x="254" y="321" font-size="15" fill="var(--ink-3)">〜</text>
+  <g class="bal"><circle cx="114" cy="284" r="17"/><text x="114" y="290">6</text></g>
+  <text x="300" y="306" font-size="13" font-weight="700" fill="var(--ink)">KLIMA — zero kabli sygnałowych</text>
+  <text x="300" y="323" font-size="11.5" fill="var(--ink-2)">jednostki mają Wi-Fi (GREE) i gadają lokalnie z serwerem</text>
+  <text x="300" y="340" font-size="11" fill="var(--ink-3)">wariant VRF: zamiast tego LiYCY 2×1,5 do szafy RACK</text>
+  <rect x="420" y="352" width="24" height="24" rx="5" fill="var(--panel)" stroke="var(--line-2)" stroke-width="1.5"/>
+
+  <!-- ===== 3 · jedyny nowy kabel przez dom ===== -->
+  <text x="620" y="392" font-size="13" font-weight="700" fill="var(--mod-ink)">NOWY KABEL: UTP kat.6 (skrętka)</text>
+  <text x="620" y="409" font-size="11.5" fill="var(--ink-2)">z rekuperatora, szachtem, do szafy RACK w garażu</text>
+  <text x="620" y="426" font-size="11" fill="var(--ink-3)">4 pary: Modbus (A/B) + REKU-STOP z alarmu + 2× zapas</text>
+  <line x1="936" y1="404" x2="964" y2="415" stroke="var(--mod)" stroke-width="1.5"/>
+  <polygon points="970,418 957,417 961,407" fill="var(--mod)"/>
+
+  <!-- ===== 7 · podłogówka ===== -->
+  <rect x="120" y="500" width="120" height="34" rx="9" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.5"/>
+  <text x="180" y="522" font-size="11.5" font-weight="700" fill="var(--ink)" text-anchor="middle">KLIMA</text>
+  <text x="254" y="521" font-size="15" fill="var(--ink-3)">〜</text>
+  <rect x="420" y="550" width="24" height="24" rx="5" fill="var(--panel)" stroke="var(--line-2)" stroke-width="1.5"/>
+  <g class="bal"><circle cx="420" cy="528" r="17"/><text x="420" y="534">7</text></g>
+  <text x="470" y="552" font-size="13" font-weight="700" fill="var(--ink)">PODŁOGÓWKA — kable już są</text>
+  <text x="470" y="569" font-size="11.5" fill="var(--ink-2)">sterowanie per pokój istnieje: regulator Salus w każdym pokoju</text>
+  <text x="470" y="586" font-size="11.5" fill="var(--ink-3)">smart = wymiana regulatora w puszce, zero nowych kabli</text>
+
+  <!-- ===== 1 · szafa RACK ===== -->
+  <rect x="120" y="700" width="240" height="140" rx="11" fill="var(--panel)" stroke="var(--ink)" stroke-width="2"/>
+  <text x="240" y="718" font-size="13.5" font-weight="700" fill="var(--ink)" text-anchor="middle">SZAFA RACK — mózg domu</text>
+  <rect x="134" y="726" width="212" height="24" rx="6" fill="var(--d-box)"/>
+  <text x="240" y="742" font-size="11" fill="var(--d-box-text)" text-anchor="middle">SERWER (Home Assistant)</text>
+  <rect x="134" y="754" width="212" height="24" rx="6" fill="var(--lan-bg)" stroke="var(--lan)"/>
+  <text x="240" y="770" font-size="11" font-weight="600" fill="var(--lan-ink)" text-anchor="middle">switch LAN</text>
+  <rect x="134" y="782" width="212" height="24" rx="6" fill="var(--mod-bg)" stroke="var(--mod)"/>
+  <text x="240" y="798" font-size="11" font-weight="600" fill="var(--mod-ink)" text-anchor="middle">2× konwerter USB ↔ RS485</text>
+  <rect x="134" y="810" width="212" height="24" rx="6" fill="var(--sg-bg)" stroke="var(--sg)"/>
+  <text x="240" y="826" font-size="11" font-weight="600" fill="var(--sg-ink)" text-anchor="middle">Shelly Pro 2 — styki SG Ready</text>
+  <g class="bal"><circle cx="114" cy="686" r="17"/><text x="114" y="692">1</text></g>
+
+  <!-- ===== 4 · pompa ciepła ===== -->
+  <rect x="460" y="700" width="230" height="140" rx="11" fill="var(--panel)" stroke="var(--ink)" stroke-width="2"/>
+  <text x="575" y="718" font-size="13.5" font-weight="700" fill="var(--ink)" text-anchor="middle">POMPA CIEPŁA</text>
+  <text x="575" y="734" font-size="11" fill="var(--ink-3)" text-anchor="middle">Vitocal 222-S, jednostka wewnętrzna</text>
+  <rect x="474" y="742" width="202" height="24" rx="6" fill="var(--lan-bg)" stroke="var(--lan)"/>
+  <text x="575" y="758" font-size="11" font-weight="600" fill="var(--lan-ink)" text-anchor="middle">Wi-Fi / LAN — apka ViCare</text>
+  <rect x="474" y="770" width="202" height="24" rx="6" fill="var(--sg-bg)" stroke="var(--sg)"/>
+  <text x="575" y="786" font-size="11" font-weight="600" fill="var(--sg-ink)" text-anchor="middle">wejście SG Ready (2 styki)</text>
+  <rect x="474" y="798" width="202" height="24" rx="6" fill="var(--panel-2)" stroke="var(--line-2)"/>
+  <text x="575" y="814" font-size="11" fill="var(--ink-3)" text-anchor="middle">opcja: czujnik rosy — chłodzenie</text>
+  <g class="bal"><circle cx="454" cy="686" r="17"/><text x="454" y="692">4</text></g>
+
+  <!-- ===== 8 · falownik PV ===== -->
+  <rect x="750" y="700" width="180" height="110" rx="11" fill="var(--panel)" stroke="var(--ink)" stroke-width="2"/>
+  <text x="840" y="722" font-size="13.5" font-weight="700" fill="var(--ink)" text-anchor="middle">FALOWNIK PV</text>
+  <text x="840" y="738" font-size="11" fill="var(--ink-3)" text-anchor="middle">GoodWe GW4K-DT</text>
+  <rect x="764" y="748" width="152" height="24" rx="6" fill="var(--pv-bg)" stroke="var(--pv)"/>
+  <text x="840" y="764" font-size="11" font-weight="600" fill="var(--pv-ink)" text-anchor="middle">RS485 do RACK — już jest</text>
+  <g class="bal"><circle cx="744" cy="686" r="17"/><text x="744" y="692">8</text></g>
+
+  <!-- ===== krótkie odcinki w garażu ===== -->
+  <path d="M 360 742 L 460 742" stroke="var(--lan)" stroke-width="3"/>
+  <text class="halo" x="410" y="733" font-size="10.5" font-weight="600" fill="var(--lan-ink)" text-anchor="middle">UTP (LAN)</text>
+  <path d="M 360 800 L 460 800" stroke="var(--sg)" stroke-width="3.5"/>
+  <text class="m halo" x="410" y="779" font-size="10.5" font-weight="600" fill="var(--sg-ink)" text-anchor="middle">YTDY 6×0,5</text>
+  <text class="halo" x="410" y="828" font-size="10.5" fill="var(--sg-ink)" text-anchor="middle">SG Ready</text>
+  <g class="bal"><circle cx="410" cy="800" r="17"/><text x="410" y="806">5</text></g>
+
+  <!-- ===== 3 · trasa nowego kabla ===== -->
+  <path d="M 920 165 L 978 165 L 978 856 L 300 856 L 300 840" fill="none" stroke="var(--mod)" stroke-width="4" stroke-dasharray="9 7"/>
+  <g class="bal"><circle cx="978" cy="470" r="17"/><text x="978" y="476">3</text></g>
+
+  <!-- ===== trasa RS485 od falownika — już położona ===== -->
+  <path d="M 840 810 L 840 872 L 340 872 L 340 840" fill="none" stroke="var(--pv)" stroke-width="3.5" stroke-dasharray="9 7"/>
+</svg>
+      </div>
+    </div>
+
+    <div class="key">
+      <div class="key__item">
+        <span class="key__swatch"><span class="key__line" style="background:var(--mod)"></span></span>
+        <span><b>Modbus — skrętka UTP</b><span>rekuperator do szafy RACK</span><span class="key__tag" style="background:var(--mod-bg);color:var(--mod-ink)">nowy kabel</span></span>
+      </div>
+      <div class="key__item">
+        <span class="key__swatch"><span class="key__line" style="background:var(--sg)"></span></span>
+        <span><b>SG Ready — YTDY 6×0,5</b><span>krótki odcinek w garażu, RACK do pompy</span><span class="key__tag" style="background:var(--sg-bg);color:var(--sg-ink)">nowy kabel</span></span>
+      </div>
+      <div class="key__item">
+        <span class="key__swatch"><span class="key__line" style="background:var(--pv)"></span></span>
+        <span><b>RS485 do falownika PV</b><span>położony przez dewelopera</span><span class="key__tag" style="background:var(--pv-bg);color:var(--pv-ink)">już jest</span></span>
+      </div>
+      <div class="key__item">
+        <span class="key__swatch"><span class="key__line" style="background:var(--lan)"></span></span>
+        <span><b>LAN — UTP kat.6</b><span>do pompy; pewniejszy niż Wi-Fi</span><span class="key__tag" style="background:var(--lan-bg);color:var(--lan-ink)">opcjonalny</span></span>
+      </div>
+      <div class="key__item">
+        <span class="key__swatch" style="margin-top:2px"><span style="font-size:17px;color:var(--ink-3)">〜</span></span>
+        <span><b>Wi-Fi</b><span>klimatyzacja i pompa — łączą się bez kabla</span><span class="key__tag" style="background:var(--panel-2);color:var(--ink-2)">bez kabla</span></span>
+      </div>
+      <div class="key__item">
+        <span class="key__bal">1</span>
+        <span><b>Numer kroku</b><span>opisany w opowieści niżej</span></span>
+      </div>
+    </div>
+
+    <dl class="scenes">
+      <div class="scene">
+        <dt>Nadwyżka z PV</dt>
+        <dd>tania ciepła woda — serwer zwiera styki SG Ready i pompa grzeje mocniej</dd>
+      </div>
+      <div class="scene">
+        <dt>Okno otwarte</dt>
+        <dd>klima w tym pokoju pauzuje — sygnał z kontaktronu</dd>
+      </div>
+      <div class="scene">
+        <dt>Pożar</dt>
+        <dd>rekuperator staje, żeby nie rozdmuchiwać dymu — sygnał z centrali Satel</dd>
+      </div>
+    </dl>
+  </figure>
+</section>
+
+<!-- ============================================================
+     02 — KROK PO KROKU
+     ============================================================ -->
+<section class="section" id="kroki">
+  <div class="section__head">
+    <span class="section__no">02</span>
+    <h2>Krok po kroku <span class="sub">— kto z kim rozmawia i po czym</span></h2>
   </div>
 
-  <!-- ================= RYSUNEK GŁÓWNY ================= -->
-  <section style="background:#fff; border:1px solid #e7e5e4; border-radius:16px; padding:28px; margin-bottom:28px; box-shadow:0 1px 3px rgba(0,0,0,.05)">
-    <h2 style="margin:0 0 6px; font-size:22px; font-weight:700">Przekrój domu — kto gdzie mieszka i którędy melduje się serwerowi</h2>
-    <p style="margin:0 0 18px; color:#57534e; font-size:15px">Czytaj numerkami <b style="color:#b45309">① → ⑧</b> — te same numery znajdziesz w opowieści pod rysunkiem.</p>
+  <ol class="steps">
+    <li class="step">
+      <span class="step__no" aria-hidden="true">1</span>
+      <span class="step__tag tag-none">dyrygent</span>
+      <p><b>Szafa RACK.</b> W garażu mieszka serwer domu (Home Assistant). Sam nie grzeje i nie chłodzi — słucha meldunków i wydaje polecenia. Obok niego w szafie: switch LAN, dwa małe konwertery USB↔RS485 i Shelly Pro 2 na szynie DIN.</p>
+    </li>
+    <li class="step">
+      <span class="step__no" aria-hidden="true">2</span>
+      <span class="step__tag tag-new">nowy kabel</span>
+      <p><b>Rekuperator — mówi tylko po kablu.</b> Jedyna z czterech maszyn bez radia (piętro 2, przy szachcie) — ma port <b>COM3 z Modbus RTU</b>. Przez niego serwer odczyta biegi, temperatury i stan filtrów oraz ustawi wydajność, na przykład boost dla łazienki.</p>
+    </li>
+    <li class="step">
+      <span class="step__no" aria-hidden="true">3</span>
+      <span class="step__tag tag-new">nowy kabel</span>
+      <p><b>Jedyny nowy kabel przez dom.</b> <span class="mono">UTP kat.6</span> od rekuperatora, szachtem, do RACK. Skrętka ma 4 pary, Modbus potrzebuje jednej — druga dostaje od razu drugą pracę: <b>REKU-STOP</b>, sygnał z centrali alarmowej „pożar = zatrzymaj wentylację”, żeby reku nie rozdmuchiwał dymu. Dwie pary zostają w zapasie.</p>
+    </li>
+    <li class="step">
+      <span class="step__no" aria-hidden="true">4</span>
+      <span class="step__tag tag-none">sieć + zapas</span>
+      <p><b>Pompa ciepła.</b> Ma własne Wi-Fi i oficjalną apkę <b>ViCare</b> — tą drogą wchodzi do serwera, przez chmurę. Stoi kilka metrów od szafy, więc kładziemy też <span class="mono">UTP</span>: pewniejszy od Wi-Fi i furtka na integracje lokalne. Uwaga: wariant „AC” umie chłodzić, ale przed aktywacją trzeba dokupić <b>czujnik rosy</b> — inaczej chłodna podłoga się wykropli.</p>
+    </li>
+    <li class="step">
+      <span class="step__no" aria-hidden="true">5</span>
+      <span class="step__tag tag-sg">nowy kabel</span>
+      <p><b>SG Ready — perła tego schematu.</b> Dwa styki na płycie pompy, których deweloper nie okablował. Krótki <span class="mono">YTDY 6×0,5</span> z RACK do pompy plus Shelly Pro 2, które na rozkaz serwera zwiera styki: „masz tani prąd — podgrzej wodę mocniej”. Cztery kombinacje dwóch styków = cztery tryby: normalny, blokada, zachęta, wymuszenie.</p>
+    </li>
+    <li class="step">
+      <span class="step__no" aria-hidden="true">6</span>
+      <span class="step__tag tag-none">bez kabla</span>
+      <p><b>Klimatyzacja.</b> Jednostki GREE mają wbudowane Wi-Fi i integrację lokalną z Home Assistant — rozmowa idzie w Twojej sieci, bez chmury. Gdyby wrócił wariant VRF Toshiba: zamiast tego jeden przewód <span class="mono">LiYCY 2×1,5</span> z dowolnej jednostki wewnętrznej do RACK.</p>
+    </li>
+    <li class="step">
+      <span class="step__no" aria-hidden="true">7</span>
+      <span class="step__tag tag-have">kable już są</span>
+      <p><b>Podłogówka.</b> Tu deweloper odrobił lekcję: w każdym pokoju jest przewodowy regulator Salus, kable siedzą w ścianach. Smart = <b>wymiana regulatora w istniejącej puszce</b> na wersję łączącą się z serwerem. Zero nowych kabli, zero kucia.</p>
+    </li>
+    <li class="step">
+      <span class="step__no" aria-hidden="true">8</span>
+      <span class="step__tag tag-have">kabel już jest</span>
+      <p><b>Fotowoltaika.</b> RS485 od falownika do RACK położył deweloper — wystarczy wpiąć w drugi konwerter. GoodWe ma też natywną integrację po sieci; obie drogi są lokalne. Po co serwerowi PV? Scena „nadwyżka słońca → grzej wodę” z punktu 5 musi wiedzieć, ile prądu właśnie się marnuje.</p>
+    </li>
+  </ol>
+</section>
 
-    <svg viewBox="0 0 1180 990" xmlns="http://www.w3.org/2000/svg" font-family="var(--font-sans,'NVIDIA Sans',sans-serif)" style="width:100%; height:auto; display:block">
-      <defs>
-        <pattern id="hatch" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
-          <rect width="8" height="8" fill="#e7e5e4"/><line x1="0" y1="0" x2="0" y2="8" stroke="#d6d3d1" stroke-width="3"/>
-        </pattern>
-      </defs>
-
-      <!-- AGREGATY KLIMY NA DACHU -->
-      <rect x="150" y="10" width="180" height="38" rx="8" fill="#fff" stroke="#1c1917" stroke-width="2"/>
-      <text x="240" y="28" font-size="12.5" font-weight="700" text-anchor="middle">AGREGATY KLIMY</text>
-      <text x="240" y="42" font-size="10.5" fill="#78716c" text-anchor="middle">(dach, na wspornikach)</text>
-      <text x="350" y="32" font-size="11" fill="#78716c">przejścia przez papę tylko z uszczelnieniem żywicą</text>
-
-      <!-- DACH -->
-      <rect x="40" y="50" width="1100" height="24" fill="url(#hatch)" stroke="#d6d3d1"/>
-      <text x="1060" y="67" fill="#a8a29e" font-size="11" letter-spacing=".12em">DACH</text>
-
-      <!-- ŚCIANY -->
-      <rect x="40" y="74" width="32" height="806" fill="url(#hatch)" stroke="#d6d3d1"/>
-      <rect x="1108" y="74" width="32" height="806" fill="url(#hatch)" stroke="#d6d3d1"/>
-
-      <!-- STROPY -->
-      <rect x="72" y="252" width="1036" height="20" fill="url(#hatch)" stroke="#d6d3d1"/>
-      <rect x="72" y="452" width="1036" height="20" fill="url(#hatch)" stroke="#d6d3d1"/>
-      <rect x="72" y="652" width="1036" height="20" fill="url(#hatch)" stroke="#d6d3d1"/>
-
-      <!-- PODŁOGA -->
-      <rect x="40" y="880" width="1100" height="24" fill="url(#hatch)" stroke="#d6d3d1"/>
-
-      <!-- ETYKIETY KONDYGNACJI -->
-      <text x="56" y="163" fill="#a8a29e" font-size="11" text-anchor="middle" letter-spacing=".15em" transform="rotate(-90 56 163)">PIĘTRO 2</text>
-      <text x="56" y="362" fill="#a8a29e" font-size="11" text-anchor="middle" letter-spacing=".15em" transform="rotate(-90 56 362)">PIĘTRO 1</text>
-      <text x="56" y="562" fill="#a8a29e" font-size="11" text-anchor="middle" letter-spacing=".15em" transform="rotate(-90 56 562)">PARTER</text>
-      <text x="56" y="776" fill="#a8a29e" font-size="11" text-anchor="middle" letter-spacing=".15em" transform="rotate(-90 56 776)">GARAŻ</text>
-
-      <!-- SZACHT -->
-      <rect x="950" y="74" width="56" height="806" fill="none" stroke="#a8a29e" stroke-width="1.5" stroke-dasharray="7 6"/>
-      <text x="1000" y="360" fill="#a8a29e" font-size="11" text-anchor="middle" letter-spacing=".12em" transform="rotate(-90 1000 360)">SZACHT INSTALACYJNY</text>
-
-      <!-- ============ PIĘTRO 2 ============ -->
-      <!-- REKUPERATOR -->
-      <rect x="700" y="100" width="220" height="110" rx="10" fill="#fff" stroke="#1c1917" stroke-width="2"/>
-      <text x="810" y="128" font-size="14" font-weight="700" text-anchor="middle">REKUPERATOR</text>
-      <text x="810" y="146" font-size="11.5" fill="#78716c" text-anchor="middle">Frapol OnyX Pride 400</text>
-      <rect x="714" y="158" width="192" height="28" rx="6" fill="#f0fdfa" stroke="#0d9488"/>
-      <text x="810" y="177" font-size="12" fill="#0f766e" text-anchor="middle">port COM3: Modbus RTU</text>
-      <circle cx="700" cy="86" r="14" fill="#b45309"/><text x="700" y="91" font-size="14" fill="#fff" text-anchor="middle" font-weight="700">2</text>
-
-      <!-- klima p.2 -->
-      <rect x="120" y="100" width="120" height="34" rx="8" fill="#fff" stroke="#1c1917" stroke-width="1.5"/>
-      <text x="180" y="122" font-size="11.5" font-weight="700" text-anchor="middle">KLIMA</text>
-      <text x="254" y="120" font-size="16" fill="#0ea5e9">〜</text>
-
-      <!-- regulator podłogówki p.2 -->
-      <rect x="420" y="150" width="24" height="24" rx="4" fill="#fff" stroke="#a8a29e" stroke-width="1.5"/>
-      <text x="432" y="192" font-size="10.5" fill="#78716c" text-anchor="middle">regulator podłog.</text>
-
-      <!-- ============ PIĘTRO 1 ============ -->
-      <rect x="120" y="300" width="120" height="34" rx="8" fill="#fff" stroke="#1c1917" stroke-width="1.5"/>
-      <text x="180" y="322" font-size="11.5" font-weight="700" text-anchor="middle">KLIMA</text>
-      <text x="254" y="320" font-size="16" fill="#0ea5e9">〜</text>
-      <circle cx="120" cy="286" r="14" fill="#b45309"/><text x="120" y="291" font-size="14" fill="#fff" text-anchor="middle" font-weight="700">6</text>
-      <text x="300" y="306" font-size="13" font-weight="700" fill="#0ea5e9">KLIMA — zero kabli sygnałowych</text>
-      <text x="300" y="323" font-size="11.5" fill="#57534e">jednostki mają Wi-Fi (GREE) i gadają lokalnie z serwerem</text>
-      <text x="300" y="340" font-size="11" fill="#78716c">(wariant VRF: zamiast tego LiYCY 2×1,5 do szafy RACK)</text>
-
-      <rect x="420" y="352" width="24" height="24" rx="4" fill="#fff" stroke="#a8a29e" stroke-width="1.5"/>
-
-      <!-- etykieta kabla UTP (na wolnym polu p.1, strzałka do szachtu) -->
-      <text x="620" y="392" font-size="13" font-weight="700" fill="#0d9488">NOWY KABEL: UTP kat.6 (skrętka)</text>
-      <text x="620" y="409" font-size="11.5" fill="#57534e">z rekuperatora, szachtem, do szafy RACK w garażu</text>
-      <text x="620" y="426" font-size="11" fill="#78716c">4 pary: Modbus (A/B) + REKU-STOP (z alarmu) + 2× zapas</text>
-      <line x1="936" y1="404" x2="966" y2="416" stroke="#0d9488" stroke-width="1.5"/>
-      <polygon points="970,418 957,417 961,407" fill="#0d9488"/>
-
-      <!-- ============ PARTER ============ -->
-      <rect x="120" y="500" width="120" height="34" rx="8" fill="#fff" stroke="#1c1917" stroke-width="1.5"/>
-      <text x="180" y="522" font-size="11.5" font-weight="700" text-anchor="middle">KLIMA</text>
-      <text x="254" y="520" font-size="16" fill="#0ea5e9">〜</text>
-
-      <rect x="420" y="550" width="24" height="24" rx="4" fill="#fff" stroke="#a8a29e" stroke-width="1.5"/>
-      <circle cx="420" cy="540" r="14" fill="#b45309"/><text x="420" y="545" font-size="14" fill="#fff" text-anchor="middle" font-weight="700">7</text>
-      <text x="470" y="552" font-size="13" font-weight="700">PODŁOGÓWKA — kable JUŻ SĄ</text>
-      <text x="470" y="569" font-size="11.5" fill="#57534e">sterowanie per pokój istnieje (Salus, regulator w każdym pokoju);</text>
-      <text x="470" y="586" font-size="11.5" fill="#57534e">smart = wymiana regulatora w puszce — zero nowych kabli</text>
-
-      <!-- ============ GARAŻ ============ -->
-      <!-- RACK -->
-      <rect x="120" y="700" width="240" height="140" rx="10" fill="#fff" stroke="#1c1917" stroke-width="2"/>
-      <text x="240" y="718" font-size="13.5" font-weight="700" text-anchor="middle">SZAFA RACK — mózg domu</text>
-      <rect x="134" y="726" width="212" height="24" rx="5" fill="#1c1917"/>
-      <text x="240" y="742" font-size="11" fill="#fff" text-anchor="middle">SERWER (Home Assistant)</text>
-      <rect x="134" y="754" width="212" height="24" rx="5" fill="#eff6ff" stroke="#2563eb"/>
-      <text x="240" y="770" font-size="11" fill="#1d4ed8" text-anchor="middle">switch LAN</text>
-      <rect x="134" y="782" width="212" height="24" rx="5" fill="#f0fdfa" stroke="#0d9488"/>
-      <text x="240" y="798" font-size="11" fill="#0f766e" text-anchor="middle">2× konwerter USB ↔ RS485</text>
-      <rect x="134" y="810" width="212" height="24" rx="5" fill="#fff7ed" stroke="#ea580c"/>
-      <text x="240" y="826" font-size="11" fill="#c2410c" text-anchor="middle">Shelly Pro 2 — styki SG Ready</text>
-      <circle cx="120" cy="686" r="14" fill="#b45309"/><text x="120" y="691" font-size="14" fill="#fff" text-anchor="middle" font-weight="700">1</text>
-
-      <!-- POMPA CIEPŁA -->
-      <rect x="460" y="700" width="230" height="140" rx="10" fill="#fff" stroke="#1c1917" stroke-width="2"/>
-      <text x="575" y="718" font-size="13.5" font-weight="700" text-anchor="middle">POMPA CIEPŁA</text>
-      <text x="575" y="734" font-size="11" fill="#78716c" text-anchor="middle">Vitocal 222-S (jedn. wewnętrzna)</text>
-      <rect x="474" y="742" width="202" height="24" rx="5" fill="#eff6ff" stroke="#2563eb"/>
-      <text x="575" y="758" font-size="11" fill="#1d4ed8" text-anchor="middle">Wi-Fi / LAN — apka ViCare</text>
-      <rect x="474" y="770" width="202" height="24" rx="5" fill="#fff7ed" stroke="#ea580c"/>
-      <text x="575" y="786" font-size="11" fill="#c2410c" text-anchor="middle">wejście SG Ready (2 styki)</text>
-      <rect x="474" y="798" width="202" height="24" rx="5" fill="#f5f5f4" stroke="#d6d3d1"/>
-      <text x="575" y="814" font-size="11" fill="#78716c" text-anchor="middle">(opcja) czujnik rosy — chłodzenie</text>
-      <circle cx="460" cy="686" r="14" fill="#b45309"/><text x="460" y="691" font-size="14" fill="#fff" text-anchor="middle" font-weight="700">4</text>
-
-      <!-- FALOWNIK PV -->
-      <rect x="750" y="700" width="180" height="110" rx="10" fill="#fff" stroke="#1c1917" stroke-width="2"/>
-      <text x="840" y="722" font-size="13.5" font-weight="700" text-anchor="middle">FALOWNIK PV</text>
-      <text x="840" y="738" font-size="11" fill="#78716c" text-anchor="middle">GoodWe GW4K-DT</text>
-      <rect x="764" y="748" width="152" height="24" rx="5" fill="#fefce8" stroke="#ca8a04"/>
-      <text x="840" y="764" font-size="11" fill="#a16207" text-anchor="middle">RS485 do RACK ✓ jest</text>
-      <circle cx="750" cy="686" r="14" fill="#b45309"/><text x="750" y="691" font-size="14" fill="#fff" text-anchor="middle" font-weight="700">8</text>
-
-      <!-- KABLE W GARAŻU: RACK <-> POMPA -->
-      <path d="M 360 742 L 460 742" stroke="#2563eb" stroke-width="3"/>
-      <text x="410" y="733" font-size="10.5" fill="#1d4ed8" text-anchor="middle">UTP (LAN)</text>
-
-      <path d="M 360 800 L 460 800" stroke="#ea580c" stroke-width="3.5"/>
-      <circle cx="410" cy="800" r="13" fill="#b45309"/><text x="410" y="805" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">5</text>
-      <text x="410" y="779" font-size="11" font-weight="700" fill="#ea580c" text-anchor="middle">YTDY 6×0,5</text>
-      <text x="410" y="826" font-size="10.5" fill="#78716c" text-anchor="middle">SG Ready</text>
-
-      <!-- KABEL UTP REKU -> RACK (szachtem) -->
-      <path d="M 920 165 L 978 165 L 978 856 L 300 856 L 300 840" fill="none" stroke="#0d9488" stroke-width="4" stroke-dasharray="9 7"/>
-      <circle cx="978" cy="470" r="14" fill="#b45309"/><text x="978" y="475" font-size="14" fill="#fff" text-anchor="middle" font-weight="700">3</text>
-
-      <!-- KABEL RS485 PV -> RACK (już jest) -->
-      <path d="M 840 810 L 840 872 L 340 872 L 340 840" fill="none" stroke="#ca8a04" stroke-width="3.5" stroke-dasharray="9 7"/>
-
-      <!-- PASEK SCEN -->
-      <g>
-        <rect x="110" y="928" width="330" height="40" rx="20" fill="#fff" stroke="#e7e5e4"/>
-        <text x="275" y="953" font-size="13" text-anchor="middle"><tspan font-weight="700">nadwyżka z PV</tspan> = tania ciepła woda (SG Ready)</text>
-        <rect x="460" y="928" width="330" height="40" rx="20" fill="#fff" stroke="#e7e5e4"/>
-        <text x="625" y="953" font-size="13" text-anchor="middle"><tspan font-weight="700">okno otwarte</tspan> = klima pauza (kontaktron)</text>
-        <rect x="810" y="928" width="260" height="40" rx="20" fill="#fff" stroke="#e7e5e4"/>
-        <text x="940" y="953" font-size="13" text-anchor="middle"><tspan font-weight="700">pożar</tspan> = reku STOP (Satel)</text>
-      </g>
-    </svg>
-  </section>
-
-  <!-- ================= OPOWIEŚĆ ================= -->
-  <section style="margin-bottom:28px">
-    <h2 style="margin:0 0 14px; font-size:22px; font-weight:700">Opowieść krok po kroku</h2>
-    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:14px">
-      <div style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:18px 20px; box-shadow:0 1px 3px rgba(0,0,0,.04)">
-        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px"><span style="flex:none; width:30px; height:30px; border-radius:99px; background:#b45309; color:#fff; font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:center">1</span><b style="font-size:15px">Szafa RACK — dyrygent</b></div>
-        <p style="margin:0; font-size:14px; color:#44403c">W garażu mieszka serwer domu (Home Assistant). Sam nie grzeje i nie chłodzi — słucha meldunków i wydaje polecenia. Obok niego w szafie: switch LAN, dwa małe konwertery USB↔RS485 i Shelly Pro 2 na szynie DIN.</p>
-      </div>
-      <div style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:18px 20px; box-shadow:0 1px 3px rgba(0,0,0,.04)">
-        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px"><span style="flex:none; width:30px; height:30px; border-radius:99px; background:#b45309; color:#fff; font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:center">2</span><b style="font-size:15px">Rekuperator — mówi tylko po kablu</b></div>
-        <p style="margin:0; font-size:14px; color:#44403c">Jedyna z czterech maszyn bez radia (piętro 2, przy szachcie) — ma port <b>COM3 z Modbus RTU</b>. Przez niego serwer odczyta biegi, temperatury i filtry oraz ustawi wydajność (np. boost dla łazienki).</p>
-      </div>
-      <div style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:18px 20px; box-shadow:0 1px 3px rgba(0,0,0,.04)">
-        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px"><span style="flex:none; width:30px; height:30px; border-radius:99px; background:#b45309; color:#fff; font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:center">3</span><b style="font-size:15px">Jedyny nowy kabel przez dom</b></div>
-        <p style="margin:0; font-size:14px; color:#44403c"><b>UTP kat.6</b> od rekuperatora, szachtem, do RACK. Skrętka ma 4 pary, Modbus potrzebuje jednej — druga dostaje od razu drugą pracę: <b>REKU-STOP</b>, sygnał z centrali alarmowej „pożar = zatrzymaj wentylację" (żeby reku nie rozdmuchiwał dymu). Dwie pary zostają w zapasie.</p>
-      </div>
-      <div style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:18px 20px; box-shadow:0 1px 3px rgba(0,0,0,.04)">
-        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px"><span style="flex:none; width:30px; height:30px; border-radius:99px; background:#b45309; color:#fff; font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:center">4</span><b style="font-size:15px">Pompa ciepła — sieć + zapas kabla</b></div>
-        <p style="margin:0; font-size:14px; color:#44403c">Ma własne Wi-Fi i oficjalną apkę <b>ViCare</b> — tą drogą wchodzi do serwera (przez chmurę). Stoi kilka metrów od szafy, więc kładziemy też <b>UTP (LAN)</b>: pewniejszy od Wi-Fi i furtka na integracje lokalne. Uwaga: wariant „AC" umie chłodzić, ale przed aktywacją trzeba dokupić <b>czujnik rosy</b> — inaczej chłodna podłoga się wykropli.</p>
-      </div>
-      <div style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:18px 20px; box-shadow:0 1px 3px rgba(0,0,0,.04)">
-        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px"><span style="flex:none; width:30px; height:30px; border-radius:99px; background:#b45309; color:#fff; font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:center">5</span><b style="font-size:15px">SG Ready — perła tego schematu</b></div>
-        <p style="margin:0; font-size:14px; color:#44403c">Dwa styki na płycie pompy, których deweloper nie okablował. Krótki <b>YTDY 6×0,5</b> z RACK do pompy + Shelly Pro 2, które na rozkaz serwera zwiera styki: „masz tani prąd — podgrzej wodę mocniej". Cztery kombinacje dwóch styków = cztery tryby (normalny, blokada, zachęta, wymuszenie).</p>
-      </div>
-      <div style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:18px 20px; box-shadow:0 1px 3px rgba(0,0,0,.04)">
-        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px"><span style="flex:none; width:30px; height:30px; border-radius:99px; background:#b45309; color:#fff; font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:center">6</span><b style="font-size:15px">Klimatyzacja — zero kabli</b></div>
-        <p style="margin:0; font-size:14px; color:#44403c">Jednostki GREE mają wbudowane Wi-Fi i integrację lokalną z Home Assistant — rozmowa idzie w Twojej sieci, bez chmury. (Gdyby wrócił wariant VRF Toshiba: zamiast tego jeden przewód LiYCY 2×1,5 z dowolnej jednostki wewnętrznej do RACK.)</p>
-      </div>
-      <div style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:18px 20px; box-shadow:0 1px 3px rgba(0,0,0,.04)">
-        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px"><span style="flex:none; width:30px; height:30px; border-radius:99px; background:#b45309; color:#fff; font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:center">7</span><b style="font-size:15px">Podłogówka — kable już są</b></div>
-        <p style="margin:0; font-size:14px; color:#44403c">Tu deweloper odrobił lekcję: w każdym pokoju jest przewodowy regulator (Salus), kable siedzą w ścianach. Smart = <b>wymiana regulatora w istniejącej puszce</b> na wersję łączącą się z serwerem. Zero nowych kabli, zero kucia.</p>
-      </div>
-      <div style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:18px 20px; box-shadow:0 1px 3px rgba(0,0,0,.04)">
-        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px"><span style="flex:none; width:30px; height:30px; border-radius:99px; background:#b45309; color:#fff; font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:center">8</span><b style="font-size:15px">Fotowoltaika — kabel już leży</b></div>
-        <p style="margin:0; font-size:14px; color:#44403c">RS485 od falownika do RACK położył deweloper — wystarczy wpiąć w drugi konwerter. GoodWe ma też natywną integrację po sieci; obie drogi są lokalne. Po co serwerowi PV? Scena „nadwyżka słońca → grzej wodę" (punkt 5) musi wiedzieć, ile prądu właśnie się marnuje.</p>
+<!-- ============================================================
+     03 — ZBLIŻENIE: SZAFA RACK
+     ============================================================ -->
+<section class="section" id="rack">
+  <figure class="figure">
+    <div class="figure__head">
+      <div class="section__head">
+        <span class="section__no">03</span>
+        <div>
+          <h2>Zbliżenie: rozszycie w szafie RACK</h2>
+          <p>Wszystkie trzy kable schodzą się w jednym miejscu. Tak wygląda ich podpięcie do serwera — to część, którą zmontujesz samodzielnie, bez kucia.</p>
+        </div>
       </div>
     </div>
-  </section>
 
-  <!-- ================= ZBLIŻENIE: RACK ================= -->
-  <section style="background:#fff; border:1px solid #e7e5e4; border-radius:16px; padding:28px; margin-bottom:36px; box-shadow:0 1px 3px rgba(0,0,0,.05)">
-    <h2 style="margin:0 0 6px; font-size:22px; font-weight:700">Zbliżenie: rozszycie w szafie RACK (dla elektryka i do samodzielnego montażu)</h2>
-    <p style="margin:0 0 18px; color:#57534e; font-size:15px">Wszystkie trzy kable schodzą się w jednym miejscu. Tak wygląda ich podpięcie do serwera.</p>
+    <p class="scroll-hint">Rysunek jest szeroki — przesuń go palcem w bok, żeby zobaczyć całość.</p>
 
-    <svg viewBox="0 0 1180 470" xmlns="http://www.w3.org/2000/svg" font-family="var(--font-sans,'NVIDIA Sans',sans-serif)" style="width:100%; height:auto; display:block">
-      <!-- obrys szafy -->
-      <rect x="150" y="40" width="880" height="390" rx="16" fill="#fefce8" fill-opacity=".35" stroke="#a8a29e" stroke-width="2" stroke-dasharray="8 6"/>
-      <text x="590" y="30" font-size="13" fill="#78716c" text-anchor="middle">SZAFA RACK — widok środka (półka + szyna DIN)</text>
+    <div class="figure__body">
+      <div class="dwg-wrap">
+<svg class="dwg" viewBox="0 0 1180 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="f2-t f2-d">
+  <title id="f2-t">Wnętrze szafy RACK: serwer, konwertery RS485 i Shelly Pro 2</title>
+  <desc id="f2-d">Serwer łączy się przez USB z dwoma konwerterami RS485. Pierwszy obsługuje magistralę Modbus do rekuperatora — para A i B ze skrętki UTP. Druga para tej samej skrętki idzie do wyjścia centrali alarmowej i realizuje funkcję REKU-STOP. Drugi konwerter obsługuje RS485 do falownika fotowoltaiki. Osobno Shelly Pro 2 na szynie DIN zwiera dwa styki bezpotencjałowe, które kablem YTDY sterują wejściem SG Ready pompy ciepła.</desc>
 
-      <!-- SERWER -->
-      <rect x="190" y="80" width="210" height="100" rx="10" fill="#1c1917"/>
-      <text x="295" y="122" font-size="14" font-weight="700" fill="#fff" text-anchor="middle">SERWER</text>
-      <text x="295" y="140" font-size="11.5" fill="#a8a29e" text-anchor="middle">(Home Assistant)</text>
+  <!-- obrys szafy -->
+  <rect x="150" y="40" width="880" height="390" rx="16" fill="var(--panel-2)" stroke="var(--line-2)" stroke-width="2" stroke-dasharray="8 6"/>
+  <text x="590" y="30" font-size="13" fill="var(--ink-3)" text-anchor="middle">SZAFA RACK — widok środka (półka i szyna DIN)</text>
 
-      <!-- konwerter 1 -->
-      <line x1="400" y1="95" x2="500" y2="95" stroke="#57534e" stroke-width="2.5"/>
-      <text x="450" y="88" font-size="10" fill="#78716c" text-anchor="middle">USB</text>
-      <rect x="500" y="70" width="150" height="50" rx="8" fill="#f0fdfa" stroke="#0d9488" stroke-width="1.5"/>
-      <text x="575" y="91" font-size="11.5" font-weight="700" fill="#0f766e" text-anchor="middle">USB ↔ RS485 nr 1</text>
-      <text x="575" y="107" font-size="10.5" fill="#78716c" text-anchor="middle">(dla rekuperatora)</text>
+  <!-- serwer -->
+  <rect x="190" y="80" width="210" height="100" rx="11" fill="var(--d-box)"/>
+  <text x="295" y="122" font-size="14" font-weight="700" fill="var(--d-box-text)" text-anchor="middle">SERWER</text>
+  <text x="295" y="140" font-size="11.5" fill="var(--d-box-dim)" text-anchor="middle">Home Assistant</text>
 
-      <!-- konwerter 2 -->
-      <line x1="400" y1="195" x2="500" y2="195" stroke="#57534e" stroke-width="2.5"/>
-      <text x="450" y="188" font-size="10" fill="#78716c" text-anchor="middle">USB</text>
-      <rect x="500" y="170" width="150" height="50" rx="8" fill="#f0fdfa" stroke="#0d9488" stroke-width="1.5"/>
-      <text x="575" y="191" font-size="11.5" font-weight="700" fill="#0f766e" text-anchor="middle">USB ↔ RS485 nr 2</text>
-      <text x="575" y="207" font-size="10.5" fill="#78716c" text-anchor="middle">(dla falownika PV)</text>
+  <!-- konwerter 1 — rekuperator -->
+  <line x1="400" y1="95" x2="500" y2="95" stroke="var(--ink-3)" stroke-width="2.5"/>
+  <text class="m" x="450" y="88" font-size="10" fill="var(--ink-3)" text-anchor="middle">USB</text>
+  <rect x="500" y="70" width="150" height="50" rx="9" fill="var(--mod-bg)" stroke="var(--mod)" stroke-width="1.5"/>
+  <text x="575" y="91" font-size="11.5" font-weight="700" fill="var(--mod-ink)" text-anchor="middle">USB ↔ RS485 nr 1</text>
+  <text x="575" y="107" font-size="10.5" fill="var(--ink-3)" text-anchor="middle">dla rekuperatora</text>
 
-      <!-- para Modbus z UTP reku -->
-      <path d="M 650 85 L 780 85" stroke="#0d9488" stroke-width="3"/>
-      <path d="M 650 105 L 780 105" stroke="#0d9488" stroke-width="3"/>
-      <text x="656" y="78" font-size="9.5" fill="#0f766e">A</text>
-      <text x="656" y="120" font-size="9.5" fill="#0f766e">B</text>
-      <rect x="780" y="70" width="22" height="50" rx="4" fill="#e7e5e4" stroke="#a8a29e"/>
-      <text x="814" y="84" font-size="12" font-weight="700" fill="#0d9488">UTP kat.6 → REKUPERATOR (p.2)</text>
-      <text x="814" y="101" font-size="11" fill="#57534e">para 1: Modbus (zaciski A / B)</text>
+  <!-- konwerter 2 — PV -->
+  <line x1="400" y1="195" x2="500" y2="195" stroke="var(--ink-3)" stroke-width="2.5"/>
+  <text class="m" x="450" y="188" font-size="10" fill="var(--ink-3)" text-anchor="middle">USB</text>
+  <rect x="500" y="170" width="150" height="50" rx="9" fill="var(--pv-bg)" stroke="var(--pv)" stroke-width="1.5"/>
+  <text x="575" y="191" font-size="11.5" font-weight="700" fill="var(--pv-ink)" text-anchor="middle">USB ↔ RS485 nr 2</text>
+  <text x="575" y="207" font-size="10.5" fill="var(--ink-3)" text-anchor="middle">dla falownika PV</text>
 
-      <!-- REKU-STOP: para 2 z tego samego UTP do wyjścia Satela -->
-      <path d="M 791 120 L 791 298 L 800 298" fill="none" stroke="#57534e" stroke-width="2.5"/>
-      <text x="806" y="148" font-size="11" fill="#78716c">para 2 z tego samego UTP:</text>
-      <text x="806" y="164" font-size="11" font-weight="700" fill="#57534e">REKU-STOP (pożar → wentylacja staje)</text>
-      <rect x="800" y="270" width="212" height="56" rx="8" fill="#fff" stroke="#1c1917" stroke-width="1.5"/>
-      <text x="906" y="293" font-size="11.5" font-weight="700" text-anchor="middle">WYJŚCIE CENTRALI ALARMU (Satel)</text>
-      <text x="906" y="310" font-size="10.5" fill="#78716c" text-anchor="middle">styk przekaźnikowy: pożar = zwarcie pary</text>
+  <!-- para Modbus -->
+  <path d="M 650 85 L 780 85" stroke="var(--mod)" stroke-width="3"/>
+  <path d="M 650 105 L 780 105" stroke="var(--mod)" stroke-width="3"/>
+  <text class="m" x="656" y="78" font-size="9.5" font-weight="600" fill="var(--mod-ink)">A</text>
+  <text class="m" x="656" y="121" font-size="9.5" font-weight="600" fill="var(--mod-ink)">B</text>
+  <rect x="780" y="70" width="22" height="50" rx="5" fill="var(--panel-2)" stroke="var(--line-2)"/>
+  <text x="814" y="84" font-size="12" font-weight="700" fill="var(--mod-ink)">UTP kat.6 → REKUPERATOR (p.2)</text>
+  <text x="814" y="101" font-size="11" fill="var(--ink-2)">para 1: Modbus, zaciski A / B</text>
 
-      <!-- para PV -->
-      <path d="M 650 195 L 780 195" stroke="#ca8a04" stroke-width="3"/>
-      <text x="814" y="190" font-size="12" font-weight="700" fill="#ca8a04">RS485 → FALOWNIK PV</text>
-      <text x="814" y="207" font-size="11" fill="#57534e">(kabel od dewelopera — już jest)</text>
+  <!-- druga para tego samego UTP: REKU-STOP -->
+  <path d="M 791 120 L 791 298 L 798 298" fill="none" stroke="var(--ink-3)" stroke-width="2.5"/>
+  <text x="806" y="150" font-size="11" fill="var(--ink-3)">para 2 z tego samego kabla:</text>
+  <text x="806" y="166" font-size="11" font-weight="700" fill="var(--ink)">REKU-STOP — pożar zatrzymuje wentylację</text>
+  <rect x="800" y="270" width="212" height="56" rx="9" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.5"/>
+  <text x="906" y="293" font-size="11.5" font-weight="700" fill="var(--ink)" text-anchor="middle">WYJŚCIE CENTRALI ALARMU (Satel)</text>
+  <text x="906" y="310" font-size="10.5" fill="var(--ink-3)" text-anchor="middle">styk przekaźnikowy: pożar = zwarcie pary</text>
 
-      <!-- SHELLY PRO 2 -->
-      <rect x="190" y="250" width="210" height="100" rx="10" fill="#166534"/>
-      <text x="295" y="288" font-size="13.5" font-weight="700" fill="#fff" text-anchor="middle">SHELLY PRO 2</text>
-      <text x="295" y="306" font-size="11" fill="#bbf7d0" text-anchor="middle">(przekaźnik na szynę DIN)</text>
-      <rect x="392" y="264" width="16" height="14" rx="3" fill="#fff"/>
-      <rect x="392" y="322" width="16" height="14" rx="3" fill="#fff"/>
-      <path d="M 408 271 L 560 271" stroke="#ea580c" stroke-width="3"/>
-      <path d="M 408 329 L 560 329" stroke="#ea580c" stroke-width="3"/>
-      <text x="190" y="240" font-size="12" font-weight="700" fill="#ea580c">YTDY 6×0,5 → POMPA — zaciski Smart Grid</text>
-      <text x="572" y="290" font-size="11" fill="#57534e">styk 1 → wejście SG 1 (para żył)</text>
-      <text x="572" y="348" font-size="11" fill="#57534e">styk 2 → wejście SG 2 · 2 żyły zapasu</text>
+  <!-- RS485 do PV -->
+  <path d="M 650 195 L 790 195" stroke="var(--pv)" stroke-width="3"/>
+  <text x="814" y="190" font-size="12" font-weight="700" fill="var(--pv-ink)">RS485 → FALOWNIK PV</text>
+  <text x="814" y="207" font-size="11" fill="var(--ink-3)">kabel od dewelopera — już jest</text>
 
-      <!-- callout -->
-      <text x="190" y="398" font-size="11.5" fill="#57534e">Shelly tylko <tspan font-weight="700">ZWIERA styki</tspan> (bez podawania napięcia — pompa sama „pyta" swoje wejścia).</text>
-      <text x="190" y="416" font-size="11.5" fill="#57534e">Cztery kombinacje dwóch styków = cztery tryby pompy: normalny · blokada · „tani prąd — podnieś temperaturę" · „grzej na maksa".</text>
-    </svg>
-  </section>
+  <!-- Shelly Pro 2 i SG Ready -->
+  <rect x="190" y="250" width="210" height="100" rx="11" fill="var(--d-box)"/>
+  <text x="295" y="288" font-size="13.5" font-weight="700" fill="var(--d-box-text)" text-anchor="middle">SHELLY PRO 2</text>
+  <text x="295" y="306" font-size="11" fill="var(--sg-bg)" text-anchor="middle">przekaźnik na szynę DIN</text>
+  <rect x="392" y="264" width="16" height="14" rx="4" fill="var(--panel)" stroke="var(--sg)" stroke-width="2"/>
+  <rect x="392" y="322" width="16" height="14" rx="4" fill="var(--panel)" stroke="var(--sg)" stroke-width="2"/>
+  <path d="M 408 271 L 560 271" stroke="var(--sg)" stroke-width="3"/>
+  <path d="M 408 329 L 560 329" stroke="var(--sg)" stroke-width="3"/>
+  <text x="190" y="240" font-size="12" font-weight="700" fill="var(--sg-ink)">YTDY 6×0,5 → POMPA — zaciski Smart Grid</text>
+  <text x="572" y="275" font-size="11" fill="var(--ink-2)">styk 1 → wejście SG 1 (para żył)</text>
+  <text x="572" y="333" font-size="11" fill="var(--ink-2)">styk 2 → wejście SG 2 · 2 żyły zapasu</text>
 
-  <!-- ================= WERSJA TECHNICZNA ================= -->
-  <section>
-    <h2 style="margin:0 0 4px; font-size:22px; font-weight:700">Wersja techniczna <span style="color:#78716c; font-weight:400; font-size:16px">(dla elektryka i do zakupów)</span></h2>
-    <p style="margin:0 0 18px; color:#57534e; font-size:15px">Całość roboty kablowej HVAC to dwa nowe kable + jeden opcjonalny. Reszta idzie radiem albo po kablach, które już są.</p>
-    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:16px">
-
-      <div style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:20px 22px; font-size:14px">
-        <h3 style="margin:0 0 12px; font-size:15px; padding-bottom:10px; border-bottom:2px solid #f5f5f4">Kable — co położyć TERAZ (przed gładziami)</h3>
-        <ul style="margin:0; padding-left:18px; display:flex; flex-direction:column; gap:8px; color:#44403c">
-          <li><b>UTP kat.6 (drut)</b>: rekuperator (p.2) → RACK, szachtem. Jeden odcinek z rolki, bez sztukowania, zapas 2 m z każdej strony.</li>
-          <li><b>YTDY 6×0,5</b>: RACK → pompa ciepła (SG Ready). Krótki odcinek w garażu.</li>
-          <li><b>UTP kat.6</b>: pompa → switch w RACK (LAN) — opcja pewności; pompa ma Wi-Fi, ale kabel to kabel.</li>
-          <li>Wariant VRF (gdyby wrócił): <b>LiYCY 2×1,5</b> z dowolnej jednostki wewnętrznej do RACK.</li>
-          <li><b>NIC</b> do: klimy GREE (Wi-Fi), podłogówki (kable są), fotowoltaiki (kabel jest ✓).</li>
-        </ul>
+  <text x="190" y="398" font-size="11.5" fill="var(--ink-2)">Shelly tylko <tspan font-weight="700">zwiera styki</tspan> — nie podaje napięcia. Pompa sama odpytuje swoje wejścia.</text>
+  <text x="190" y="416" font-size="11.5" fill="var(--ink-3)">Cztery kombinacje dwóch styków = cztery tryby pompy: normalny · blokada · „tani prąd, podnieś temperaturę” · „grzej na maksa”.</text>
+</svg>
       </div>
-
-      <div style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:20px 22px; font-size:14px">
-        <h3 style="margin:0 0 12px; font-size:15px; padding-bottom:10px; border-bottom:2px solid #f5f5f4">Sprzęt i integracje (montaż własny, bez kucia)</h3>
-        <ul style="margin:0; padding-left:18px; display:flex; flex-direction:column; gap:8px; color:#44403c">
-          <li><b>2× konwerter USB↔RS485</b> (~40–60 zł/szt.) — osobny na każdą magistralę; reku i PV NIE wpinamy na jeden.</li>
-          <li><b>Shelly Pro 2</b> (~400 zł, szyna DIN) — dwa beznapięciowe styki na SG Ready.</li>
-          <li>Integracje w Home Assistant: reku = <b>Modbus</b> (rejestry z instrukcji Frapol) · PV = <b>GoodWe</b> (natywna, lokalna) · pompa = <b>ViCare</b> (oficjalna, chmura) · klima = <b>GREE</b> (natywna, lokalna) · podłogówka = po wymianie regulatorów.</li>
-          <li><b>Appartme zostaje nietknięte</b> — serwer współistnieje, niczego nie przejmuje.</li>
-        </ul>
-      </div>
-
-      <div style="background:#fff; border:1px solid #e7e5e4; border-radius:14px; padding:20px 22px; font-size:14px">
-        <h3 style="margin:0 0 12px; font-size:15px; padding-bottom:10px; border-bottom:2px solid #f5f5f4">Sceny i zasady dyrygenta</h3>
-        <ul style="margin:0; padding-left:18px; display:flex; flex-direction:column; gap:8px; color:#44403c">
-          <li><b>Interlock</b>: nigdy jednocześnie grzanie podłogą i chłodzenie klimą w tym samym pomieszczeniu.</li>
-          <li><b>Kontaktron</b>: okno otwarte → klima w tym pokoju pauza.</li>
-          <li><b>Nadwyżka z PV</b> → SG Ready → pompa grzeje wodę „darmowym" prądem.</li>
-          <li><b>Pożar (Satel)</b> → REKU-STOP — wentylacja nie roznosi dymu.</li>
-          <li><b>Boost łazienki</b>: wilgoć/przycisk → wyższy bieg reku (po Modbusie).</li>
-          <li><b>Chłodzenie pompą</b> (wariant AC): przed aktywacją dokupić czujnik rosy — inaczej wykropli podłogę.</li>
-        </ul>
-      </div>
-
     </div>
-  </section>
+  </figure>
+</section>
+
+<!-- ============================================================
+     04 — WERSJA TECHNICZNA
+     ============================================================ -->
+<section class="section" id="technika">
+  <div class="section__head">
+    <span class="section__no">04</span>
+    <h2>Wersja techniczna <span class="sub">— dla elektryka i do zakupów</span></h2>
+  </div>
+  <p style="margin:0 0 16px;color:var(--ink-2);font-size:14.5px;max-width:80ch">Całość roboty kablowej HVAC to <b>dwa nowe kable plus jeden opcjonalny</b>. Reszta idzie radiem albo po kablach, które już leżą w ścianach.</p>
+
+  <div class="spec">
+    <div class="card">
+      <h3>Kable — co położyć przed gładziami</h3>
+      <ul>
+        <li><b><code>UTP kat.6</code> (drut):</b> rekuperator (p.2) → RACK, szachtem. Jeden odcinek z rolki, bez sztukowania, zapas 2 m z każdej strony.</li>
+        <li><b><code>YTDY 6×0,5</code>:</b> RACK → pompa ciepła, wejście SG Ready. Krótki odcinek w garażu.</li>
+        <li><b><code>UTP kat.6</code>:</b> pompa → switch w RACK. Opcja pewności — pompa ma Wi-Fi, ale kabel to kabel.</li>
+        <li>Wariant VRF, gdyby wrócił: <code>LiYCY 2×1,5</code> z dowolnej jednostki wewnętrznej do RACK.</li>
+        <li><b>Nic</b> do: klimy GREE (Wi-Fi), podłogówki (kable są), fotowoltaiki (kabel jest).</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Sprzęt i integracje</h3>
+      <ul>
+        <li><b>2× konwerter USB↔RS485</b> (~40–60 zł/szt.) — osobny na każdą magistralę. Rekuperatora i PV <b>nie wpinamy na jeden</b>.</li>
+        <li><b>Shelly Pro 2</b> (~400 zł, szyna DIN) — dwa styki bezpotencjałowe na SG Ready.</li>
+        <li><b>Integracje w Home Assistant:</b> reku = Modbus (rejestry z instrukcji Frapol) · PV = GoodWe (natywna, lokalna) · pompa = ViCare (oficjalna, chmura) · klima = GREE (natywna, lokalna) · podłogówka = po wymianie regulatorów.</li>
+        <li><b>Appartme zostaje nietknięte</b> — serwer współistnieje, niczego nie przejmuje.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Sceny i zasady dyrygenta</h3>
+      <ul>
+        <li><b>Interlock:</b> nigdy jednocześnie grzanie podłogą i chłodzenie klimą w tym samym pomieszczeniu.</li>
+        <li><b>Kontaktron:</b> okno otwarte → klima w tym pokoju pauzuje.</li>
+        <li><b>Nadwyżka z PV</b> → SG Ready → pompa grzeje wodę tanim prądem.</li>
+        <li><b>Pożar (Satel)</b> → REKU-STOP, wentylacja nie roznosi dymu.</li>
+        <li><b>Boost łazienki:</b> wilgoć albo przycisk → wyższy bieg reku po Modbusie.</li>
+        <li class="warn"><b>Chłodzenie pompą (wariant AC):</b> przed aktywacją dokupić <b>czujnik rosy</b>. Bez niego chłodna podłoga wykropli się i zaleje wylewkę — a to awaria, nie niedogodność.</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="footnote">Dwa nowe kable: <span class="mono">UTP kat.6</span> przez szacht do rekuperatora i <span class="mono">YTDY 6×0,5</span> w garażu do pompy. Wszystko inne albo już leży, albo idzie radiem.</p>
+</section>
 
 </div>
-</div>
-</body></html>
+</body>
+</html>
